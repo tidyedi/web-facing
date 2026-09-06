@@ -46,6 +46,11 @@ packages = ["src/x12_tidy_web"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+filterwarnings = [
+    # Starlette's TestClient nudges toward a not-yet-released httpx2; harmless.
+    "ignore:Using `httpx` with `starlette.testclient`:DeprecationWarning",
+    "ignore::starlette.exceptions.StarletteDeprecationWarning",
+]
 
 [tool.ruff]
 line-length = 100
