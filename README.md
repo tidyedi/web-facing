@@ -1,3 +1,15 @@
+---
+title: x12-tidy-web
+emoji: "\U0001F9F9"
+colorFrom: green
+colorTo: gray
+sdk: docker
+app_port: 8000
+pinned: false
+license: apache-2.0
+short_description: Repair malformed ANSI X12 EDI and see what changed
+---
+
 <h1>
   <img src="https://raw.githubusercontent.com/tidyedi/x12-tidy/main/docs/images/brand/tidyedi-mark.svg" alt="" width="48" height="48" align="left">
   &nbsp;x12-tidy-web
