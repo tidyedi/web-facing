@@ -18,6 +18,9 @@
 
 * { box-sizing: border-box; }
 
+/* an ID/class `display:` rule outranks the UA [hidden] rule; restore it */
+[hidden] { display: none !important; }
+
 body {
   margin: 0;
   font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
