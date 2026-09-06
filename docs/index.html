@@ -23,12 +23,13 @@
     a.card:hover { border-color:var(--brand); transform:translateY(-2px); }
     a.card h2 { margin:0 0 .3rem; font-size:1.05rem; }
     a.card p { margin:0; color:var(--dim); font-size:.9rem; }
-    a.card.primary { border-color:var(--brand); background:#f1f8f3; }
-    a.card.disabled { opacity:.6; pointer-events:none; }
-    .tag { display:inline-block; font-size:.7rem; font-weight:600; color:var(--brand);
-      background:#e3efe8; border-radius:999px; padding:.1rem .5rem; margin-left:.4rem; vertical-align:middle; }
+    .tag { display:inline-block; font-size:.7rem; font-weight:600; border-radius:999px;
+      padding:.12rem .55rem; margin-left:.5rem; vertical-align:middle; }
+    .tag.live { color:#fff; background:var(--brand); }
+    .tag.soon { color:#8a6d00; background:#f6ecc6; }
+    .watch { margin:1.1rem 0 0; font-size:.9rem; color:var(--dim); }
+    .watch a, footer a { color:var(--accent); }
     footer { margin-top:2.5rem; color:var(--dim); font-size:.85rem; }
-    footer a { color:var(--accent); }
   </style>
 </head>
 <body>
@@ -44,16 +45,21 @@
   </p>
 
   <div class="cards">
-    <!-- LIVE-APP-CARD -->
-    <a class="card disabled" href="https://github.com/tidyedi/web-facing#run-it">
-      <h2>Open the live app <span class="tag">soon</span></h2>
-      <p>Paste your own interchange and repair it. Not hosted yet — run it locally or watch this space.</p>
+    <!-- LIVE-APP-CARD: when hosted, set href to the app URL and change the tag to
+         `tag live`>Live and the copy to "Paste your own interchange." -->
+    <a class="card" href="https://github.com/tidyedi/web-facing#run-it">
+      <h2>Live app <span class="tag soon">coming soon</span></h2>
+      <p>Paste your own interchange and repair it. Not hosted yet — run it
+        yourself in a couple of minutes, or watch the repo for the hosted release.</p>
     </a>
-    <a class="card primary" href="demo/">
-      <h2>Browse the static demo</h2>
-      <p>Five broken sample interchanges, each repaired with the result baked in. No server, nothing to install.</p>
+    <a class="card" href="demo/">
+      <h2>Static demo <span class="tag live">ready</span></h2>
+      <p>Five broken sample interchanges, each repaired with the result baked in.
+        No server, nothing to install — open it now.</p>
     </a>
   </div>
+
+  <p class="watch"><a href="https://github.com/tidyedi/web-facing/subscription">Watch the repo</a> to be notified when the live version is up.</p>
 
   <footer>
     <a href="https://github.com/tidyedi/web-facing">Source</a> ·
