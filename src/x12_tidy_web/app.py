@@ -14,10 +14,22 @@ Routes:
 
 All EDI knowledge is in :mod:`x12_tidy`; the loop is in
 :mod:`x12_tidy_web.engine`; this module is just wiring.
+
+The two repair endpoints (``/api/validate`` and ``/api/report``) do real,
+synchronous CPU work and have no auth, so they carry a per-IP rate limit
+(:mod:`slowapi`). This matters on public deploys where nothing else fronts the
+app -- Hugging Face Spaces, say, where you cannot put a proxy in front. Set
+``X12_TIDY_WEB_RATE_LIMIT`` (a `limits`_ string like ``"30/minute"``, the
+default) to change it, or ``"off"`` to disable it (e.g. when a proxy already
+rate-limits). GET routes and static files are not limited here -- a flood of
+those is cheap and better handled at the infrastructure layer.
+
+.. _limits: https://limits.readthedocs.io/en/stable/quickstart.html#rate-limit-string-notation
 """
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Any
 
@@ -25,6 +37,9 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
 from x12_tidy_web import __version__
 from x12_tidy_web.diagnostics import AREA_LABELS, code_catalog, code_reference
@@ -46,6 +61,22 @@ _TEMPLATES = Jinja2Templates(directory=str(_HERE / "templates"))
 #: every finding's code, title, severity, and explanation (issues #4, #22).
 _REGISTRY_PATH = "src/x12_tidy/diagnostics/codes.py"
 
+_RATE_LIMIT_DEFAULT = "30/minute"
+_RATE_LIMIT_DISABLED = {"", "0", "off", "none", "disabled", "false"}
+
+
+def _rate_limit() -> tuple[str, bool]:
+    """``(limit string, enabled)`` from ``X12_TIDY_WEB_RATE_LIMIT``.
+
+    The limit applies per client IP to the two repair endpoints. ``"off"`` (or
+    ``0``/``none``/…) disables it — do that only when something else in front of
+    the app already rate-limits. Read here (not at import) so it is testable.
+    """
+    raw = os.environ.get("X12_TIDY_WEB_RATE_LIMIT", _RATE_LIMIT_DEFAULT).strip()
+    if raw.lower() in _RATE_LIMIT_DISABLED:
+        return "1000000/minute", False  # decorator still needs a valid string
+    return raw, True
+
 
 def create_app() -> FastAPI:
     app = FastAPI(
@@ -53,6 +84,20 @@ def create_app() -> FastAPI:
         version=__version__,
         description="Web front end for x12-tidy: iterative X12 EDI repair with a downloadable report.",
     )
+
+    rate_limit, rate_limit_enabled = _rate_limit()
+    limiter = Limiter(
+        key_func=get_remote_address,
+        enabled=rate_limit_enabled,
+        headers_enabled=True,  # emit X-RateLimit-* and Retry-After
+        retry_after="delta-seconds",
+    )
+    app.state.limiter = limiter
+    # one shared per-IP budget across both repair endpoints, not one each
+    repair_limit = limiter.shared_limit(rate_limit, scope="repair")
+    # slowapi's handler is typed (Request, RateLimitExceeded) -> Response; Starlette
+    # wants (Request, Exception). The narrower signature is safe here.
+    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)  # type: ignore[arg-type]
 
     app.mount("/static", StaticFiles(directory=str(_HERE / "static")), name="static")
 
@@ -118,12 +163,14 @@ def create_app() -> FastAPI:
         }
 
     @app.post("/api/validate")
-    def validate(req: ValidateRequest) -> JSONResponse:
+    @repair_limit
+    def validate(request: Request, req: ValidateRequest) -> JSONResponse:
         run = repair(req.edi, max_iterations=req.max_iterations)
         return JSONResponse(run.as_dict())
 
     @app.post("/api/report")
-    def report(req: ReportRequest) -> Response:
+    @repair_limit
+    def report(request: Request, req: ReportRequest) -> Response:
         run = repair(req.edi, max_iterations=req.max_iterations)
         rendered = render_report(run, req.format)
         return Response(

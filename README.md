@@ -34,7 +34,9 @@ uv sync                       # installs x12-tidy from its git repo
 uv run x12-tidy-web serve     # http://127.0.0.1:8000
 ```
 
-Options: `x12-tidy-web serve --host 0.0.0.0 --port 8080 --reload`.
+Options: `x12-tidy-web serve --host 0.0.0.0 --port 8080 --reload`. The server
+honours `$PORT` when set. The two repair endpoints are rate-limited per IP
+(30/min by default; `X12_TIDY_WEB_RATE_LIMIT="60/minute"` or `"off"`).
 
 ### Docker
 

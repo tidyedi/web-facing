@@ -144,6 +144,35 @@ def test_index_links_and_byte_note(client) -> None:
     assert "The <strong>Byte</strong> column" in text
 
 
+def _fresh_client(monkeypatch, limit: str):
+    from fastapi.testclient import TestClient
+
+    from x12_tidy_web.app import create_app
+
+    monkeypatch.setenv("X12_TIDY_WEB_RATE_LIMIT", limit)
+    return TestClient(create_app())
+
+
+def test_repair_endpoints_are_rate_limited(monkeypatch) -> None:
+    c = _fresh_client(monkeypatch, "5/minute")
+    statuses = [c.post("/api/validate", json={"edi": CLEAN}).status_code for _ in range(8)]
+    assert statuses.count(200) == 5
+    assert 429 in statuses
+
+    blocked = c.post("/api/report", json={"edi": CLEAN, "format": "json"})
+    assert blocked.status_code == 429  # shared budget across both repair endpoints
+    assert "Retry-After" in blocked.headers
+    assert "rate limit" in blocked.text.lower()
+
+    assert c.get("/healthz").status_code == 200  # GET routes stay open
+
+
+def test_rate_limit_can_be_turned_off(monkeypatch) -> None:
+    c = _fresh_client(monkeypatch, "off")
+    statuses = [c.post("/api/validate", json={"edi": CLEAN}).status_code for _ in range(12)]
+    assert set(statuses) == {200}
+
+
 def test_index_embeds_the_samples(client) -> None:
     import json
 

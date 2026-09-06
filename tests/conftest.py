@@ -43,9 +43,11 @@ def not_edi() -> bytes:
 
 
 @pytest.fixture
-def client():
+def client(monkeypatch: pytest.MonkeyPatch):
     from fastapi.testclient import TestClient
 
     from x12_tidy_web.app import create_app
 
+    # Rate limiting is exercised in its own tests; keep it out of the way here.
+    monkeypatch.setenv("X12_TIDY_WEB_RATE_LIMIT", "off")
     return TestClient(create_app())

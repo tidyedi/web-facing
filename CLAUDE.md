@@ -119,9 +119,10 @@ CI additionally builds the Docker image and hits `/healthz` in the container.
 
 ## Not done / possible next steps
 
-- No rate limiting or request-size middleware beyond the `MAX_EDI_CHARS` check
-  in `models.py`. Add a reverse proxy or slowapi if deployed publicly — see
-  `docs/DEPLOYMENT.md`.
+- Per-IP rate limiting on the two repair endpoints is built in (`slowapi`,
+  30/min shared, `X12_TIDY_WEB_RATE_LIMIT` to tune or `off` to disable). No
+  request-size middleware beyond `MAX_EDI_CHARS` in `models.py`; put a body cap
+  at the proxy for a public deploy — see `docs/DEPLOYMENT.md`.
 - No persistence by design — nothing pasted is stored or logged. Keep it that
   way unless there's a deliberate decision otherwise.
 - Open UI issues on the remote (tidyedi/web-facing): #5/#6/#9/#12 (visual

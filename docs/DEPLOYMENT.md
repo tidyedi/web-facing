@@ -50,17 +50,16 @@ proxy in front to provide:
   should stop the bytes before they reach Python.
 - **A response timeout** — 30 s is plenty; a pathological input is already
   bounded by `MAX_ALLOWED_ITERATIONS`, but a timeout is a cheap backstop.
-- **Rate limiting** — per-IP, e.g. 30 requests/minute. nginx `limit_req`, Caddy
-  `rate_limit`, or Cloudflare in front. This is the one real gap for a public
-  deployment: `POST /api/validate` and `/api/report` do real CPU work and have
-  no throttle today.
+- **Rate limiting** — the app already limits `POST /api/validate` and
+  `/api/report` to a shared **30 requests/minute per IP** (`slowapi`; set
+  `X12_TIDY_WEB_RATE_LIMIT`, e.g. `"60/minute"`, or `"off"`). Add a proxy or
+  Cloudflare rule on top if you want to throttle the whole site, not just the
+  repair calls. On a host where you *can't* put a proxy in front (Hugging Face
+  Spaces), the built-in limit is your only layer — keep it on.
 - **Security headers** — `X-Content-Type-Options: nosniff`,
   `Referrer-Policy: no-referrer`, a strict `Content-Security-Policy` (the app
-  loads only its own CSS/JS, no CDN, so `default-src 'self'` fits).
-
-If you would rather the app carry its own rate limiting and headers instead of
-leaning on the proxy, add `slowapi` + a small middleware — tracked as a possible
-next step in `CLAUDE.md`.
+  loads only its own CSS/JS, no CDN, so `default-src 'self'` fits). These are
+  not set by the app; add them at the proxy.
 
 ### 3. Keep the privacy promise true
 
@@ -101,9 +100,9 @@ launch on the platform's URL instead of a custom domain.
 | **Oracle Cloud "Always Free" VM** | Yes (verification) | A real always-on VM; run `docker compose` + Caddy as in the VPS section below. No sleep. |
 
 Rate limiting on the managed platforms (HF, Render): you can't put nginx/Caddy in
-front, so either accept the risk for launch (the app still caps body size and
-iteration count) or add `slowapi` to the app. On Cloud Run, put Cloudflare's free
-tier in front of a custom domain.
+front, but the app's built-in per-IP limit on the repair endpoints (30/min,
+`X12_TIDY_WEB_RATE_LIMIT`) covers you. On Cloud Run or a VPS you can also put
+Cloudflare's free tier in front of a custom domain for whole-site limiting.
 
 ### Hugging Face Spaces (recommended for a no-cost launch)
 
@@ -201,12 +200,8 @@ docker compose up -d      # from this repo, on the VPS
 systemctl reload caddy
 ```
 
-That covers TLS, the body cap, headers, and a DNS record. For **rate limiting**,
-pick one:
-
-- Put Cloudflare (free tier) in front of the subdomain and add a rate-limit rule
-  there — no server config, also gives you a CDN and basic bot filtering.
-- Build Caddy with the [`caddy-ratelimit`](https://github.com/mholt/caddy-ratelimit)
-  plugin and add a `rate_limit` block.
-- Use nginx instead of Caddy — `limit_req` is built in.
-- Add `slowapi` to the app itself (see `CLAUDE.md` "Not done").
+That covers TLS, the body cap, headers, and a DNS record. The app already
+rate-limits the repair endpoints per IP; for **whole-site** limiting on top, add
+Cloudflare's free tier in front, build Caddy with the
+[`caddy-ratelimit`](https://github.com/mholt/caddy-ratelimit) plugin, or use
+nginx (`limit_req` is built in).

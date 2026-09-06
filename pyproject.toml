@@ -18,6 +18,9 @@ dependencies = [
     "uvicorn[standard]>=0.30",
     "jinja2>=3.1",
     "python-multipart>=0.0.9",
+    # Per-IP rate limiting on the two repair endpoints, for public deploys where
+    # nothing else fronts the app (e.g. Hugging Face Spaces). See app.py.
+    "slowapi>=0.1.9",
 ]
 
 [project.optional-dependencies]
