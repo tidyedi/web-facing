@@ -185,6 +185,28 @@ def test_rate_limit_can_be_turned_off(monkeypatch) -> None:
     assert set(statuses) == {200}
 
 
+def test_index_has_the_segment_outline_and_config(client) -> None:
+    text = client.get("/").text
+    assert 'id="exploded-wrap"' in text
+    assert "Read it segment by segment" in text
+    assert 'id="app-config"' in text
+
+
+def _app_config(html: str) -> dict:
+    blob = html.split('id="app-config">', 1)[1].split("</script>", 1)[0]
+    return json.loads(blob)
+
+
+def test_report_a_wrong_result_link_is_opt_in(monkeypatch) -> None:
+    monkeypatch.delenv("X12_TIDY_WEB_FEEDBACK_EMAIL", raising=False)
+    off = _fresh_client(monkeypatch, "off")
+    assert _app_config(off.get("/").text)["feedbackEmail"] == ""
+
+    monkeypatch.setenv("X12_TIDY_WEB_FEEDBACK_EMAIL", "ops@example.com")
+    on = _fresh_client(monkeypatch, "off")
+    assert _app_config(on.get("/").text)["feedbackEmail"] == "ops@example.com"
+
+
 def test_index_embeds_the_samples(client) -> None:
     import json
 

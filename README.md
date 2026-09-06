@@ -35,8 +35,15 @@ uv run x12-tidy-web serve     # http://127.0.0.1:8000
 ```
 
 Options: `x12-tidy-web serve --host 0.0.0.0 --port 8080 --reload`. The server
-honours `$PORT` when set. The two repair endpoints are rate-limited per IP
-(30/min by default; `X12_TIDY_WEB_RATE_LIMIT="60/minute"` or `"off"`).
+honours `$PORT` when set.
+
+Environment:
+
+| Variable | Effect |
+| --- | --- |
+| `PORT` | Bind port when `--port` isn't given (Cloud Run, Render, Fly set it). |
+| `X12_TIDY_WEB_RATE_LIMIT` | Per-IP limit on the repair endpoints (`"30/minute"` default; `"off"` to disable). |
+| `X12_TIDY_WEB_FEEDBACK_EMAIL` | Address for the "report a wrong result" `mailto:` link. Unset → link hidden. |
 
 ### Docker
 

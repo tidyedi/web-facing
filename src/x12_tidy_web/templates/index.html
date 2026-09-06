@@ -64,8 +64,16 @@
     <p id="form-error" class="form-error" hidden></p>
   </form>
 
+  <script type="application/json" id="app-config">{{ config | tojson }}</script>
+
   <section id="results" hidden aria-live="polite">
     <div id="verdict" class="verdict"></div>
+
+    <p id="report-wrong" class="hint" hidden>
+      Result look wrong?
+      <a id="report-link" href="#">Report it by email</a> — you choose what to
+      include; nothing is sent automatically.
+    </p>
 
     <div class="result-grid">
       <div class="panel">
@@ -86,6 +94,16 @@
           re-run the repair on it or hand-edit and re-check. Neither is saved
           anywhere — it stays in your browser.
         </p>
+        <details id="exploded-wrap" class="exploded-box" hidden>
+          <summary>Read it segment by segment</summary>
+          <p class="hint">
+            The same corrected bytes, one segment per line, indented by envelope
+            level, with the segments inside each transaction set numbered (that
+            count is what <code>SE01</code> must match). A reading aid — not a
+            different result.
+          </p>
+          <pre id="exploded"></pre>
+        </details>
         <p id="isa-pad-note" class="hint" hidden>
           Runs of spaces in the ISA header are correct: ISA is a fixed-width
           record, so every element is padded to an exact size (ISA05/07 to 2,
@@ -155,6 +173,7 @@
     <a href="/codes">Code reference</a>
     <a href="https://docs.tidyedi.com">Docs</a>
     <a href="https://github.com/tidyedi/web-facing">Source</a>
+    <a href="https://github.com/tidyedi/web-facing/issues">Feedback</a>
     <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
     <a href="https://tidyedi.com">TidyEDI</a>
   </nav>

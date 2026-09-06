@@ -18,6 +18,14 @@ try {
 }
 let lastSampleSlug = null;
 
+// { feedbackEmail, x12TidyRelease } from the server.
+let CONFIG = {};
+try {
+  CONFIG = JSON.parse($("app-config").textContent);
+} catch {
+  /* no config — feature links stay hidden */
+}
+
 const form = $("edi-form");
 const ediInput = $("edi");
 const maxIterInput = $("max-iterations");
@@ -25,8 +33,12 @@ const formError = $("form-error");
 const sampleNote = $("sample-note");
 const results = $("results");
 const verdictEl = $("verdict");
+const reportWrong = $("report-wrong");
+const reportLink = $("report-link");
 const correctedEl = $("corrected");
 const isaPadNote = $("isa-pad-note");
+const explodedWrap = $("exploded-wrap");
+const explodedEl = $("exploded");
 const factsBody = $("facts").querySelector("tbody");
 const factsEmpty = $("facts-empty");
 const passesEl = $("passes");
@@ -177,6 +189,73 @@ function pill(text, kind) {
   return el("span", { class: `pill ${kind}`, text });
 }
 
+// --------------------------------------------------------------------------- //
+// "read it segment by segment" — a display-only re-layout of the corrected
+// bytes. Segment boundaries come from x12-tidy's output (the ISA line fixes the
+// segment terminator at byte 105); indentation and the per-transaction-set
+// numbering are just formatting.
+// --------------------------------------------------------------------------- //
+const _INDENT = { 0: "", 1: "  ", 2: "     " }; // depth -> leading space
+
+function segTag(segment) {
+  const m = segment.match(/^\s*([A-Za-z0-9]+)/);
+  return m ? m[1].toUpperCase() : "";
+}
+
+function explodeSegments(text) {
+  if (!text || text.length < 106 || segTag(text) !== "ISA") return null;
+  const term = text[105];
+  const raw = text
+    .split(term)
+    .map((s) => s.replace(/[\r\n]+/g, "").trim())
+    .filter(Boolean);
+
+  // show a visible terminator (~, |, …); a whitespace one is already implied by
+  // the line break in this view.
+  const shownTerm = /\S/.test(term) ? term : "";
+
+  const lines = [];
+  let depth = 0;
+  let inSet = false;
+  let n = 0;
+  for (const seg of raw) {
+    const tag = segTag(seg);
+    let num = null;
+    if (tag === "ISA" || tag === "IEA") {
+      depth = 0;
+      inSet = false;
+    } else if (tag === "GS") {
+      depth = 1;
+    } else if (tag === "GE") {
+      depth = 1;
+      inSet = false;
+    } else if (tag === "ST") {
+      depth = 2;
+      inSet = true;
+      n = 1;
+      num = n;
+    } else if (tag === "SE") {
+      depth = 2;
+      n += 1;
+      num = n;
+      inSet = false;
+    } else if (inSet) {
+      depth = 2;
+      n += 1;
+      num = n;
+    }
+    const label = num == null ? "    " : String(num).padStart(3) + " ";
+    lines.push(_INDENT[depth] + label + seg + shownTerm);
+  }
+  return lines.join("\n");
+}
+
+function renderExploded(run) {
+  const text = explodeSegments(run.final_text || "");
+  explodedWrap.hidden = text === null;
+  if (text !== null) explodedEl.textContent = text;
+}
+
 function renderFindingsTable(diagnostics) {
   const table = el("table", { class: "findings" });
   table.append(
@@ -306,9 +385,32 @@ function renderPass(iter, isLast) {
   return details;
 }
 
+function verdictHeadline(run) {
+  if (!run.recovered) return "unrecoverable";
+  if (run.clean) return "clean";
+  if (run.converged) return "repaired with residual findings";
+  return "did not converge";
+}
+
+function updateReportLink(run) {
+  if (!CONFIG.feedbackEmail) return; // deployer didn't opt in
+  const subject = `[x12-tidy-web] wrong result: ${verdictHeadline(run)}`;
+  const body =
+    `x12-tidy ${CONFIG.x12TidyRelease || "?"}\n` +
+    `verdict: ${verdictHeadline(run)} (stop reason: ${run.stop_reason})\n` +
+    `final findings: ${countsSummary(run.residual_severity_counts)}\n\n` +
+    "What did you expect, and what did you get? Paste the relevant part of your " +
+    "interchange below — remove anything you can't share.\n";
+  reportLink.href = `mailto:${CONFIG.feedbackEmail}?subject=${encodeURIComponent(
+    subject
+  )}&body=${encodeURIComponent(body)}`;
+  reportWrong.hidden = false;
+}
+
 function renderRun(run) {
   lastRun = run;
   renderVerdict(run);
+  updateReportLink(run);
 
   correctedEl.value = run.final_text || "";
   const hasCorrected = Boolean(run.final_text);
@@ -320,6 +422,8 @@ function renderRun(run) {
     it.diagnostics.some((d) => d.code.startsWith("isa."))
   );
   isaPadNote.hidden = !(hasCorrected && touchedIsa);
+
+  renderExploded(run);
 
   renderFacts(run.final_facts);
 

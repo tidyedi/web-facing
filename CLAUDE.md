@@ -125,11 +125,13 @@ CI additionally builds the Docker image and hits `/healthz` in the container.
   at the proxy for a public deploy — see `docs/DEPLOYMENT.md`.
 - No persistence by design — nothing pasted is stored or logged. Keep it that
   way unless there's a deliberate decision otherwise.
-- Open issues on the remote (tidyedi/web-facing): #7 (a pretty-printed segment
-  view — decide x12-tidy vs. local), #10/#14 (feedback/email — needs a
-  destination, in tension with no-persistence), #15–#19 (marketing backlog,
-  user-tagged "later:"), #26 (deployment — `docs/DEPLOYMENT.md` is the answer,
-  waiting on a platform decision).
+- Open issues on the remote (tidyedi/web-facing): #10 (server-sent email —
+  declined for now, privacy), #15–#19 (marketing backlog, "later:"), #26
+  (deployment — `docs/DEPLOYMENT.md` is the answer, waiting on a platform pick).
 - Feedback on a diagnostic code goes to x12-tidy's Q&A discussions, not here —
   the per-code "Discuss" links on `/codes` build a pre-filled URL
-  (`diagnostics._discuss_url`).
+  (`diagnostics._discuss_url`). "Report a wrong result" is an opt-in `mailto:`
+  (`X12_TIDY_WEB_FEEDBACK_EMAIL`); the interchange is never auto-attached.
+- The "read it segment by segment" view (#7) is JS-only in `app.js`
+  (`explodeSegments`): it splits the corrected bytes on the terminator x12-tidy
+  fixed at ISA byte 105 and re-lays them out. Not ported to the demo pages.

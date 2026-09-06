@@ -158,6 +158,19 @@ button.ghost { background: transparent; }
 
 .hint { color: var(--dim); font-size: .85rem; margin: .5rem 0 0; }
 
+.exploded-box { margin-top: .6rem; }
+.exploded-box > summary { cursor: pointer; font-size: .9rem; color: var(--accent); }
+.exploded-box pre {
+  margin: .5rem 0 0;
+  padding: .75rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfdff;
+  font: 12px/1.5 var(--mono);
+  overflow-x: auto;
+  white-space: pre;
+}
+
 table.facts { width: 100%; border-collapse: collapse; font-size: .9rem; }
 table.facts th, table.facts td { text-align: left; padding: .35rem .4rem; border-bottom: 1px solid var(--bg); vertical-align: top; }
 table.facts th { color: var(--ink); font-weight: 500; width: 30%; white-space: nowrap; vertical-align: baseline; }

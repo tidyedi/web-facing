@@ -65,6 +65,16 @@ _RATE_LIMIT_DEFAULT = "30/minute"
 _RATE_LIMIT_DISABLED = {"", "0", "off", "none", "disabled", "false"}
 
 
+def _feedback_email() -> str:
+    """Address for the "report a wrong result" link, or "" to hide it.
+
+    Set ``X12_TIDY_WEB_FEEDBACK_EMAIL`` on the deployment. The link is a plain
+    ``mailto:`` — the interchange is never attached automatically, the visitor
+    decides what to paste.
+    """
+    return os.environ.get("X12_TIDY_WEB_FEEDBACK_EMAIL", "").strip()
+
+
 def _rate_limit() -> tuple[str, bool]:
     """``(limit string, enabled)`` from ``X12_TIDY_WEB_RATE_LIMIT``.
 
@@ -117,6 +127,10 @@ def create_app() -> FastAPI:
                     {"slug": s.slug, "title": s.title, "blurb": s.blurb, "edi": s.edi}
                     for s in SAMPLES
                 ],
+                "config": {
+                    "feedbackEmail": _feedback_email(),
+                    "x12TidyRelease": x12_tidy_release(),
+                },
             },
         )
 
