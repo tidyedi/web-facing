@@ -44,16 +44,23 @@
 </header>
 
 <main class="wrap">
+  <div class="codes-filter" role="group" aria-label="Filter the reference by severity">
+    <span>Show</span>
+    <button type="button" class="pill fatal" data-sev="fatal" aria-pressed="false">{{ fatal_count }} fatal</button>
+    <button type="button" class="pill error" data-sev="error" aria-pressed="false">{{ error_count }} error</button>
+    <button type="button" class="pill warning" data-sev="warning" aria-pressed="false">{{ warning_count }} warning</button>
+  </div>
+
   {% for area, rows in by_area %}
   <section class="panel">
-    <h2>{{ area_labels.get(area, area) }} <span class="dim">({{ rows | length }})</span></h2>
+    <h2>{{ area_labels.get(area, area) }} <span class="dim" data-count data-total="{{ rows | length }}">({{ rows | length }})</span></h2>
     <table class="findings codes-table">
       <thead>
         <tr><th>Severity</th><th>Code</th><th>Finding</th></tr>
       </thead>
       <tbody>
         {% for c in rows %}
-        <tr{% if c.deprecated %} class="deprecated"{% endif %}>
+        <tr data-sev="{{ c.severity }}"{% if c.deprecated %} class="deprecated"{% endif %}>
           <td><span class="sev {{ c.severity }}">{{ c.severity.upper() }}</span></td>
           <td>
             <code>{{ c.code }}</code>{% if c.deprecated %} <span class="dim">(deprecated)</span>{% endif %}
@@ -82,5 +89,38 @@
   </nav>
   <p>x12-tidy-web {{ app_version }} · x12-tidy {{ x12_tidy_release }} · Apache-2.0</p>
 </footer>
+
+<script>
+(function () {
+  var bar = document.querySelector(".codes-filter");
+  if (!bar) return;
+  var btns = Array.prototype.slice.call(bar.querySelectorAll("button[data-sev]"));
+  var active = new Set();
+  function apply() {
+    var on = active.size > 0;
+    btns.forEach(function (b) {
+      var sel = active.has(b.dataset.sev);
+      b.setAttribute("aria-pressed", sel ? "true" : "false");
+      b.classList.toggle("dim", on && !sel);
+    });
+    document.querySelectorAll("tbody tr[data-sev]").forEach(function (row) {
+      row.hidden = on && !active.has(row.dataset.sev);
+    });
+    document.querySelectorAll("main section.panel").forEach(function (sec) {
+      var vis = sec.querySelectorAll("tbody tr[data-sev]:not([hidden])").length;
+      sec.hidden = on && vis === 0;
+      var count = sec.querySelector("[data-count]");
+      if (count) count.textContent = "(" + (on ? vis + " of " + count.dataset.total : count.dataset.total) + ")";
+    });
+  }
+  btns.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var s = b.dataset.sev;
+      active.has(s) ? active.delete(s) : active.add(s);
+      apply();
+    });
+  });
+})();
+</script>
 </body>
 </html>

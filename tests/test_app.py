@@ -148,6 +148,16 @@ def test_codes_page_renders(client) -> None:
     assert "x12-tidy/discussions/new?" in text
 
 
+def test_codes_page_has_a_severity_filter(client) -> None:
+    text = client.get("/codes").text
+    assert 'class="codes-filter"' in text
+    for sev in ("fatal", "error", "warning"):
+        assert f'data-sev="{sev}"' in text
+    # every code row is tagged so the filter can show/hide it
+    api = client.get("/api/codes").json()["codes"]
+    assert text.count("<tr data-sev=") == len(api)
+
+
 def test_index_links_and_byte_note(client) -> None:
     text = client.get("/").text
     assert 'class="footer-links"' in text
