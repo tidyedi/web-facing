@@ -1,5 +1,66 @@
 <!doctype html>
-<meta charset="utf-8">
-<title>x12-tidy-web</title>
-<meta http-equiv="refresh" content="0; url=demo/">
-<p>Redirecting to the <a href="demo/">x12-tidy-web static demo</a>…</p>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>x12-tidy-web</title>
+  <meta name="description" content="Repair malformed ANSI X12 EDI and see what each pass changed. A stateless web front end for x12-tidy.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlRpZHlFREkiPgogIDx0aXRsZT5UaWR5RURJPC90aXRsZT4KICA8cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHJ4PSIxNCIgZmlsbD0iIzFGNkI0RCIvPgogIDxyZWN0IHg9IjExIiB5PSIxNSIgd2lkdGg9IjM1IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIgb3BhY2l0eT0iMC4zNCIvPgogIDxyZWN0IHg9IjE4IiB5PSIyNiIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgogIDxyZWN0IHg9IjE4IiB5PSIzNyIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgogIDxyZWN0IHg9IjE4IiB5PSI0OCIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgo8L3N2Zz4K">
+  <style>
+    :root { color-scheme: light; --ink:#1b1f24; --dim:#6a737d; --line:#d8dee4; --bg:#f6f8fa; --panel:#fff; --accent:#1f6feb; --brand:#1F6B4D; }
+    * { box-sizing: border-box; }
+    body { margin:0; font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:var(--ink); background:var(--bg); }
+    .wrap { max-width:44rem; margin:0 auto; padding:3.5rem 1.25rem 4rem; }
+    .brand { display:flex; align-items:center; gap:.7rem; }
+    .mark { width:44px; height:44px; border-radius:10px; flex:none; }
+    h1 { margin:0; font-size:2rem; letter-spacing:-.02em; }
+    h1 .dim { color:var(--dim); font-weight:400; }
+    .lede { color:var(--dim); margin:1rem 0 2rem; font-size:1.05rem; }
+    .cards { display:grid; gap:1rem; grid-template-columns:1fr 1fr; }
+    @media (max-width:34rem){ .cards{ grid-template-columns:1fr; } }
+    a.card { display:block; text-decoration:none; color:inherit; background:var(--panel);
+      border:1px solid var(--line); border-radius:12px; padding:1.15rem 1.25rem; transition:border-color .12s, transform .12s; }
+    a.card:hover { border-color:var(--brand); transform:translateY(-2px); }
+    a.card h2 { margin:0 0 .3rem; font-size:1.05rem; }
+    a.card p { margin:0; color:var(--dim); font-size:.9rem; }
+    a.card.primary { border-color:var(--brand); background:#f1f8f3; }
+    a.card.disabled { opacity:.6; pointer-events:none; }
+    .tag { display:inline-block; font-size:.7rem; font-weight:600; color:var(--brand);
+      background:#e3efe8; border-radius:999px; padding:.1rem .5rem; margin-left:.4rem; vertical-align:middle; }
+    footer { margin-top:2.5rem; color:var(--dim); font-size:.85rem; }
+    footer a { color:var(--accent); }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#1F6B4D"/><rect x="11" y="15" width="35" height="5.4" rx="2.7" fill="#F3F8F5" opacity=".34"/><rect x="18" y="26" width="28" height="5.4" rx="2.7" fill="#F3F8F5"/><rect x="18" y="37" width="28" height="5.4" rx="2.7" fill="#F3F8F5"/><rect x="18" y="48" width="28" height="5.4" rx="2.7" fill="#F3F8F5"/></svg>
+    <h1>x12-tidy<span class="dim">-web</span></h1>
+  </div>
+  <p class="lede">
+    Paste a malformed ANSI X12 interchange, get a cleansed conformant copy plus a
+    per-pass report of what changed. Nothing you paste is stored or sent anywhere.
+    All EDI work is done by <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>.
+  </p>
+
+  <div class="cards">
+    <!-- LIVE-APP-CARD -->
+    <a class="card disabled" href="https://github.com/tidyedi/web-facing#run-it">
+      <h2>Open the live app <span class="tag">soon</span></h2>
+      <p>Paste your own interchange and repair it. Not hosted yet — run it locally or watch this space.</p>
+    </a>
+    <a class="card primary" href="demo/">
+      <h2>Browse the static demo</h2>
+      <p>Five broken sample interchanges, each repaired with the result baked in. No server, nothing to install.</p>
+    </a>
+  </div>
+
+  <footer>
+    <a href="https://github.com/tidyedi/web-facing">Source</a> ·
+    <a href="demo/codes.html">Diagnostic codes</a> ·
+    <a href="DEPLOYMENT.md">Deploy your own</a> ·
+    Apache-2.0
+  </footer>
+</div>
+</body>
+</html>

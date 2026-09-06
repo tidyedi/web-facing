@@ -80,11 +80,19 @@ src/x12_tidy_web/
   static/        styles.css, app.js, favicon.svg. Vanilla JS, no build, no CDN.
 ```
 
-The committed demo bundle lives in `docs/demo/` and is published by GitHub Pages
-(source: `main` `/docs`, with `docs/.nojekyll`) at
-<https://tidyedi.github.io/web-facing/demo/>. Regenerate it with
-`uv run x12-tidy-web demo docs/demo` after changing samples, templates, or the
-x12-tidy pin, then commit — Pages redeploys on push.
+GitHub Pages (source: `main` `/docs`, with `docs/.nojekyll`) serves:
+- `docs/index.html` — the hand-maintained landing page at
+  <https://tidyedi.github.io/web-facing/> (the repo's Website link). It offers
+  "live app" and "static demo". **When the app is hosted somewhere, edit the
+  `<!-- LIVE-APP-CARD -->` anchor**: drop `disabled`, add `primary`, set `href`
+  to the real URL — and move `primary` off the demo card.
+- `docs/demo/` — the generated bundle. Regenerate with
+  `uv run x12-tidy-web demo docs/demo` after changing samples, templates, or the
+  x12-tidy pin, then commit. Pages redeploys on push.
+
+When a hosted URL exists, also update: the repo Website field, `demo.py`'s
+`static_nav["home_href"]`, and the `_nav.html` "Repair" default if it stops
+being `/`.
 
 ### Why iterate?
 
