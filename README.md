@@ -141,7 +141,7 @@ src/x12_tidy_web/
   diagnostics.py x12-tidy's severity-free Diagnostic -> a display row
   reporting.py   render a RepairRun as JSON / Markdown / HTML / text / CSV
   provenance.py  which x12-tidy build is installed (footer, /healthz, links)
-  samples.py     the three broken samples the form and demo pages share
+  samples.py     the five broken samples the form and demo pages share
   demo.py        build the static demo bundle
   models.py      Pydantic request/response schemas
   app.py         the FastAPI app: form page + JSON API + downloads

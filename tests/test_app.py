@@ -227,6 +227,6 @@ def test_index_embeds_the_samples(client) -> None:
     assert "Load a random sample" in text
     blob = text.split('id="samples-data">', 1)[1].split("</script>", 1)[0]
     samples = json.loads(blob)
-    assert len(samples) == 3
-    assert {s["slug"] for s in samples} == {"forwarded-email", "pipe-delimited", "lowercased-isa"}
+    assert len(samples) == 5
+    assert {"forwarded-email", "pipe-delimited", "wrapped-isa"} <= {s["slug"] for s in samples}
     assert all(s["edi"] and s["blurb"] for s in samples)

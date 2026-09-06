@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>x12-tidy-web demo — Lowercased tag — 997 functional acknowledgement</title>
+  <title>x12-tidy-web demo — Wrapped ISA header — 940 warehouse shipping order</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlRpZHlFREkiPgogIDx0aXRsZT5UaWR5RURJPC90aXRsZT4KICA8cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHJ4PSIxNCIgZmlsbD0iIzFGNkI0RCIvPgogIDxyZWN0IHg9IjExIiB5PSIxNSIgd2lkdGg9IjM1IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIgb3BhY2l0eT0iMC4zNCIvPgogIDxyZWN0IHg9IjE4IiB5PSIyNiIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgogIDxyZWN0IHg9IjE4IiB5PSIzNyIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgogIDxyZWN0IHg9IjE4IiB5PSI0OCIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgo8L3N2Zz4K">
   <style>/* SPDX-License-Identifier: Apache-2.0
    Copyright 2026 Michael Schertz */
@@ -325,20 +325,21 @@ tr.deprecated { opacity: .55; }
     
       <a href="pipe-delimited.html">Pipe-delimited — 856 advance ship notice</a>
     
-      <strong>Lowercased tag — 997 functional acknowledgement</strong>
+      <a href="lowercased-isa.html">Lowercased tag — 997 functional acknowledgement</a>
     
       <a href="truncated-transmission.html">Truncated transmission — 837 claim, cut off</a>
     
-      <a href="wrapped-isa.html">Wrapped ISA header — 940 warehouse shipping order</a>
+      <strong>Wrapped ISA header — 940 warehouse shipping order</strong>
     
     <a href="codes.html">Code reference</a>
   </nav>
 
   <section class="panel">
-    <h2>Lowercased tag — 997 functional acknowledgement</h2>
-    <p class="hint">A functional acknowledgement whose ISA segment tag arrived in lowercase (&#39;isa&#39;). x12-tidy uppercases it; nothing else is wrong and the result is conformant.</p>
+    <h2>Wrapped ISA header — 940 warehouse shipping order</h2>
+    <p class="hint">A mail client hard-wrapped the ISA segment mid-element, putting a CR/LF inside ISA08. x12-tidy replaces the break with a space, re-measures the element, and the interchange comes out conformant (one warning, one error, both resolved).</p>
     <h3>The interchange as submitted</h3>
-    <textarea readonly spellcheck="false" rows="6">isa*00*          *00*          *ZZ*GATEWAYEDI     *ZZ*PARTNERX       *240102*0801*U*00401*000000015*0*P*:~GS*FA*GATEWAYEDI*PARTNERX*20240102*0801*15*X*004010~ST*997*0001~AK1*PO*501~AK2*850*0001~AK5*A~AK9*A*1*1*1~SE*6*0001~GE*1*15~IEA*1*000000015~</textarea>
+    <textarea readonly spellcheck="false" rows="6">ISA*00*          *00*          *ZZ*SHIPPERONE     *ZZ*RECEIVER
+TWO    *240705*2200*U*00401*000000900*0*P*:~GS*SW*SHIPPERONE*RECEIVERTWO*20240705*2200*900*X*004010~ST*940*0001~W05*N*ORDER-7781~N1*ST*Receiver Two DC~W66*PP*****FEDG~G62*10*20240706~SE*6*0001~GE*1*900~IEA*1*000000900~</textarea>
   </section>
 
   <div class="verdict ok">
@@ -353,7 +354,7 @@ tr.deprecated { opacity: .55; }
   <div class="result-grid">
     <div class="panel">
       <div class="panel-head"><h2>Corrected interchange</h2></div>
-      <textarea readonly spellcheck="false" rows="8">ISA*00*          *00*          *ZZ*GATEWAYEDI     *ZZ*PARTNERX       *240102*0801*U*00401*000000015*0*P*:~GS*FA*GATEWAYEDI*PARTNERX*20240102*0801*15*X*004010~ST*997*0001~AK1*PO*501~AK2*850*0001~AK5*A~AK9*A*1*1*1~SE*6*0001~GE*1*15~IEA*1*000000015~</textarea>
+      <textarea readonly spellcheck="false" rows="8">ISA*00*          *00*          *ZZ*SHIPPERONE     *ZZ*RECEIVER  TWO  *240705*2200*U*00401*000000900*0*P*:~GS*SW*SHIPPERONE*RECEIVERTWO*20240705*2200*900*X*004010~ST*940*0001~W05*N*ORDER-7781~N1*ST*Receiver Two DC~W66*PP*****FEDG~G62*10*20240706~SE*6*0001~GE*1*900~IEA*1*000000900~</textarea>
     </div>
 
     <div class="panel">
@@ -361,11 +362,11 @@ tr.deprecated { opacity: .55; }
       
       
       <table class="facts"><tbody>
-        <tr><th>Sender</th><td><span>ZZ / GATEWAYEDI</span><span class="fact-src">From ISA05 (qualifier) and ISA06 (ID).</span></td></tr>
-        <tr><th>Receiver</th><td><span>ZZ / PARTNERX</span><span class="fact-src">From ISA07 (qualifier) and ISA08 (ID).</span></td></tr>
+        <tr><th>Sender</th><td><span>ZZ / SHIPPERONE</span><span class="fact-src">From ISA05 (qualifier) and ISA06 (ID).</span></td></tr>
+        <tr><th>Receiver</th><td><span>ZZ / RECEIVER  TWO</span><span class="fact-src">From ISA07 (qualifier) and ISA08 (ID).</span></td></tr>
         <tr><th>Usage indicator</th><td><span>P</span><span class="fact-src">ISA15 — P = production, T = test, I = information.</span></td></tr>
         <tr><th>Interchange version</th><td><span>00401</span><span class="fact-src">ISA12 — the interchange control version number.</span></td></tr>
-        <tr><th>Date / time</th><td><span>240102 0801</span><span class="fact-src">ISA09 and ISA10 — when the interchange was prepared.</span></td></tr>
+        <tr><th>Date / time</th><td><span>240705 2200</span><span class="fact-src">ISA09 and ISA10 — when the interchange was prepared.</span></td></tr>
         <tr><th>Functional groups</th><td><span>1</span><span class="fact-src">GS segments counted while walking the payload; IEA01 is checked against this.</span></td></tr>
         <tr><th>Transaction sets</th><td><span>1</span><span class="fact-src">ST segments counted; each group's GE01 is checked against its own count.</span></td></tr>
         <tr><th>Segments</th><td><span>9</span><span class="fact-src">Total segments in the cleansed payload; each SE01 is checked against its set's count.</span></td></tr>
@@ -390,15 +391,15 @@ tr.deprecated { opacity: .55; }
         
           <span class="pill error">1 error</span>
         
-          
+          <span class="pill warning">1 warning</span>
         
         
         <span class="pass-status">changed the interchange</span>
       </summary>
       <div class="pass-body">
         <p class="hint">
-          246 bytes in →
-          246 bytes out.
+          282 bytes in →
+          280 bytes out.
         </p>
         
         <table class="findings">
@@ -407,12 +408,23 @@ tr.deprecated { opacity: .55; }
           
             <tr>
               <td><span class="sev error">ERROR</span></td>
-              <td><code>isa.identifier-lowercase</code></td>
+              <td><code>isa.element-width</code></td>
               <td>0</td>
               <td>
-                <strong>ISA segment identifier is not uppercase</strong>
-                <span class="finding-msg">the ISA segment identifier is not uppercase (&#39;isa&#39; or mixed case); X12 segment identifiers are uppercase. Parsed case-insensitively.</span>
-                <p class="finding-expl">The segment identifier was found as &#39;isa&#39; or mixed case (e.g. &#39;Isa&#39;). X12 segment identifiers are uppercase. x12-tidy matched it case-insensitively and continued -- a file with a non-uppercase ISA identifier almost certainly has every other segment identifier the same way, which downstream steps must also tolerate.</p>
+                <strong>An ISA element is not its fixed width</strong>
+                <span class="finding-msg">ISA08 is 17 byte(s), over its fixed width of 15 by trailing spaces only; trimmed.</span>
+                <p class="finding-expl">Every ISA element has a fixed width -- ISA06 is 15 bytes, ISA13 is 9, and so on. This element was shorter (space-padded on the right to fit) or longer only by trailing spaces (trimmed). The value itself is unchanged. A sender that right-trims blank fixed-width fields is the usual cause. This is an error, not a warning: the ISA line is no longer 105 bytes, and conventional VAN services and fixed-offset parsers cannot read the interchange at all until it is repaired.</p>
+              </td>
+            </tr>
+          
+            <tr>
+              <td><span class="sev warning">WARNING</span></td>
+              <td><code>isa.element-embedded-newline</code></td>
+              <td>0</td>
+              <td>
+                <strong>A carriage return or line feed sits inside an ISA element</strong>
+                <span class="finding-msg">ISA08 contains 2 carriage-return/line-feed byte(s) (b&#39;RECEIVER\r\nTWO    &#39;); replaced with spaces.</span>
+                <p class="finding-expl">An ISA element value contains a CR or LF byte -- almost always a sender that hard-wrapped the ISA segment across lines. The delimiters are already known at this point, so the byte cannot be a delimiter (ISA11 when it carries the repetition separator, and ISA16, are left untouched); it is replaced with a space and the element is then measured against its fixed width.</p>
               </td>
             </tr>
           
@@ -437,8 +449,8 @@ tr.deprecated { opacity: .55; }
       </summary>
       <div class="pass-body">
         <p class="hint">
-          246 bytes in →
-          246 bytes out.
+          280 bytes in →
+          280 bytes out.
         </p>
         
         <p class="hint">No findings on this pass.</p>

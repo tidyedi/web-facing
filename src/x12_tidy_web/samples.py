@@ -2,7 +2,7 @@
 # Copyright 2026 Michael Schertz
 """The broken interchanges the form and the static demo pages draw from.
 
-Three of them, each with a distinct repair story so the demo pages (issue #32)
+Five of them, each with a distinct repair story so the demo pages (issue #32)
 show different behaviour:
 
 * ``forwarded-email`` — junk before the ISA, trimmed ISA elements, and a bad
@@ -13,6 +13,11 @@ show different behaviour:
   ends *clean*.
 * ``lowercased-isa`` — a functional acknowledgement whose ``ISA`` tag arrived
   lowercase. One error, uppercased; ends *clean*.
+* ``truncated-transmission`` — a claim file cut off mid-transaction (no SE, GE
+  or IEA). x12-tidy names every missing trailer but changes nothing; ends
+  *stable* with the payload untouched.
+* ``wrapped-isa`` — a CR/LF wrapped into an ISA element by a mail client.
+  x12-tidy replaces it with a space and re-measures; ends *clean*.
 
 Kept here rather than in the repo-root ``samples/`` directory so they ship in
 the wheel and the Docker image. The ``samples/*.edi`` files are generated copies
@@ -110,6 +115,48 @@ SAMPLES: tuple[Sample, ...] = (
             "SE*6*0001~"
             "GE*1*15~"
             "IEA*1*000000015~"
+        ),
+    ),
+    Sample(
+        slug="truncated-transmission",
+        title="Truncated transmission — 837 claim, cut off",
+        blurb=(
+            "A claim file that ends mid-transaction: the ST has no SE, the GS "
+            "no GE, and there is no IEA. x12-tidy names every missing trailer "
+            "(all fatal) but will not fabricate them — it stops 'stable' and "
+            "leaves the payload untouched."
+        ),
+        edi=(
+            "ISA*00*          *00*          *ZZ*ACME HEALTH    *ZZ*PAYERCENTRAL"
+            "   *240610*1015*U*00401*000004242*0*P*:~"
+            "GS*HC*ACMEHEALTH*PAYERCENTRAL*20240610*1015*4242*X*004010X098A1~"
+            "ST*837*0001~"
+            "BHT*0019*00*REF-88*20240610*1015*CH~"
+            "NM1*41*2*ACME HEALTH SERVICES*****46*ACME01~"
+            "PER*IC*BILLING DEPT*TE*5551234567~"
+        ),
+    ),
+    Sample(
+        slug="wrapped-isa",
+        title="Wrapped ISA header — 940 warehouse shipping order",
+        blurb=(
+            "A mail client hard-wrapped the ISA segment mid-element, putting a "
+            "CR/LF inside ISA08. x12-tidy replaces the break with a space, "
+            "re-measures the element, and the interchange comes out conformant "
+            "(one warning, one error, both resolved)."
+        ),
+        edi=(
+            "ISA*00*          *00*          *ZZ*SHIPPERONE     *ZZ*RECEIVER\r\n"
+            "TWO    *240705*2200*U*00401*000000900*0*P*:~"
+            "GS*SW*SHIPPERONE*RECEIVERTWO*20240705*2200*900*X*004010~"
+            "ST*940*0001~"
+            "W05*N*ORDER-7781~"
+            "N1*ST*Receiver Two DC~"
+            "W66*PP*****FEDG~"
+            "G62*10*20240706~"
+            "SE*6*0001~"
+            "GE*1*900~"
+            "IEA*1*000000900~"
         ),
     ),
 )

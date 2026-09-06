@@ -10,9 +10,9 @@ from x12_tidy_web.engine import repair
 from x12_tidy_web.samples import SAMPLES, by_slug, random_sample
 
 
-def test_three_samples_with_unique_slugs() -> None:
-    assert len(SAMPLES) == 3
-    assert len({s.slug for s in SAMPLES}) == 3
+def test_five_samples_with_unique_slugs() -> None:
+    assert len(SAMPLES) == 5
+    assert len({s.slug for s in SAMPLES}) == 5
     for s in SAMPLES:
         assert s.title and s.blurb and s.edi
 
@@ -36,6 +36,8 @@ def test_random_sample_can_exclude_the_last_one() -> None:
         ("forwarded-email", "stable", False),  # residual functional-group-count-mismatch
         ("pipe-delimited", "clean", True),
         ("lowercased-isa", "clean", True),
+        ("truncated-transmission", "stable", False),  # missing trailers, unfixable
+        ("wrapped-isa", "clean", True),
     ],
 )
 def test_each_sample_repairs_to_its_documented_outcome(

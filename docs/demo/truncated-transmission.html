@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>x12-tidy-web demo — Lowercased tag — 997 functional acknowledgement</title>
+  <title>x12-tidy-web demo — Truncated transmission — 837 claim, cut off</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlRpZHlFREkiPgogIDx0aXRsZT5UaWR5RURJPC90aXRsZT4KICA8cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHJ4PSIxNCIgZmlsbD0iIzFGNkI0RCIvPgogIDxyZWN0IHg9IjExIiB5PSIxNSIgd2lkdGg9IjM1IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIgb3BhY2l0eT0iMC4zNCIvPgogIDxyZWN0IHg9IjE4IiB5PSIyNiIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgogIDxyZWN0IHg9IjE4IiB5PSIzNyIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgogIDxyZWN0IHg9IjE4IiB5PSI0OCIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgo8L3N2Zz4K">
   <style>/* SPDX-License-Identifier: Apache-2.0
    Copyright 2026 Michael Schertz */
@@ -325,9 +325,9 @@ tr.deprecated { opacity: .55; }
     
       <a href="pipe-delimited.html">Pipe-delimited — 856 advance ship notice</a>
     
-      <strong>Lowercased tag — 997 functional acknowledgement</strong>
+      <a href="lowercased-isa.html">Lowercased tag — 997 functional acknowledgement</a>
     
-      <a href="truncated-transmission.html">Truncated transmission — 837 claim, cut off</a>
+      <strong>Truncated transmission — 837 claim, cut off</strong>
     
       <a href="wrapped-isa.html">Wrapped ISA header — 940 warehouse shipping order</a>
     
@@ -335,25 +335,25 @@ tr.deprecated { opacity: .55; }
   </nav>
 
   <section class="panel">
-    <h2>Lowercased tag — 997 functional acknowledgement</h2>
-    <p class="hint">A functional acknowledgement whose ISA segment tag arrived in lowercase (&#39;isa&#39;). x12-tidy uppercases it; nothing else is wrong and the result is conformant.</p>
+    <h2>Truncated transmission — 837 claim, cut off</h2>
+    <p class="hint">A claim file that ends mid-transaction: the ST has no SE, the GS no GE, and there is no IEA. x12-tidy names every missing trailer (all fatal) but will not fabricate them — it stops &#39;stable&#39; and leaves the payload untouched.</p>
     <h3>The interchange as submitted</h3>
-    <textarea readonly spellcheck="false" rows="6">isa*00*          *00*          *ZZ*GATEWAYEDI     *ZZ*PARTNERX       *240102*0801*U*00401*000000015*0*P*:~GS*FA*GATEWAYEDI*PARTNERX*20240102*0801*15*X*004010~ST*997*0001~AK1*PO*501~AK2*850*0001~AK5*A~AK9*A*1*1*1~SE*6*0001~GE*1*15~IEA*1*000000015~</textarea>
+    <textarea readonly spellcheck="false" rows="6">ISA*00*          *00*          *ZZ*ACME HEALTH    *ZZ*PAYERCENTRAL   *240610*1015*U*00401*000004242*0*P*:~GS*HC*ACMEHEALTH*PAYERCENTRAL*20240610*1015*4242*X*004010X098A1~ST*837*0001~BHT*0019*00*REF-88*20240610*1015*CH~NM1*41*2*ACME HEALTH SERVICES*****46*ACME01~PER*IC*BILLING DEPT*TE*5551234567~</textarea>
   </section>
 
-  <div class="verdict ok">
-    Clean — the interchange is conformant, with nothing left to fix.
+  <div class="verdict residual">
+    Repaired, with findings x12-tidy cannot fix automatically.
     <small>
-      2 passes ·
-      A pass returned no findings. ·
-      corrected text differs from the input
+      1 pass ·
+      A pass reported findings but changed nothing; they cannot be auto-repaired. ·
+      corrected text matches the input
     </small>
   </div>
 
   <div class="result-grid">
     <div class="panel">
       <div class="panel-head"><h2>Corrected interchange</h2></div>
-      <textarea readonly spellcheck="false" rows="8">ISA*00*          *00*          *ZZ*GATEWAYEDI     *ZZ*PARTNERX       *240102*0801*U*00401*000000015*0*P*:~GS*FA*GATEWAYEDI*PARTNERX*20240102*0801*15*X*004010~ST*997*0001~AK1*PO*501~AK2*850*0001~AK5*A~AK9*A*1*1*1~SE*6*0001~GE*1*15~IEA*1*000000015~</textarea>
+      <textarea readonly spellcheck="false" rows="8">ISA*00*          *00*          *ZZ*ACME HEALTH    *ZZ*PAYERCENTRAL   *240610*1015*U*00401*000004242*0*P*:~GS*HC*ACMEHEALTH*PAYERCENTRAL*20240610*1015*4242*X*004010X098A1~ST*837*0001~BHT*0019*00*REF-88*20240610*1015*CH~NM1*41*2*ACME HEALTH SERVICES*****46*ACME01~PER*IC*BILLING DEPT*TE*5551234567~</textarea>
     </div>
 
     <div class="panel">
@@ -361,14 +361,14 @@ tr.deprecated { opacity: .55; }
       
       
       <table class="facts"><tbody>
-        <tr><th>Sender</th><td><span>ZZ / GATEWAYEDI</span><span class="fact-src">From ISA05 (qualifier) and ISA06 (ID).</span></td></tr>
-        <tr><th>Receiver</th><td><span>ZZ / PARTNERX</span><span class="fact-src">From ISA07 (qualifier) and ISA08 (ID).</span></td></tr>
+        <tr><th>Sender</th><td><span>ZZ / ACME HEALTH</span><span class="fact-src">From ISA05 (qualifier) and ISA06 (ID).</span></td></tr>
+        <tr><th>Receiver</th><td><span>ZZ / PAYERCENTRAL</span><span class="fact-src">From ISA07 (qualifier) and ISA08 (ID).</span></td></tr>
         <tr><th>Usage indicator</th><td><span>P</span><span class="fact-src">ISA15 — P = production, T = test, I = information.</span></td></tr>
         <tr><th>Interchange version</th><td><span>00401</span><span class="fact-src">ISA12 — the interchange control version number.</span></td></tr>
-        <tr><th>Date / time</th><td><span>240102 0801</span><span class="fact-src">ISA09 and ISA10 — when the interchange was prepared.</span></td></tr>
+        <tr><th>Date / time</th><td><span>240610 1015</span><span class="fact-src">ISA09 and ISA10 — when the interchange was prepared.</span></td></tr>
         <tr><th>Functional groups</th><td><span>1</span><span class="fact-src">GS segments counted while walking the payload; IEA01 is checked against this.</span></td></tr>
         <tr><th>Transaction sets</th><td><span>1</span><span class="fact-src">ST segments counted; each group's GE01 is checked against its own count.</span></td></tr>
-        <tr><th>Segments</th><td><span>9</span><span class="fact-src">Total segments in the cleansed payload; each SE01 is checked against its set's count.</span></td></tr>
+        <tr><th>Segments</th><td><span>5</span><span class="fact-src">Total segments in the cleansed payload; each SE01 is checked against its set's count.</span></td></tr>
       </tbody></table>
       
     </div>
@@ -386,19 +386,19 @@ tr.deprecated { opacity: .55; }
       <summary>
         <span class="pass-label">Pass 1</span>
         
-          
-        
-          <span class="pill error">1 error</span>
+          <span class="pill fatal">3 fatal</span>
         
           
         
+          
         
-        <span class="pass-status">changed the interchange</span>
+        
+        <span class="pass-status">no change</span>
       </summary>
       <div class="pass-body">
         <p class="hint">
-          246 bytes in →
-          246 bytes out.
+          296 bytes in →
+          296 bytes out.
         </p>
         
         <table class="findings">
@@ -406,42 +406,40 @@ tr.deprecated { opacity: .55; }
           <tbody>
           
             <tr>
-              <td><span class="sev error">ERROR</span></td>
-              <td><code>isa.identifier-lowercase</code></td>
-              <td>0</td>
+              <td><span class="sev fatal">FATAL</span></td>
+              <td><code>st.missing-se</code></td>
+              <td>—</td>
               <td>
-                <strong>ISA segment identifier is not uppercase</strong>
-                <span class="finding-msg">the ISA segment identifier is not uppercase (&#39;isa&#39; or mixed case); X12 segment identifiers are uppercase. Parsed case-insensitively.</span>
-                <p class="finding-expl">The segment identifier was found as &#39;isa&#39; or mixed case (e.g. &#39;Isa&#39;). X12 segment identifiers are uppercase. x12-tidy matched it case-insensitively and continued -- a file with a non-uppercase ISA identifier almost certainly has every other segment identifier the same way, which downstream steps must also tolerate.</p>
+                <strong>No SE segment closes this transaction set</strong>
+                <span class="finding-msg">ST b&#39;0001&#39; has no matching SE.</span>
+                <p class="finding-expl">Every ST transaction set must be closed by a matching SE segment before the next ST, the enclosing GE, or the interchange trailer. None was found; the transaction set&#39;s boundary was inferred from the next such marker so that everything inside it could still be checked.</p>
+              </td>
+            </tr>
+          
+            <tr>
+              <td><span class="sev fatal">FATAL</span></td>
+              <td><code>gs.missing-ge</code></td>
+              <td>—</td>
+              <td>
+                <strong>No GE segment closes this functional group</strong>
+                <span class="finding-msg">GS b&#39;4242&#39; has no matching GE.</span>
+                <p class="finding-expl">Every GS functional group must be closed by a matching GE segment before the next GS or the interchange trailer. None was found; the group&#39;s boundary was inferred from the next such marker so that everything inside it could still be checked.</p>
+              </td>
+            </tr>
+          
+            <tr>
+              <td><span class="sev fatal">FATAL</span></td>
+              <td><code>structure.missing-iea</code></td>
+              <td>—</td>
+              <td>
+                <strong>No IEA segment closes the interchange</strong>
+                <span class="finding-msg">no IEA segment closes the interchange.</span>
+                <p class="finding-expl">Every ISA interchange must be closed by a matching IEA segment. None was found before the end of the file. This is QA/QC&#39;s &#39;fatal&#39; -- a display/trust signal, not a stop: the rest of the payload is still scanned and every other finding is still reported.</p>
               </td>
             </tr>
           
           </tbody>
         </table>
-        
-      </div>
-    </details>
-    
-    <details class="pass" open>
-      <summary>
-        <span class="pass-label">Pass 2</span>
-        
-          
-        
-          
-        
-          
-        
-        <span class="pass-status ok">clean</span>
-        <span class="pass-status">no change</span>
-      </summary>
-      <div class="pass-body">
-        <p class="hint">
-          246 bytes in →
-          246 bytes out.
-        </p>
-        
-        <p class="hint">No findings on this pass.</p>
         
       </div>
     </details>
