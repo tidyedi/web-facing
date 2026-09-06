@@ -1,6 +1,6 @@
 ---
 title: x12-tidy-web
-emoji: "\U0001F9F9"
+emoji: 🧹
 colorFrom: green
 colorTo: gray
 sdk: docker
