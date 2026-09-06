@@ -33,7 +33,15 @@ _REGISTRY_PATH = "src/x12_tidy/diagnostics/codes.py"
 _VERDICTS = {
     "unrecoverable": ("fail", "Unrecoverable — no ISA line could be located."),
     "clean": ("ok", "Clean — the interchange is conformant, with nothing left to fix."),
-    "residual": ("residual", "Repaired, with findings x12-tidy cannot fix automatically."),
+    "residual": (
+        "residual",
+        "Repaired what it could — the findings below remain and x12-tidy cannot fix them automatically.",
+    ),
+    "unfixable": (
+        "fail",
+        "Not repaired — the interchange is still non-conformant. x12-tidy flagged the "
+        "problems below but cannot fix them.",
+    ),
     "notconverged": ("fail", "Did not converge within the pass limit — treat the output with care."),
 }
 
@@ -44,7 +52,7 @@ def _verdict(run_dict: dict[str, Any]) -> tuple[str, str]:
     if run_dict["clean"]:
         return _VERDICTS["clean"]
     if run_dict["converged"]:
-        return _VERDICTS["residual"]
+        return _VERDICTS["residual"] if run_dict["changed"] else _VERDICTS["unfixable"]
     return _VERDICTS["notconverged"]
 
 
@@ -117,6 +125,7 @@ def build_demo(out_dir: Path) -> list[Path]:
         static=True,
         inline_css=css,
         favicon=favicon,
+        current="codes",
         **static_nav,
     )
     codes_path = out_dir / "codes.html"
@@ -132,6 +141,7 @@ def build_demo(out_dir: Path) -> list[Path]:
         favicon=favicon,
         app_version=__version__,
         x12_tidy_release=release,
+        current="demo",
         **static_nav,
     )
     index_path = out_dir / "index.html"

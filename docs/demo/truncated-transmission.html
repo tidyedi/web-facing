@@ -271,6 +271,7 @@ table.findings code { font: 12px var(--mono); background: var(--bg); padding: .1
 .site-footer p { margin: 0; }
 .navlinks { display: flex; flex-wrap: wrap; gap: .35rem 1rem; }
 .navlinks a { font-weight: 500; }
+.navlinks .here { font-weight: 600; color: var(--dim); }
 .navbar { background: var(--panel); border-bottom: 1px solid var(--line); font-size: .85rem; }
 .navbar .wrap { padding-top: .55rem; padding-bottom: .55rem; }
 .site-footer .navlinks { margin-bottom: .5rem; }
@@ -294,13 +295,16 @@ tr.deprecated { opacity: .55; }
 <nav class="navbar" aria-label="Site"><div class="wrap">
 <div class="navlinks">
   <a href="https://tidyedi.github.io/web-facing/">Repair</a>
+
   <a href="index.html">Demo</a>
+
   <a href="codes.html">Code reference</a>
+
   <a href="https://docs.tidyedi.com">Docs</a>
   <a href="https://github.com/tidyedi/web-facing">Source</a>
-  <a href="https://github.com/tidyedi/web-facing/issues">Feedback</a>
+  <a href="https://github.com/tidyedi/web-facing/issues"
+     title="Opens GitHub Issues — a free GitHub account is needed to post">Feedback</a>
   <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
-  <a href="https://github.com/tidyedi">TidyEDI</a>
 </div></div></nav>
 <header class="site-header">
   <div class="wrap">
@@ -342,8 +346,8 @@ tr.deprecated { opacity: .55; }
     <textarea readonly spellcheck="false" rows="6">ISA*00*          *00*          *ZZ*ACME HEALTH    *ZZ*PAYERCENTRAL   *240610*1015*U*00401*000004242*0*P*:~GS*HC*ACMEHEALTH*PAYERCENTRAL*20240610*1015*4242*X*004010X098A1~ST*837*0001~BHT*0019*00*REF-88*20240610*1015*CH~NM1*41*2*ACME HEALTH SERVICES*****46*ACME01~PER*IC*BILLING DEPT*TE*5551234567~</textarea>
   </section>
 
-  <div class="verdict residual">
-    Repaired, with findings x12-tidy cannot fix automatically.
+  <div class="verdict fail">
+    Not repaired — the interchange is still non-conformant. x12-tidy flagged the problems below but cannot fix them.
     <small>
       1 pass ·
       A pass reported findings but changed nothing; they cannot be auto-repaired. ·
@@ -452,13 +456,16 @@ tr.deprecated { opacity: .55; }
   
 <div class="navlinks">
   <a href="https://tidyedi.github.io/web-facing/">Repair</a>
+
   <a href="index.html">Demo</a>
+
   <a href="codes.html">Code reference</a>
+
   <a href="https://docs.tidyedi.com">Docs</a>
   <a href="https://github.com/tidyedi/web-facing">Source</a>
-  <a href="https://github.com/tidyedi/web-facing/issues">Feedback</a>
+  <a href="https://github.com/tidyedi/web-facing/issues"
+     title="Opens GitHub Issues — a free GitHub account is needed to post">Feedback</a>
   <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
-  <a href="https://github.com/tidyedi">TidyEDI</a>
 </div>
   <p>x12-tidy-web 0.1.0 · x12-tidy 0.1.0 (git 04bffa4) · Apache-2.0 · static demo, nothing is sent anywhere</p>
 </footer>

@@ -1,13 +1,21 @@
-{# Shared link row. Rendered at the top (in <nav class="navbar">) and bottom
-   (in <footer>) of every page. home_href / codes_href / demo_href default to the
-   live-app routes and the published demo; the static demo passes its own. #}
+{# Shared link row, rendered as the top navbar and in the footer of every page.
+   `current` ("repair" | "codes" | "demo") renders that entry as plain text
+   instead of a link — no point linking the page you're on. home_href /
+   codes_href / demo_href default to the live-app routes; the static demo
+   passes its own. #}
 <div class="navlinks">
-  <a href="{{ home_href | default('/', true) }}">Repair</a>
-  <a href="{{ demo_href | default('https://tidyedi.github.io/web-facing/demo/', true) }}">Demo</a>
-  <a href="{{ codes_href | default('/codes', true) }}">Code reference</a>
+  {% if current == "repair" %}<span class="here">Repair</span>
+  {% else %}<a href="{{ home_href | default('/', true) }}">Repair</a>{% endif %}
+
+  {% if current == "demo" %}<span class="here">Demo</span>
+  {% else %}<a href="{{ demo_href | default('https://tidyedi.github.io/web-facing/demo/', true) }}">Demo</a>{% endif %}
+
+  {% if current == "codes" %}<span class="here">Code reference</span>
+  {% else %}<a href="{{ codes_href | default('/codes', true) }}">Code reference</a>{% endif %}
+
   <a href="https://docs.tidyedi.com">Docs</a>
   <a href="https://github.com/tidyedi/web-facing">Source</a>
-  <a href="https://github.com/tidyedi/web-facing/issues">Feedback</a>
+  <a href="https://github.com/tidyedi/web-facing/issues"
+     title="Opens GitHub Issues — a free GitHub account is needed to post">Feedback</a>
   <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
-  <a href="https://github.com/tidyedi">TidyEDI</a>
 </div>

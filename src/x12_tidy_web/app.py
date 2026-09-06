@@ -131,6 +131,7 @@ def create_app() -> FastAPI:
                     "feedbackEmail": _feedback_email(),
                     "x12TidyRelease": x12_tidy_release(),
                 },
+                "current": "repair",
             },
         )
 
@@ -150,6 +151,7 @@ def create_app() -> FastAPI:
                 "fatal_count": sum(c["severity"] == "fatal" for c in catalog),
                 "error_count": sum(c["severity"] == "error" for c in catalog),
                 "warning_count": sum(c["severity"] == "warning" for c in catalog),
+                "current": "codes",
             },
         )
 

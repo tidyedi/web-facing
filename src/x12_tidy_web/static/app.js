@@ -94,9 +94,14 @@ function renderVerdict(run) {
   } else if (run.clean) {
     verdictEl.classList.add("ok");
     headline = "Clean — the interchange is conformant, with nothing left to fix.";
-  } else if (run.converged) {
+  } else if (run.converged && run.changed) {
     verdictEl.classList.add("residual");
-    headline = "Repaired, with findings x12-tidy cannot fix automatically.";
+    headline =
+      "Repaired what it could — the findings below remain and x12-tidy cannot fix them automatically.";
+  } else if (run.converged) {
+    verdictEl.classList.add("fail");
+    headline =
+      "Not repaired — the interchange is still non-conformant. x12-tidy flagged the problems below but cannot fix them.";
   } else {
     verdictEl.classList.add("fail");
     headline = "Did not converge within the pass limit — treat the output with care.";
@@ -603,17 +608,27 @@ function restoreDraft() {
 // wiring
 // --------------------------------------------------------------------------- //
 form.addEventListener("submit", validate);
-$("sample-btn").addEventListener("click", () => {
-  if (!SAMPLES.length) return;
-  // pick a different one each click when there's a choice
-  const pool = SAMPLES.length > 1 ? SAMPLES.filter((s) => s.slug !== lastSampleSlug) : SAMPLES;
-  const sample = pool[Math.floor(Math.random() * pool.length)];
+
+function loadSample(sample) {
   lastSampleSlug = sample.slug;
   ediInput.value = sample.edi;
   sampleNote.textContent = `${sample.title} — ${sample.blurb}`;
   sampleNote.hidden = false;
   saveDraft();
   clearError();
+}
+
+$("sample-select").addEventListener("change", (ev) => {
+  const v = ev.target.value;
+  ev.target.value = ""; // reset so the same pick can be chosen again
+  if (!v || !SAMPLES.length) return;
+  if (v === "__random__") {
+    const pool = SAMPLES.length > 1 ? SAMPLES.filter((s) => s.slug !== lastSampleSlug) : SAMPLES;
+    loadSample(pool[Math.floor(Math.random() * pool.length)]);
+  } else {
+    const sample = SAMPLES.find((s) => s.slug === v);
+    if (sample) loadSample(sample);
+  }
 });
 ediInput.addEventListener("input", () => {
   if (!sampleNote.hidden) sampleNote.hidden = true;

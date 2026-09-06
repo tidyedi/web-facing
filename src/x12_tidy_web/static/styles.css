@@ -264,6 +264,7 @@ table.findings code { font: 12px var(--mono); background: var(--bg); padding: .1
 .site-footer p { margin: 0; }
 .navlinks { display: flex; flex-wrap: wrap; gap: .35rem 1rem; }
 .navlinks a { font-weight: 500; }
+.navlinks .here { font-weight: 600; color: var(--dim); }
 .navbar { background: var(--panel); border-bottom: 1px solid var(--line); font-size: .85rem; }
 .navbar .wrap { padding-top: .55rem; padding-bottom: .55rem; }
 .site-footer .navlinks { margin-bottom: .5rem; }

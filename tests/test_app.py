@@ -225,9 +225,14 @@ def test_index_embeds_the_samples(client) -> None:
     import json
 
     text = client.get("/").text
-    assert "Load a random sample" in text
+    assert 'id="sample-select"' in text
     blob = text.split('id="samples-data">', 1)[1].split("</script>", 1)[0]
     samples = json.loads(blob)
     assert len(samples) == 5
     assert {"forwarded-email", "pipe-delimited", "wrapped-isa"} <= {s["slug"] for s in samples}
     assert all(s["edi"] and s["blurb"] for s in samples)
+    # every sample is a pickable option in the sample select, plus Random
+    picker = text.split('id="sample-select"', 1)[1].split("</select>", 1)[0]
+    for s in samples:
+        assert f'<option value="{s["slug"]}">' in picker
+    assert '<option value="__random__">' in picker
