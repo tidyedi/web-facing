@@ -70,9 +70,13 @@ def build_demo(out_dir: Path) -> list[Path]:
     registry_url = x12_tidy_source_url(_REGISTRY_PATH)
 
     nav = [(s.slug, s.title) for s in SAMPLES]
-    # in the static bundle there is no live app; the shared nav's "Repair" and
-    # "Code reference" links point at the demo index and the static /codes.
-    static_nav = {"home_href": "index.html", "codes_href": "codes.html"}
+    # in the static bundle: "Demo" is this index; "Code reference" is the static
+    # copy; "Repair" (the live app) has no URL yet, so send it to the repo.
+    static_nav = {
+        "home_href": "https://github.com/tidyedi/web-facing",
+        "demo_href": "index.html",
+        "codes_href": "codes.html",
+    }
     written: list[Path] = []
 
     demo_tmpl = env.get_template("demo.html")

@@ -163,6 +163,7 @@ def test_index_links_and_byte_note(client) -> None:
     # the shared nav appears twice — a top bar and in the footer
     assert text.count('class="navlinks"') == 2
     assert 'class="navbar"' in text
+    assert text.count("tidyedi.github.io/web-facing/demo/") == 2  # a "Demo" link in each
     assert "https://docs.tidyedi.com" in text
     assert "tidyedi.com" not in text.replace("docs.tidyedi.com", "")  # the dead bare domain is gone
     assert "github.com/tidyedi/x12-tidy/blob/" in text  # registry link in the passes note

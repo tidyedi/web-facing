@@ -1,8 +1,9 @@
 {# Shared link row. Rendered at the top (in <nav class="navbar">) and bottom
-   (in <footer>) of every page. home_href / codes_href default to the live-app
-   routes; the static demo passes relative paths. #}
+   (in <footer>) of every page. home_href / codes_href / demo_href default to the
+   live-app routes and the published demo; the static demo passes its own. #}
 <div class="navlinks">
   <a href="{{ home_href | default('/', true) }}">Repair</a>
+  <a href="{{ demo_href | default('https://tidyedi.github.io/web-facing/demo/', true) }}">Demo</a>
   <a href="{{ codes_href | default('/codes', true) }}">Code reference</a>
   <a href="https://docs.tidyedi.com">Docs</a>
   <a href="https://github.com/tidyedi/web-facing">Source</a>
