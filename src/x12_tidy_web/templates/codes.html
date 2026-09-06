@@ -4,12 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>x12-tidy-web — diagnostic code reference</title>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', path='favicon.svg') }}">
   <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
 </head>
 <body>
 <header class="site-header">
   <div class="wrap">
-    <h1><a href="/" class="plain">x12-tidy<span class="dim">-web</span></a> <span class="dim">/ codes</span></h1>
+    <div class="brand">
+      <img class="brand-mark" src="{{ url_for('static', path='favicon.svg') }}" alt="" width="40" height="40">
+      <h1><a href="/" class="plain">x12-tidy<span class="dim">-web</span></a> <span class="dim">/ codes</span></h1>
+    </div>
     <p class="tagline">
       Every finding x12-tidy&nbsp;<code>{{ x12_tidy_release }}</code> can emit, straight from its
       diagnostic registry — the single source of truth that also backs

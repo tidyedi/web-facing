@@ -110,8 +110,15 @@ def test_index_has_privacy_callout_and_severity_legend(client) -> None:
     text = client.get("/").text
     assert "stored, logged, or sent anywhere" in text
     assert 'class="legend"' in text
-    for sev in ("FATAL", "ERROR", "WARNING"):
-        assert sev in text
+    for sev in ("fatal", "error", "warning"):
+        assert f'class="pill {sev}"' in text
+
+
+def test_favicon_and_brand_mark_are_served(client) -> None:
+    assert 'rel="icon"' in client.get("/").text
+    svg = client.get("/static/favicon.svg")
+    assert svg.status_code == 200
+    assert svg.headers["content-type"].startswith("image/svg")
 
 
 def test_codes_page_renders(client) -> None:

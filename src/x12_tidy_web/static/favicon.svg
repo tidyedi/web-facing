@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="TidyEDI">
+  <title>TidyEDI</title>
+  <rect width="64" height="64" rx="14" fill="#1F6B4D"/>
+  <rect x="11" y="15" width="35" height="5.4" rx="2.7" fill="#F3F8F5" opacity="0.34"/>
+  <rect x="18" y="26" width="28" height="5.4" rx="2.7" fill="#F3F8F5"/>
+  <rect x="18" y="37" width="28" height="5.4" rx="2.7" fill="#F3F8F5"/>
+  <rect x="18" y="48" width="28" height="5.4" rx="2.7" fill="#F3F8F5"/>
+</svg>
