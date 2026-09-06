@@ -75,7 +75,8 @@ src/x12_tidy_web/
                  `x12-tidy-web demo [OUT_DIR]`.
   templates/     server-rendered shells: index.html (the form), codes.html
                  (the /codes reference; also static-mode for the demo bundle),
-                 demo.html + demo_index.html (the static demo).
+                 demo.html + demo_index.html (the static demo), _nav.html (the
+                 link row shared by the top navbar and footer of every page).
   static/        styles.css, app.js, favicon.svg. Vanilla JS, no build, no CDN.
 ```
 

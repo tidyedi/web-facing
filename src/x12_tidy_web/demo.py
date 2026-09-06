@@ -70,6 +70,9 @@ def build_demo(out_dir: Path) -> list[Path]:
     registry_url = x12_tidy_source_url(_REGISTRY_PATH)
 
     nav = [(s.slug, s.title) for s in SAMPLES]
+    # in the static bundle there is no live app; the shared nav's "Repair" and
+    # "Code reference" links point at the demo index and the static /codes.
+    static_nav = {"home_href": "index.html", "codes_href": "codes.html"}
     written: list[Path] = []
 
     demo_tmpl = env.get_template("demo.html")
@@ -89,6 +92,7 @@ def build_demo(out_dir: Path) -> list[Path]:
             app_version=__version__,
             x12_tidy_release=release,
             registry_url=registry_url,
+            **static_nav,
         )
         path = out_dir / f"{sample.slug}.html"
         path.write_text(html, encoding="utf-8")
@@ -109,7 +113,7 @@ def build_demo(out_dir: Path) -> list[Path]:
         static=True,
         inline_css=css,
         favicon=favicon,
-        home_href=f"{SAMPLES[0].slug}.html",
+        **static_nav,
     )
     codes_path = out_dir / "codes.html"
     codes_path.write_text(codes_html, encoding="utf-8")
@@ -124,6 +128,7 @@ def build_demo(out_dir: Path) -> list[Path]:
         favicon=favicon,
         app_version=__version__,
         x12_tidy_release=release,
+        **static_nav,
     )
     index_path = out_dir / "index.html"
     index_path.write_text(index_html, encoding="utf-8")

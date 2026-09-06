@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
 </head>
 <body>
+<nav class="navbar" aria-label="Site"><div class="wrap">{% include "_nav.html" %}</div></nav>
 <header class="site-header">
   <div class="wrap">
     <div class="brand">
@@ -169,14 +170,7 @@
 </main>
 
 <footer class="wrap site-footer">
-  <nav class="footer-links">
-    <a href="/codes">Code reference</a>
-    <a href="https://docs.tidyedi.com">Docs</a>
-    <a href="https://github.com/tidyedi/web-facing">Source</a>
-    <a href="https://github.com/tidyedi/web-facing/issues">Feedback</a>
-    <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
-    <a href="https://tidyedi.com">TidyEDI</a>
-  </nav>
+  {% include "_nav.html" %}
   <p>
     x12-tidy-web {{ app_version }} · x12-tidy {{ x12_tidy_release }} ·
     Apache-2.0 · nothing you paste is stored or logged

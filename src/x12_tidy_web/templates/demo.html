@@ -8,6 +8,7 @@
   <style>{{ inline_css }}</style>
 </head>
 <body>
+<nav class="navbar" aria-label="Site"><div class="wrap">{% include "_nav.html" %}</div></nav>
 <header class="site-header">
   <div class="wrap">
     <div class="brand">
@@ -25,7 +26,7 @@
 </header>
 
 <main class="wrap">
-  <nav class="footer-links demo-nav">
+  <nav class="navlinks demo-nav">
     <span class="dim">Samples:</span>
     {% for slug, title in nav %}
       {% if slug == current %}<strong>{{ title }}</strong>{% else %}<a href="{{ slug }}.html">{{ title }}</a>{% endif %}
@@ -125,13 +126,7 @@
 </main>
 
 <footer class="wrap site-footer">
-  <nav class="footer-links">
-    <a href="index.html">All samples</a>
-    <a href="codes.html">Code reference</a>
-    <a href="https://github.com/tidyedi/web-facing">Source</a>
-    <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
-    <a href="https://tidyedi.com">TidyEDI</a>
-  </nav>
+  {% include "_nav.html" %}
   <p>x12-tidy-web {{ app_version }} · x12-tidy {{ x12_tidy_release }} · Apache-2.0 · static demo, nothing is sent anywhere</p>
 </footer>
 </body>

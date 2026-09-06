@@ -265,8 +265,11 @@ table.findings code { font: 12px var(--mono); background: var(--bg); padding: .1
 
 .site-footer { color: var(--dim); font-size: .85rem; padding: 1.5rem 0 2rem; border-top: 1px solid var(--line); }
 .site-footer p { margin: 0; }
-.footer-links { display: flex; flex-wrap: wrap; gap: .35rem .9rem; margin-bottom: .5rem; }
-.footer-links a { font-weight: 500; }
+.navlinks { display: flex; flex-wrap: wrap; gap: .35rem 1rem; }
+.navlinks a { font-weight: 500; }
+.navbar { background: var(--panel); border-bottom: 1px solid var(--line); font-size: .85rem; }
+.navbar .wrap { padding-top: .55rem; padding-bottom: .55rem; }
+.site-footer .navlinks { margin-bottom: .5rem; }
 .demo-nav { align-items: baseline; margin: 0 0 1.25rem; font-size: .9rem; }
 .demo-nav strong { color: var(--ink); }
 
@@ -287,11 +290,21 @@ tr.deprecated { opacity: .55; }
 <body>
 
 
+<nav class="navbar" aria-label="Site"><div class="wrap">
+<div class="navlinks">
+  <a href="index.html">Repair</a>
+  <a href="codes.html">Code reference</a>
+  <a href="https://docs.tidyedi.com">Docs</a>
+  <a href="https://github.com/tidyedi/web-facing">Source</a>
+  <a href="https://github.com/tidyedi/web-facing/issues">Feedback</a>
+  <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
+  <a href="https://github.com/tidyedi">TidyEDI</a>
+</div></div></nav>
 <header class="site-header">
   <div class="wrap">
     <div class="brand">
       <img class="brand-mark" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlRpZHlFREkiPgogIDx0aXRsZT5UaWR5RURJPC90aXRsZT4KICA8cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHJ4PSIxNCIgZmlsbD0iIzFGNkI0RCIvPgogIDxyZWN0IHg9IjExIiB5PSIxNSIgd2lkdGg9IjM1IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIgb3BhY2l0eT0iMC4zNCIvPgogIDxyZWN0IHg9IjE4IiB5PSIyNiIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgogIDxyZWN0IHg9IjE4IiB5PSIzNyIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgogIDxyZWN0IHg9IjE4IiB5PSI0OCIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgo8L3N2Zz4K" alt="" width="40" height="40">
-      <h1><a href="forwarded-email.html" class="plain">x12-tidy<span class="dim">-web</span></a> <span class="dim">/ codes</span></h1>
+      <h1><a href="index.html" class="plain">x12-tidy<span class="dim">-web</span></a> <span class="dim">/ codes</span></h1>
     </div>
     <p class="tagline">
       Every finding x12-tidy&nbsp;<code>0.1.0 (git 04bffa4)</code> can emit, straight from its
@@ -915,14 +928,16 @@ tr.deprecated { opacity: .55; }
 </main>
 
 <footer class="wrap site-footer">
-  <nav class="footer-links">
-    <a href="forwarded-email.html">← Demo</a>
-    <a href="https://docs.tidyedi.com">Docs</a>
-    <a href="https://github.com/tidyedi/web-facing">Source</a>
-    <a href="https://github.com/tidyedi/web-facing/issues">Feedback</a>
-    <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
-    <a href="https://tidyedi.com">TidyEDI</a>
-  </nav>
+  
+<div class="navlinks">
+  <a href="index.html">Repair</a>
+  <a href="codes.html">Code reference</a>
+  <a href="https://docs.tidyedi.com">Docs</a>
+  <a href="https://github.com/tidyedi/web-facing">Source</a>
+  <a href="https://github.com/tidyedi/web-facing/issues">Feedback</a>
+  <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
+  <a href="https://github.com/tidyedi">TidyEDI</a>
+</div>
   <p>x12-tidy-web 0.1.0 · x12-tidy 0.1.0 (git 04bffa4) · Apache-2.0</p>
 </footer>
 

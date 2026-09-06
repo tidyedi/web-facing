@@ -160,8 +160,11 @@ def test_codes_page_has_a_severity_filter(client) -> None:
 
 def test_index_links_and_byte_note(client) -> None:
     text = client.get("/").text
-    assert 'class="footer-links"' in text
+    # the shared nav appears twice — a top bar and in the footer
+    assert text.count('class="navlinks"') == 2
+    assert 'class="navbar"' in text
     assert "https://docs.tidyedi.com" in text
+    assert "tidyedi.com" not in text.replace("docs.tidyedi.com", "")  # the dead bare domain is gone
     assert "github.com/tidyedi/x12-tidy/blob/" in text  # registry link in the passes note
     assert "The <strong>Byte</strong> column" in text
 
