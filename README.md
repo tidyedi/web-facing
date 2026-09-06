@@ -63,7 +63,8 @@ uv run x12-tidy-web demo            # writes ./x12-tidy-web-demo/
 
 One self-contained HTML file per sample — CSS and favicon inlined, every link
 relative or external, no server. A committed copy is in
-[`docs/demo/`](docs/demo/).
+[`docs/demo/`](docs/demo/), served rendered at
+**<https://tidyedi.github.io/web-facing/demo/>**.
 
 ## The HTTP API
 

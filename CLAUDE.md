@@ -80,9 +80,11 @@ src/x12_tidy_web/
   static/        styles.css, app.js, favicon.svg. Vanilla JS, no build, no CDN.
 ```
 
-The committed demo bundle lives in `docs/demo/`; regenerate it with
+The committed demo bundle lives in `docs/demo/` and is published by GitHub Pages
+(source: `main` `/docs`, with `docs/.nojekyll`) at
+<https://tidyedi.github.io/web-facing/demo/>. Regenerate it with
 `uv run x12-tidy-web demo docs/demo` after changing samples, templates, or the
-x12-tidy pin.
+x12-tidy pin, then commit — Pages redeploys on push.
 
 ### Why iterate?
 
