@@ -129,6 +129,16 @@ def test_codes_page_renders(client) -> None:
     assert "isa.leading-bytes" in text
     assert "ISA — interchange header" in text
     assert 'class="sev fatal"' in text
-    # Reference is read from the installed x12-tidy, credited to its registry.
+    # Reference is read from the installed x12-tidy, credited + linked to source.
     assert "0.1.0 (git " in text
-    assert "diagnostic registry" in text
+    assert "diagnostic code registry" in text
+    assert "github.com/tidyedi/x12-tidy/blob/" in text
+    assert "diagnostics/codes.py" in text
+
+
+def test_index_links_and_byte_note(client) -> None:
+    text = client.get("/").text
+    assert 'class="footer-links"' in text
+    assert "https://docs.tidyedi.com" in text
+    assert "github.com/tidyedi/x12-tidy/blob/" in text  # registry link in the passes note
+    assert "The <strong>Byte</strong> column" in text

@@ -23,6 +23,7 @@ from functools import lru_cache
 
 _DIST = "x12-tidy"
 _UNKNOWN = "unknown"
+_REPO = "https://github.com/tidyedi/x12-tidy"
 
 
 @lru_cache(maxsize=1)
@@ -72,3 +73,15 @@ def x12_tidy_release() -> str:
     if commit is None:
         return version
     return f"{version} (git {commit[:7]})"
+
+
+def x12_tidy_source_url(path: str = "") -> str:
+    """A GitHub URL into the installed x12-tidy, pinned to the exact commit.
+
+    ``path`` is a repo-relative file (blank for the repo root). Falls back to
+    the ``main`` branch if the commit is unknown.
+    """
+    ref = x12_tidy_commit() or "main"
+    if not path:
+        return f"{_REPO}/tree/{ref}"
+    return f"{_REPO}/blob/{ref}/{path.lstrip('/')}"

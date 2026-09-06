@@ -106,17 +106,50 @@ function renderVerdict(run) {
   );
 }
 
-// label, value getter, and where x12-tidy gets the value: an ISA element it
-// reads, or a tally it counts while walking the cleansed payload.
+// Each row: label, a getter for the value, and a plain-language note on what the
+// value is and where x12-tidy got it — either an ISA element it reads straight
+// out of the corrected header, or a tally it counts while walking the payload.
 const FACT_ROWS = [
-  ["Sender", (f) => `${f.sender_qualifier} / ${f.sender_id}`.replace(/^ \/ | \/ $/g, ""), "read from ISA05 + ISA06"],
-  ["Receiver", (f) => `${f.receiver_qualifier} / ${f.receiver_id}`.replace(/^ \/ | \/ $/g, ""), "read from ISA07 + ISA08"],
-  ["Usage indicator", (f) => f.usage_indicator, "read from ISA15"],
-  ["Interchange version", (f) => f.interchange_version, "read from ISA12"],
-  ["Date / time", (f) => `${f.interchange_date} ${f.interchange_time}`.trim(), "read from ISA09 + ISA10"],
-  ["Functional groups", (f) => f.functional_group_count, "GS segments counted — IEA01 is checked against this"],
-  ["Transaction sets", (f) => f.transaction_set_count, "ST segments counted — GE01 is checked against this"],
-  ["Segments", (f) => f.segment_count, "segments counted in the payload — SE01 is checked against this per set"],
+  [
+    "Sender",
+    (f) => `${f.sender_qualifier} / ${f.sender_id}`.replace(/^ \/ | \/ $/g, ""),
+    "The interchange sender — from ISA05 (ID qualifier) and ISA06 (sender ID).",
+  ],
+  [
+    "Receiver",
+    (f) => `${f.receiver_qualifier} / ${f.receiver_id}`.replace(/^ \/ | \/ $/g, ""),
+    "The interchange receiver — from ISA07 (ID qualifier) and ISA08 (receiver ID).",
+  ],
+  [
+    "Usage indicator",
+    (f) => f.usage_indicator,
+    "ISA15 — P = production, T = test, I = information.",
+  ],
+  [
+    "Interchange version",
+    (f) => f.interchange_version,
+    "ISA12 — the interchange control version number (e.g. 00401).",
+  ],
+  [
+    "Date / time",
+    (f) => `${f.interchange_date} ${f.interchange_time}`.trim(),
+    "ISA09 and ISA10 — when the interchange was prepared (YYMMDD, HHMM).",
+  ],
+  [
+    "Functional groups",
+    (f) => f.functional_group_count,
+    "GS segments found while walking the payload. IEA01 must equal this — a mismatch is a fatal finding.",
+  ],
+  [
+    "Transaction sets",
+    (f) => f.transaction_set_count,
+    "ST segments found across all groups. Each group's GE01 must equal its own count.",
+  ],
+  [
+    "Segments",
+    (f) => f.segment_count,
+    "Total segments in the cleansed payload. Each transaction set's SE01 must equal its own segment count.",
+  ],
 ];
 
 function renderFacts(facts) {
@@ -337,6 +370,7 @@ async function copyCorrected() {
 function useCorrected() {
   if (!correctedEl.value) return;
   ediInput.value = correctedEl.value;
+  saveDraft();
   ediInput.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
@@ -346,10 +380,43 @@ function loadFile(ev) {
   const reader = new FileReader();
   reader.onload = () => {
     ediInput.value = reader.result;
+    saveDraft();
     clearError();
   };
   reader.onerror = () => showError("Could not read that file.");
   reader.readAsText(file, "latin1");
+}
+
+// --------------------------------------------------------------------------- //
+// draft persistence
+//
+// Keep what's in the form for the life of this browser tab, so leaving for the
+// /codes page and coming back doesn't wipe it. sessionStorage (not local) is
+// per-tab and cleared on close, and never leaves the browser.
+// --------------------------------------------------------------------------- //
+const DRAFT_KEY = "x12-tidy-web:draft";
+
+function saveDraft() {
+  try {
+    sessionStorage.setItem(
+      DRAFT_KEY,
+      JSON.stringify({ edi: ediInput.value, maxIter: maxIterInput.value })
+    );
+  } catch {
+    /* private mode / quota / disabled — the form just won't be remembered */
+  }
+}
+
+function restoreDraft() {
+  try {
+    const raw = sessionStorage.getItem(DRAFT_KEY);
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    if (typeof d.edi === "string" && d.edi && !ediInput.value) ediInput.value = d.edi;
+    if (d.maxIter) maxIterInput.value = d.maxIter;
+  } catch {
+    /* ignore malformed / unavailable storage */
+  }
 }
 
 // --------------------------------------------------------------------------- //
@@ -360,12 +427,17 @@ $("sample-btn").addEventListener("click", () => {
   ediInput.value = SAMPLE_EDI;
   sampleNote.textContent = SAMPLE_NOTE;
   sampleNote.hidden = false;
+  saveDraft();
   clearError();
 });
 ediInput.addEventListener("input", () => {
   if (!sampleNote.hidden) sampleNote.hidden = true;
+  saveDraft();
 });
+maxIterInput.addEventListener("change", saveDraft);
 $("file").addEventListener("change", loadFile);
 copyBtn.addEventListener("click", copyCorrected);
 useBtn.addEventListener("click", useCorrected);
 downloadBtn.addEventListener("click", download);
+
+restoreDraft();

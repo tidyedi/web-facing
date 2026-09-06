@@ -16,8 +16,8 @@
     </div>
     <p class="tagline">
       Every finding x12-tidy&nbsp;<code>{{ x12_tidy_release }}</code> can emit, straight from its
-      diagnostic registry — the single source of truth that also backs
-      <code>x12-tidy codes</code> and the library's own <code>docs/diagnostics.md</code>.
+      <a href="{{ registry_url }}">diagnostic code registry</a> — the single source of truth that
+      also backs <code>x12-tidy codes</code> and the library's own <code>docs/diagnostics.md</code>.
       This repo copies none of it; it is read live from the installed package.
     </p>
     <p class="tagline">
@@ -56,11 +56,14 @@
 </main>
 
 <footer class="wrap site-footer">
-  <p>
-    <a href="/">← back to the repairer</a> ·
-    x12-tidy-web {{ app_version }} · x12-tidy {{ x12_tidy_release }} ·
-    <a href="https://github.com/tidyedi/web-facing">source</a> · Apache-2.0
-  </p>
+  <nav class="footer-links">
+    <a href="/">← Repairer</a>
+    <a href="https://docs.tidyedi.com">Docs</a>
+    <a href="https://github.com/tidyedi/web-facing">Source</a>
+    <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
+    <a href="https://tidyedi.com">TidyEDI</a>
+  </nav>
+  <p>x12-tidy-web {{ app_version }} · x12-tidy {{ x12_tidy_release }} · Apache-2.0</p>
 </footer>
 </body>
 </html>

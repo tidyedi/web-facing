@@ -129,8 +129,16 @@
       </dl>
       <p class="hint">
         x12-tidy's classification. Every finding's code, title, and explanation
-        come straight from its diagnostic registry — the same source as
-        <a href="/codes">the full code reference</a> and <code>x12-tidy codes</code>.
+        come straight from its
+        <a href="{{ registry_url }}">diagnostic code registry</a> — the same
+        source as <a href="/codes">the full code reference</a> and
+        <code>x12-tidy codes</code>.
+      </p>
+      <p class="hint">
+        The <strong>Byte</strong> column is the offset into the text you
+        submitted where the flagged structure begins. Findings about the ISA
+        line all point at the start of that line, so they share a number; a
+        dash means the finding isn't tied to one spot.
       </p>
       <div id="passes"></div>
     </div>
@@ -138,10 +146,15 @@
 </main>
 
 <footer class="wrap site-footer">
+  <nav class="footer-links">
+    <a href="/codes">Code reference</a>
+    <a href="https://docs.tidyedi.com">Docs</a>
+    <a href="https://github.com/tidyedi/web-facing">Source</a>
+    <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
+    <a href="https://tidyedi.com">TidyEDI</a>
+  </nav>
   <p>
     x12-tidy-web {{ app_version }} · x12-tidy {{ x12_tidy_release }} ·
-    <a href="/codes">code reference</a> ·
-    <a href="https://github.com/tidyedi/web-facing">source</a> ·
     Apache-2.0 · nothing you paste is stored or logged
   </p>
 </footer>

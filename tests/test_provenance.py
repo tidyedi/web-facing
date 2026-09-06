@@ -8,7 +8,12 @@ import json
 import re
 from importlib.metadata import distribution
 
-from x12_tidy_web.provenance import x12_tidy_commit, x12_tidy_release, x12_tidy_version
+from x12_tidy_web.provenance import (
+    x12_tidy_commit,
+    x12_tidy_release,
+    x12_tidy_source_url,
+    x12_tidy_version,
+)
 
 _SHA40 = re.compile(r"\A[0-9a-f]{40}\Z")
 
@@ -30,3 +35,16 @@ def test_release_combines_version_and_short_sha() -> None:
     commit = x12_tidy_commit()
     assert commit is not None
     assert x12_tidy_release() == f"0.1.0 (git {commit[:7]})"
+
+
+def test_source_url_pins_the_installed_commit() -> None:
+    commit = x12_tidy_commit()
+    assert commit is not None
+
+    root = x12_tidy_source_url()
+    assert root == f"https://github.com/tidyedi/x12-tidy/tree/{commit}"
+
+    file_url = x12_tidy_source_url("src/x12_tidy/diagnostics/codes.py")
+    assert file_url == (
+        f"https://github.com/tidyedi/x12-tidy/blob/{commit}/src/x12_tidy/diagnostics/codes.py"
+    )

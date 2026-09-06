@@ -160,8 +160,9 @@ button.ghost { background: transparent; }
 
 table.facts { width: 100%; border-collapse: collapse; font-size: .9rem; }
 table.facts th, table.facts td { text-align: left; padding: .35rem .4rem; border-bottom: 1px solid var(--bg); vertical-align: top; }
-table.facts th { color: var(--ink); font-weight: 500; width: 34%; white-space: nowrap; }
-.fact-src { display: block; color: var(--dim); font: 400 .74rem/1.35 var(--mono); margin-top: .15rem; }
+table.facts th { color: var(--ink); font-weight: 500; width: 30%; white-space: nowrap; vertical-align: baseline; }
+table.facts td > span:first-child { font-weight: 500; }
+.fact-src { display: block; color: var(--dim); font-size: .8rem; line-height: 1.4; margin-top: .2rem; }
 
 .legend { margin: .25rem 0 .5rem; display: flex; flex-direction: column; gap: .4rem; }
 .legend > div { display: flex; gap: .6rem; align-items: baseline; }
@@ -216,6 +217,8 @@ table.findings code { font: 12px var(--mono); background: var(--bg); padding: .1
 
 .site-footer { color: var(--dim); font-size: .85rem; padding: 1.5rem 0 2rem; border-top: 1px solid var(--line); }
 .site-footer p { margin: 0; }
+.footer-links { display: flex; flex-wrap: wrap; gap: .35rem .9rem; margin-bottom: .5rem; }
+.footer-links a { font-weight: 500; }
 
 /* /codes reference page */
 .codes-table { table-layout: fixed; }

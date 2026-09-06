@@ -30,11 +30,20 @@ from x12_tidy_web import __version__
 from x12_tidy_web.diagnostics import AREA_LABELS, code_catalog, code_reference
 from x12_tidy_web.engine import DEFAULT_MAX_ITERATIONS, MAX_ALLOWED_ITERATIONS, repair
 from x12_tidy_web.models import ReportRequest, ValidateRequest
-from x12_tidy_web.provenance import x12_tidy_commit, x12_tidy_release, x12_tidy_version
+from x12_tidy_web.provenance import (
+    x12_tidy_commit,
+    x12_tidy_release,
+    x12_tidy_source_url,
+    x12_tidy_version,
+)
 from x12_tidy_web.reporting import available_formats, render_report
 
 _HERE = Path(__file__).parent
 _TEMPLATES = Jinja2Templates(directory=str(_HERE / "templates"))
+
+#: The diagnostic code registry inside x12-tidy — the single source of truth for
+#: every finding's code, title, severity, and explanation (issues #4, #22).
+_REGISTRY_PATH = "src/x12_tidy/diagnostics/codes.py"
 
 
 def create_app() -> FastAPI:
@@ -54,6 +63,7 @@ def create_app() -> FastAPI:
             {
                 "app_version": __version__,
                 "x12_tidy_release": x12_tidy_release(),
+                "registry_url": x12_tidy_source_url(_REGISTRY_PATH),
                 "default_max_iterations": DEFAULT_MAX_ITERATIONS,
                 "max_allowed_iterations": MAX_ALLOWED_ITERATIONS,
                 "formats": available_formats(),
@@ -69,6 +79,7 @@ def create_app() -> FastAPI:
             {
                 "app_version": __version__,
                 "x12_tidy_release": x12_tidy_release(),
+                "registry_url": x12_tidy_source_url(_REGISTRY_PATH),
                 "codes": catalog,
                 "by_area": code_reference(),
                 "area_labels": AREA_LABELS,
