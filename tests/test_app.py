@@ -142,3 +142,15 @@ def test_index_links_and_byte_note(client) -> None:
     assert "https://docs.tidyedi.com" in text
     assert "github.com/tidyedi/x12-tidy/blob/" in text  # registry link in the passes note
     assert "The <strong>Byte</strong> column" in text
+
+
+def test_index_embeds_the_samples(client) -> None:
+    import json
+
+    text = client.get("/").text
+    assert "Load a random sample" in text
+    blob = text.split('id="samples-data">', 1)[1].split("</script>", 1)[0]
+    samples = json.loads(blob)
+    assert len(samples) == 3
+    assert {s["slug"] for s in samples} == {"forwarded-email", "pipe-delimited", "lowercased-isa"}
+    assert all(s["edi"] and s["blurb"] for s in samples)

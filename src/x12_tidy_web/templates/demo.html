@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>x12-tidy-web demo — {{ sample.title }}</title>
+  <link rel="icon" type="image/svg+xml" href="{{ favicon }}">
+  <style>{{ inline_css }}</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <div class="brand">
+      <img class="brand-mark" src="{{ favicon }}" alt="" width="40" height="40">
+      <h1>x12-tidy<span class="dim">-web</span> <span class="dim">/ demo</span></h1>
+    </div>
+    <p class="tagline">
+      A static snapshot — the sample below was repaired by
+      <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a> {{ x12_tidy_release }}
+      and the result baked into this page. Nothing here talks to a server.
+      The live version, where you paste your own interchange, is at
+      <a href="https://github.com/tidyedi/web-facing">tidyedi/web-facing</a>.
+    </p>
+  </div>
+</header>
+
+<main class="wrap">
+  <nav class="footer-links demo-nav">
+    <span class="dim">Samples:</span>
+    {% for slug, title in nav %}
+      {% if slug == current %}<strong>{{ title }}</strong>{% else %}<a href="{{ slug }}.html">{{ title }}</a>{% endif %}
+    {% endfor %}
+    <a href="codes.html">Code reference</a>
+  </nav>
+
+  <section class="panel">
+    <h2>{{ sample.title }}</h2>
+    <p class="hint">{{ sample.blurb }}</p>
+    <h3>The interchange as submitted</h3>
+    <textarea readonly spellcheck="false" rows="6">{{ run.original_text }}</textarea>
+  </section>
+
+  <div class="verdict {{ verdict_class }}">
+    {{ verdict_text }}
+    <small>
+      {{ run.iteration_count }} pass{{ '' if run.iteration_count == 1 else 'es' }} ·
+      {{ run.stop_reason_detail }} ·
+      corrected text {{ 'differs from' if run.changed else 'matches' }} the input
+    </small>
+  </div>
+
+  <div class="result-grid">
+    <div class="panel">
+      <div class="panel-head"><h2>Corrected interchange</h2></div>
+      <textarea readonly spellcheck="false" rows="8">{{ run.final_text or '(no corrected interchange — the input could not be recovered)' }}</textarea>
+    </div>
+
+    <div class="panel">
+      <h2>Envelope</h2>
+      {% if run.final_facts %}
+      {% set f = run.final_facts %}
+      <table class="facts"><tbody>
+        <tr><th>Sender</th><td><span>{{ (f.sender_qualifier ~ ' / ' ~ f.sender_id) | trim('/ ') or '—' }}</span><span class="fact-src">From ISA05 (qualifier) and ISA06 (ID).</span></td></tr>
+        <tr><th>Receiver</th><td><span>{{ (f.receiver_qualifier ~ ' / ' ~ f.receiver_id) | trim('/ ') or '—' }}</span><span class="fact-src">From ISA07 (qualifier) and ISA08 (ID).</span></td></tr>
+        <tr><th>Usage indicator</th><td><span>{{ f.usage_indicator or '—' }}</span><span class="fact-src">ISA15 — P = production, T = test, I = information.</span></td></tr>
+        <tr><th>Interchange version</th><td><span>{{ f.interchange_version or '—' }}</span><span class="fact-src">ISA12 — the interchange control version number.</span></td></tr>
+        <tr><th>Date / time</th><td><span>{{ (f.interchange_date ~ ' ' ~ f.interchange_time) | trim or '—' }}</span><span class="fact-src">ISA09 and ISA10 — when the interchange was prepared.</span></td></tr>
+        <tr><th>Functional groups</th><td><span>{{ f.functional_group_count }}</span><span class="fact-src">GS segments counted while walking the payload; IEA01 is checked against this.</span></td></tr>
+        <tr><th>Transaction sets</th><td><span>{{ f.transaction_set_count }}</span><span class="fact-src">ST segments counted; each group's GE01 is checked against its own count.</span></td></tr>
+        <tr><th>Segments</th><td><span>{{ f.segment_count }}</span><span class="fact-src">Total segments in the cleansed payload; each SE01 is checked against its set's count.</span></td></tr>
+      </tbody></table>
+      {% else %}
+      <p class="hint">No envelope facts — no payload was produced.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Repair passes</h2>
+    <p class="hint">
+      The <strong>Byte</strong> column is the offset into the submitted text where
+      the flagged structure begins; ISA-line findings share a number, and a dash
+      means the finding isn't tied to one spot.
+    </p>
+    {% for it in run.iterations %}
+    <details class="pass" open>
+      <summary>
+        <span class="pass-label">Pass {{ it.index }}</span>
+        {% for sev in ['fatal', 'error', 'warning'] %}
+          {% if it.severity_counts[sev] %}<span class="pill {{ sev }}">{{ it.severity_counts[sev] }} {{ sev }}</span>{% endif %}
+        {% endfor %}
+        {% if it.was_clean %}<span class="pass-status ok">clean</span>{% endif %}
+        <span class="pass-status">{{ 'changed the interchange' if it.changed else 'no change' }}</span>
+      </summary>
+      <div class="pass-body">
+        <p class="hint">
+          {{ it.input_byte_length }} bytes in →
+          {{ '—' if it.output_byte_length is none else (it.output_byte_length ~ ' bytes') }} out.
+        </p>
+        {% if it.diagnostics %}
+        <table class="findings">
+          <thead><tr><th>Severity</th><th>Code</th><th>Byte</th><th>Finding</th></tr></thead>
+          <tbody>
+          {% for d in it.diagnostics %}
+            <tr>
+              <td><span class="sev {{ d.severity }}">{{ d.severity.upper() }}</span></td>
+              <td><code>{{ d.code }}</code></td>
+              <td>{{ '—' if d.offset is none else d.offset }}</td>
+              <td>
+                <strong>{{ d.title }}</strong>
+                <span class="finding-msg">{{ d.message }}</span>
+                <p class="finding-expl">{{ d.explanation }}</p>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p class="hint">No findings on this pass.</p>
+        {% endif %}
+      </div>
+    </details>
+    {% endfor %}
+  </div>
+</main>
+
+<footer class="wrap site-footer">
+  <nav class="footer-links">
+    <a href="index.html">All samples</a>
+    <a href="codes.html">Code reference</a>
+    <a href="https://github.com/tidyedi/web-facing">Source</a>
+    <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
+    <a href="https://tidyedi.com">TidyEDI</a>
+  </nav>
+  <p>x12-tidy-web {{ app_version }} · x12-tidy {{ x12_tidy_release }} · Apache-2.0 · static demo, nothing is sent anywhere</p>
+</footer>
+</body>
+</html>

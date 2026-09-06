@@ -25,6 +25,15 @@ def test_default_port_ignores_non_numeric_env(monkeypatch: pytest.MonkeyPatch, b
     assert cli._default_port() == 8000
 
 
+def test_demo_subcommand_writes_the_bundle(tmp_path, capsys) -> None:
+    out = tmp_path / "demo"
+    code = cli.main(["demo", str(out)])
+    assert code == 0
+    assert (out / "index.html").exists()
+    assert (out / "forwarded-email.html").exists()
+    assert (out / "codes.html").exists()
+
+
 def test_repair_subcommand_reports_and_sets_exit_code(tmp_path, capsys) -> None:
     edi = tmp_path / "broken.edi"
     edi.write_text(

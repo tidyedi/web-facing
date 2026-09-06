@@ -37,6 +37,7 @@ from x12_tidy_web.provenance import (
     x12_tidy_version,
 )
 from x12_tidy_web.reporting import available_formats, render_report
+from x12_tidy_web.samples import SAMPLES
 
 _HERE = Path(__file__).parent
 _TEMPLATES = Jinja2Templates(directory=str(_HERE / "templates"))
@@ -67,6 +68,10 @@ def create_app() -> FastAPI:
                 "default_max_iterations": DEFAULT_MAX_ITERATIONS,
                 "max_allowed_iterations": MAX_ALLOWED_ITERATIONS,
                 "formats": available_formats(),
+                "samples": [
+                    {"slug": s.slug, "title": s.title, "blurb": s.blurb, "edi": s.edi}
+                    for s in SAMPLES
+                ],
             },
         )
 

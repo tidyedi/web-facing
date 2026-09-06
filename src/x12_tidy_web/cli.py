@@ -67,6 +67,17 @@ def _build_parser() -> argparse.ArgumentParser:
         default=DEFAULT_MAX_ITERATIONS,
         help=f"repair-pass cap (default: {DEFAULT_MAX_ITERATIONS})",
     )
+
+    demo = sub.add_parser(
+        "demo", help="write the static demo pages (one self-contained HTML file per sample)"
+    )
+    demo.add_argument(
+        "out_dir",
+        type=Path,
+        nargs="?",
+        default=Path("x12-tidy-web-demo"),
+        help="directory to write into (default: ./x12-tidy-web-demo)",
+    )
     return parser
 
 
@@ -97,12 +108,24 @@ def _cmd_repair(args: argparse.Namespace) -> int:
     return 0 if run.clean else 1
 
 
+def _cmd_demo(args: argparse.Namespace) -> int:
+    from x12_tidy_web.demo import build_demo
+
+    written = build_demo(args.out_dir)
+    for path in written:
+        print(path)
+    print(f"\n{len(written)} files written to {args.out_dir}/ — open index.html", file=sys.stderr)
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     args = _build_parser().parse_args(argv)
     if args.command == "serve":
         return _cmd_serve(args)
     if args.command == "repair":
         return _cmd_repair(args)
+    if args.command == "demo":
+        return _cmd_demo(args)
     return 2  # pragma: no cover  (argparse enforces `required=True`)
 
 

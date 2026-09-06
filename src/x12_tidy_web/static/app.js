@@ -7,20 +7,16 @@
 
 "use strict";
 
-const SAMPLE_EDI =
-  "Subject: FW: your order\r\n\r\n" +
-  "ISA*00*   *00*   *ZZ*ACME*ZZ*WIDGETCO*240101*1200*U*00401*000000001*0*P*:~" +
-  "GS*PO*ACME*WIDGET*20240101*1200*1*X*004010~" +
-  "ST*850*0001~BEG*00*NE*PO123**20240101~SE*3*0001~" +
-  "GE*1*1~IEA*2*000000001~";
-
-const SAMPLE_NOTE =
-  "This sample has three planted defects: an email header (“Subject: …”) " +
-  "before the ISA, ISA elements trimmed below their fixed width, and IEA01 " +
-  "claiming 2 functional groups when there is 1. Validate to see each one " +
-  "repaired or flagged.";
-
 const $ = (id) => document.getElementById(id);
+
+// Broken samples, embedded by the server from x12_tidy_web/samples.py.
+let SAMPLES = [];
+try {
+  SAMPLES = JSON.parse($("samples-data").textContent);
+} catch {
+  /* no samples embedded — the button just won't do anything */
+}
+let lastSampleSlug = null;
 
 const form = $("edi-form");
 const ediInput = $("edi");
@@ -487,8 +483,13 @@ function restoreDraft() {
 // --------------------------------------------------------------------------- //
 form.addEventListener("submit", validate);
 $("sample-btn").addEventListener("click", () => {
-  ediInput.value = SAMPLE_EDI;
-  sampleNote.textContent = SAMPLE_NOTE;
+  if (!SAMPLES.length) return;
+  // pick a different one each click when there's a choice
+  const pool = SAMPLES.length > 1 ? SAMPLES.filter((s) => s.slug !== lastSampleSlug) : SAMPLES;
+  const sample = pool[Math.floor(Math.random() * pool.length)];
+  lastSampleSlug = sample.slug;
+  ediInput.value = sample.edi;
+  sampleNote.textContent = `${sample.title} — ${sample.blurb}`;
   sampleNote.hidden = false;
   saveDraft();
   clearError();

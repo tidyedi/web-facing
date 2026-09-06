@@ -1,25 +1,23 @@
 # Sample interchanges
 
-Hand-written fixtures for exercising x12-tidy-web end to end. These are *our*
-files — x12-tidy ships its own real-world samples in its repo.
+Broken fixtures for exercising x12-tidy-web end to end. These are *our* files —
+x12-tidy ships its own real-world samples in its repo.
+
+**Source of truth: [`src/x12_tidy_web/samples.py`](../src/x12_tidy_web/samples.py).**
+The `.edi` files here are generated from it (`python -m x12_tidy_web.samples`);
+the form's "Load a random sample" button and the static demo pages
+(`x12-tidy-web demo`) use the same three.
 
 Run one from the shell:
 
 ```bash
-uv run x12-tidy-web repair samples/broken-850-leading-bytes.edi
+uv run x12-tidy-web repair samples/forwarded-email.edi
 ```
 
 Or paste its contents into the form.
 
-## `broken-850-leading-bytes.edi`
-
-A minimal 850 (purchase order) interchange with three deliberate problems:
-
-- **Leading bytes** — an email header precedes the `ISA` segment (a `warning`;
-  stripped).
-- **Short ISA elements** — `ISA06`/`ISA08` are 4 bytes, not their fixed width of
-  15 (an `error`; space-padded).
-- **Control-count mismatch** — `IEA01` claims 2 functional groups but there is
-  one (a `fatal` trust signal; x12-tidy reports it but cannot know the right
-  value, so it survives every repair pass — this is what a "stable" stop with
-  residual findings looks like).
+| File | What's wrong | Outcome |
+| --- | --- | --- |
+| `forwarded-email.edi` | An email header before the ISA, four ISA elements trimmed below their fixed width, and IEA01 claiming two functional groups when there is one. | **Stable** — repaired, but the functional-group count mismatch is a trust signal x12-tidy flags and cannot guess a fix for, so it survives every pass. |
+| `pipe-delimited.edi` | `\|`-delimited, newline-terminated ASN with short ISA elements. | **Clean** — x12-tidy reads the non-standard delimiters and pads the elements. |
+| `lowercased-isa.edi` | The `ISA` segment tag arrived lowercase (`isa`). | **Clean** — uppercased; nothing else was wrong. |

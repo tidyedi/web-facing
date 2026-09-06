@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>x12-tidy-web — static demo</title>
+  <link rel="icon" type="image/svg+xml" href="{{ favicon }}">
+  <style>{{ inline_css }}</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <div class="brand">
+      <img class="brand-mark" src="{{ favicon }}" alt="" width="40" height="40">
+      <h1>x12-tidy<span class="dim">-web</span> <span class="dim">/ demo</span></h1>
+    </div>
+    <p class="tagline">
+      Three malformed X12 interchanges, each repaired by
+      <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a> {{ x12_tidy_release }}
+      with the result baked into a static page. No server, nothing sent anywhere.
+      For the real thing — paste your own interchange — see
+      <a href="https://github.com/tidyedi/web-facing">tidyedi/web-facing</a>.
+    </p>
+  </div>
+</header>
+
+<main class="wrap">
+  {% for s in samples %}
+  <section class="panel">
+    <h2><a href="{{ s.slug }}.html" class="plain">{{ s.title }}</a></h2>
+    <p class="hint">{{ s.blurb }}</p>
+    <p><a href="{{ s.slug }}.html">See the repair →</a></p>
+  </section>
+  {% endfor %}
+  <p class="hint"><a href="codes.html">Every diagnostic code x12-tidy can emit →</a></p>
+</main>
+
+<footer class="wrap site-footer">
+  <nav class="footer-links">
+    <a href="https://docs.tidyedi.com">Docs</a>
+    <a href="https://github.com/tidyedi/web-facing">Source</a>
+    <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
+    <a href="https://tidyedi.com">TidyEDI</a>
+  </nav>
+  <p>x12-tidy-web {{ app_version }} · x12-tidy {{ x12_tidy_release }} · Apache-2.0</p>
+</footer>
+</body>
+</html>

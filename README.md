@@ -44,6 +44,18 @@ docker compose up --build     # http://127.0.0.1:8000
 
 Putting it on a public URL: see [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
 
+### Static demo
+
+For people who can't reach a running instance:
+
+```bash
+uv run x12-tidy-web demo            # writes ./x12-tidy-web-demo/
+```
+
+One self-contained HTML file per sample — CSS and favicon inlined, every link
+relative or external, no server. A committed copy is in
+[`docs/demo/`](docs/demo/).
+
 ## The HTTP API
 
 The form is a thin client over a JSON API you can call directly.
@@ -118,11 +130,14 @@ src/x12_tidy_web/
   engine.py      the iterative-repair loop (repair() -> RepairRun)
   diagnostics.py x12-tidy's severity-free Diagnostic -> a display row
   reporting.py   render a RepairRun as JSON / Markdown / HTML / text / CSV
+  provenance.py  which x12-tidy build is installed (footer, /healthz, links)
+  samples.py     the three broken samples the form and demo pages share
+  demo.py        build the static demo bundle
   models.py      Pydantic request/response schemas
   app.py         the FastAPI app: form page + JSON API + downloads
-  cli.py         `x12-tidy-web serve`
-  templates/     the single-page form (server-rendered shell, vanilla-JS client)
-  static/        styles.css, app.js — no build step
+  cli.py         `x12-tidy-web serve | repair | demo`
+  templates/     server-rendered shells (form, code reference, static demo)
+  static/        styles.css, app.js, favicon.svg — no build step
 ```
 
 ## The one rule this repo follows

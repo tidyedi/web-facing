@@ -1,4 +1,11 @@
-/* SPDX-License-Identifier: Apache-2.0
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>x12-tidy-web — static demo</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlRpZHlFREkiPgogIDx0aXRsZT5UaWR5RURJPC90aXRsZT4KICA8cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHJ4PSIxNCIgZmlsbD0iIzFGNkI0RCIvPgogIDxyZWN0IHg9IjExIiB5PSIxNSIgd2lkdGg9IjM1IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIgb3BhY2l0eT0iMC4zNCIvPgogIDxyZWN0IHg9IjE4IiB5PSIyNiIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgogIDxyZWN0IHg9IjE4IiB5PSIzNyIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgogIDxyZWN0IHg9IjE4IiB5PSI0OCIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgo8L3N2Zz4K">
+  <style>/* SPDX-License-Identifier: Apache-2.0
    Copyright 2026 Michael Schertz */
 
 :root {
@@ -13,14 +20,14 @@
   --error: #c05600;
   --warning: #8a6d00;
   --ok: #1a7f37;
-  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --mono: ui-monospace, SFMono-Regular, &#34;SF Mono&#34;, Menlo, Consolas, monospace;
 }
 
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
-  font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font: 15px/1.6 -apple-system, BlinkMacSystemFont, &#34;Segoe UI&#34;, Roboto, Helvetica, Arial, sans-serif;
   color: var(--ink);
   background: var(--bg);
 }
@@ -86,7 +93,7 @@ textarea {
 }
 
 label.inline { display: inline-flex; align-items: center; gap: .4rem; color: var(--dim); font-size: .9rem; }
-label.inline input[type="number"], select {
+label.inline input[type=&#34;number&#34;], select {
   font: inherit;
   padding: .3rem .4rem;
   border: 1px solid var(--line);
@@ -94,10 +101,10 @@ label.inline input[type="number"], select {
   background: var(--panel);
   color: var(--ink);
 }
-label.inline input[type="number"] { width: 4rem; }
+label.inline input[type=&#34;number&#34;] { width: 4rem; }
 
 .file-pick { position: relative; cursor: pointer; }
-.file-pick input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.file-pick input[type=&#34;file&#34;] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 .file-pick span {
   display: inline-block; padding: .4rem .7rem;
   border: 1px dashed var(--line); border-radius: 6px; background: var(--panel);
@@ -161,11 +168,11 @@ button.ghost { background: transparent; }
 table.facts { width: 100%; border-collapse: collapse; font-size: .9rem; }
 table.facts th, table.facts td { text-align: left; padding: .35rem .4rem; border-bottom: 1px solid var(--bg); vertical-align: top; }
 table.facts th { color: var(--ink); font-weight: 500; width: 30%; white-space: nowrap; vertical-align: baseline; }
-table.facts td > span:first-child { font-weight: 500; }
+table.facts td &gt; span:first-child { font-weight: 500; }
 .fact-src { display: block; color: var(--dim); font-size: .8rem; line-height: 1.4; margin-top: .2rem; }
 
 .legend { margin: .25rem 0 .5rem; display: flex; flex-direction: column; gap: .4rem; }
-.legend > div { display: flex; gap: .6rem; align-items: baseline; }
+.legend &gt; div { display: flex; gap: .6rem; align-items: baseline; }
 .legend dt { flex: 0 0 4.5rem; margin: 0; text-align: left; }
 .legend dd { margin: 0; color: var(--dim); font-size: .88rem; }
 
@@ -175,7 +182,7 @@ table.facts td > span:first-child { font-weight: 500; }
   margin-top: .75rem;
   overflow: hidden;
 }
-.pass > summary {
+.pass &gt; summary {
   cursor: pointer;
   padding: .6rem .9rem;
   background: var(--bg);
@@ -186,19 +193,19 @@ table.facts td > span:first-child { font-weight: 500; }
   flex-wrap: wrap;
   list-style: none;
 }
-.pass > summary::-webkit-details-marker { display: none; }
-.pass > summary::marker { content: ""; }
+.pass &gt; summary::-webkit-details-marker { display: none; }
+.pass &gt; summary::marker { content: &#34;&#34;; }
 .pass .pass-body { padding: .5rem .9rem 1rem; }
 
 /* disclosure caret — makes it obvious a pass row expands */
 .caret { color: var(--dim); font-size: .8rem; transition: transform .12s ease; }
-.caret::before { content: "▶"; }
-.pass[open] > summary .caret { transform: rotate(90deg); }
+.caret::before { content: &#34;▶&#34;; }
+.pass[open] &gt; summary .caret { transform: rotate(90deg); }
 
 .pass-label { font-weight: 700; }
 /* plain status text, deliberately NOT a pill */
 .pass-status { font-weight: 400; font-size: .82rem; font-style: italic; color: var(--dim); }
-.pass-status::before { content: "· "; font-style: normal; }
+.pass-status::before { content: &#34;· &#34;; font-style: normal; }
 .pass-status.ok { color: var(--ok); font-style: normal; }
 
 .pill {
@@ -220,8 +227,8 @@ table.facts td > span:first-child { font-weight: 500; }
 .finding-filter-label { color: var(--dim); font-size: .82rem; }
 button.pill { cursor: pointer; font-family: var(--mono); opacity: .5; transition: opacity .1s, box-shadow .1s; }
 button.pill:hover { opacity: .8; }
-button.pill[aria-pressed="true"] { opacity: 1; box-shadow: 0 0 0 2px var(--ink); }
-button.pill.neutral[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--dim); }
+button.pill[aria-pressed=&#34;true&#34;] { opacity: 1; box-shadow: 0 0 0 2px var(--ink); }
+button.pill.neutral[aria-pressed=&#34;true&#34;] { box-shadow: 0 0 0 2px var(--dim); }
 
 table.findings { width: 100%; border-collapse: collapse; margin-top: .5rem; font-size: .9rem; }
 table.findings th, table.findings td {
@@ -251,3 +258,56 @@ table.findings code { font: 12px var(--mono); background: var(--bg); padding: .1
 tr.deprecated { opacity: .55; }
 
 .busy { opacity: .6; pointer-events: none; }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <div class="brand">
+      <img class="brand-mark" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlRpZHlFREkiPgogIDx0aXRsZT5UaWR5RURJPC90aXRsZT4KICA8cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHJ4PSIxNCIgZmlsbD0iIzFGNkI0RCIvPgogIDxyZWN0IHg9IjExIiB5PSIxNSIgd2lkdGg9IjM1IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIgb3BhY2l0eT0iMC4zNCIvPgogIDxyZWN0IHg9IjE4IiB5PSIyNiIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgogIDxyZWN0IHg9IjE4IiB5PSIzNyIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgogIDxyZWN0IHg9IjE4IiB5PSI0OCIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgo8L3N2Zz4K" alt="" width="40" height="40">
+      <h1>x12-tidy<span class="dim">-web</span> <span class="dim">/ demo</span></h1>
+    </div>
+    <p class="tagline">
+      Three malformed X12 interchanges, each repaired by
+      <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a> 0.1.0 (git 04bffa4)
+      with the result baked into a static page. No server, nothing sent anywhere.
+      For the real thing — paste your own interchange — see
+      <a href="https://github.com/tidyedi/web-facing">tidyedi/web-facing</a>.
+    </p>
+  </div>
+</header>
+
+<main class="wrap">
+  
+  <section class="panel">
+    <h2><a href="forwarded-email.html" class="plain">Forwarded email — 850 purchase order</a></h2>
+    <p class="hint">A purchase order pasted straight out of a forwarded email: an email header sits before the ISA, four ISA elements were trimmed below their fixed width, and IEA01 claims two functional groups when there is one.</p>
+    <p><a href="forwarded-email.html">See the repair →</a></p>
+  </section>
+  
+  <section class="panel">
+    <h2><a href="pipe-delimited.html" class="plain">Pipe-delimited — 856 advance ship notice</a></h2>
+    <p class="hint">An ASN that uses &#39;|&#39; as the element separator and a newline as the segment terminator, with several ISA elements shorter than their fixed width. x12-tidy reads the non-standard delimiters and pads the elements; the result is conformant.</p>
+    <p><a href="pipe-delimited.html">See the repair →</a></p>
+  </section>
+  
+  <section class="panel">
+    <h2><a href="lowercased-isa.html" class="plain">Lowercased tag — 997 functional acknowledgement</a></h2>
+    <p class="hint">A functional acknowledgement whose ISA segment tag arrived in lowercase (&#39;isa&#39;). x12-tidy uppercases it; nothing else is wrong and the result is conformant.</p>
+    <p><a href="lowercased-isa.html">See the repair →</a></p>
+  </section>
+  
+  <p class="hint"><a href="codes.html">Every diagnostic code x12-tidy can emit →</a></p>
+</main>
+
+<footer class="wrap site-footer">
+  <nav class="footer-links">
+    <a href="https://docs.tidyedi.com">Docs</a>
+    <a href="https://github.com/tidyedi/web-facing">Source</a>
+    <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
+    <a href="https://tidyedi.com">TidyEDI</a>
+  </nav>
+  <p>x12-tidy-web 0.1.0 · x12-tidy 0.1.0 (git 04bffa4) · Apache-2.0</p>
+</footer>
+</body>
+</html>

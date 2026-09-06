@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>x12-tidy-web demo — Forwarded email — 850 purchase order</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlRpZHlFREkiPgogIDx0aXRsZT5UaWR5RURJPC90aXRsZT4KICA8cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHJ4PSIxNCIgZmlsbD0iIzFGNkI0RCIvPgogIDxyZWN0IHg9IjExIiB5PSIxNSIgd2lkdGg9IjM1IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIgb3BhY2l0eT0iMC4zNCIvPgogIDxyZWN0IHg9IjE4IiB5PSIyNiIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgogIDxyZWN0IHg9IjE4IiB5PSIzNyIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgogIDxyZWN0IHg9IjE4IiB5PSI0OCIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgo8L3N2Zz4K">
+  <style>/* SPDX-License-Identifier: Apache-2.0
+   Copyright 2026 Michael Schertz */
+
+:root {
+  --ink: #1b1f24;
+  --dim: #6a737d;
+  --line: #d8dee4;
+  --bg: #f6f8fa;
+  --panel: #ffffff;
+  --accent: #1f6feb;
+  --accent-ink: #ffffff;
+  --fatal: #b30000;
+  --error: #c05600;
+  --warning: #8a6d00;
+  --ok: #1a7f37;
+  --mono: ui-monospace, SFMono-Regular, &#34;SF Mono&#34;, Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font: 15px/1.6 -apple-system, BlinkMacSystemFont, &#34;Segoe UI&#34;, Roboto, Helvetica, Arial, sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+}
+
+.wrap { max-width: 68rem; margin: 0 auto; padding: 0 1.25rem; }
+
+a { color: var(--accent); }
+
+.site-header {
+  background: linear-gradient(180deg, #fff, var(--bg));
+  border-bottom: 1px solid var(--line);
+  padding: 1.75rem 0 1.25rem;
+}
+.brand { display: flex; align-items: center; gap: .6rem; }
+.brand-mark { display: block; border-radius: 9px; flex: none; }
+.site-header h1 { margin: 0; font-size: 1.9rem; letter-spacing: -0.02em; }
+.site-header .dim { color: var(--dim); font-weight: 400; }
+.plain { color: inherit; text-decoration: none; }
+.plain:hover { text-decoration: underline; }
+.tagline { margin: .5rem 0 0; color: var(--dim); max-width: 48rem; }
+.tagline + .tagline { margin-top: .4rem; }
+
+main { padding: 1.5rem 0 3rem; }
+
+.privacy {
+  display: flex;
+  align-items: flex-start;
+  gap: .6rem;
+  margin: 0 0 1.5rem;
+  padding: .8rem 1rem;
+  border: 1px solid #bfe0cb;
+  border-left: 4px solid var(--ok);
+  border-radius: 8px;
+  background: #f1f8f3;
+  font-size: .9rem;
+  color: var(--ink);
+}
+.privacy-icon { flex: none; color: var(--ok); margin-top: .1rem; }
+.privacy strong { color: var(--ok); }
+
+#edi-form { display: flex; flex-direction: column; gap: .75rem; }
+
+.field-label { font-weight: 600; }
+
+textarea {
+  width: 100%;
+  min-height: 11rem;
+  font: 13px/1.5 var(--mono);
+  padding: .75rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  resize: vertical;
+  color: var(--ink);
+}
+#corrected { min-height: 8rem; background: #fbfdff; }
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .6rem;
+}
+
+label.inline { display: inline-flex; align-items: center; gap: .4rem; color: var(--dim); font-size: .9rem; }
+label.inline input[type=&#34;number&#34;], select {
+  font: inherit;
+  padding: .3rem .4rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--ink);
+}
+label.inline input[type=&#34;number&#34;] { width: 4rem; }
+
+.file-pick { position: relative; cursor: pointer; }
+.file-pick input[type=&#34;file&#34;] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.file-pick span {
+  display: inline-block; padding: .4rem .7rem;
+  border: 1px dashed var(--line); border-radius: 6px; background: var(--panel);
+}
+
+button {
+  font: inherit;
+  padding: .45rem .9rem;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+}
+button:hover:not(:disabled) { border-color: var(--dim); }
+button:disabled { opacity: .5; cursor: not-allowed; }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+button.primary:hover:not(:disabled) { filter: brightness(1.05); }
+button.ghost { background: transparent; }
+
+.form-error {
+  margin: 0;
+  color: var(--fatal);
+  font-weight: 600;
+}
+
+#results { margin-top: 2rem; display: flex; flex-direction: column; gap: 1.25rem; }
+
+.verdict {
+  padding: .85rem 1.1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+.verdict.ok       { border-left: 5px solid var(--ok); }
+.verdict.residual { border-left: 5px solid var(--error); }
+.verdict.fail     { border-left: 5px solid var(--fatal); }
+.verdict small { display: block; font-weight: 400; color: var(--dim); margin-top: .25rem; }
+
+.result-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+@media (max-width: 46rem) { .result-grid { grid-template-columns: 1fr; } }
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 1rem 1.1rem 1.2rem;
+}
+.panel h2 { margin: 0 0 .6rem; font-size: 1.1rem; }
+.panel-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem; }
+.panel-actions { display: flex; gap: .4rem; align-items: center; }
+.panel-actions.download { flex-wrap: wrap; }
+
+.hint { color: var(--dim); font-size: .85rem; margin: .5rem 0 0; }
+
+table.facts { width: 100%; border-collapse: collapse; font-size: .9rem; }
+table.facts th, table.facts td { text-align: left; padding: .35rem .4rem; border-bottom: 1px solid var(--bg); vertical-align: top; }
+table.facts th { color: var(--ink); font-weight: 500; width: 30%; white-space: nowrap; vertical-align: baseline; }
+table.facts td &gt; span:first-child { font-weight: 500; }
+.fact-src { display: block; color: var(--dim); font-size: .8rem; line-height: 1.4; margin-top: .2rem; }
+
+.legend { margin: .25rem 0 .5rem; display: flex; flex-direction: column; gap: .4rem; }
+.legend &gt; div { display: flex; gap: .6rem; align-items: baseline; }
+.legend dt { flex: 0 0 4.5rem; margin: 0; text-align: left; }
+.legend dd { margin: 0; color: var(--dim); font-size: .88rem; }
+
+.pass {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin-top: .75rem;
+  overflow: hidden;
+}
+.pass &gt; summary {
+  cursor: pointer;
+  padding: .6rem .9rem;
+  background: var(--bg);
+  font-weight: 600;
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  list-style: none;
+}
+.pass &gt; summary::-webkit-details-marker { display: none; }
+.pass &gt; summary::marker { content: &#34;&#34;; }
+.pass .pass-body { padding: .5rem .9rem 1rem; }
+
+/* disclosure caret — makes it obvious a pass row expands */
+.caret { color: var(--dim); font-size: .8rem; transition: transform .12s ease; }
+.caret::before { content: &#34;▶&#34;; }
+.pass[open] &gt; summary .caret { transform: rotate(90deg); }
+
+.pass-label { font-weight: 700; }
+/* plain status text, deliberately NOT a pill */
+.pass-status { font-weight: 400; font-size: .82rem; font-style: italic; color: var(--dim); }
+.pass-status::before { content: &#34;· &#34;; font-style: normal; }
+.pass-status.ok { color: var(--ok); font-style: normal; }
+
+.pill {
+  font: 600 .72rem/1 var(--mono);
+  padding: .28rem .5rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  color: #fff;
+  white-space: nowrap;
+}
+.pill.fatal   { background: var(--fatal); }
+.pill.error   { background: var(--error); }
+.pill.warning { background: #f2e2a0; border-color: #d9c168; color: #5c4900; }
+.pill.clean   { background: var(--ok); }
+.pill.neutral { background: var(--bg); border-color: var(--line); color: var(--dim); }
+
+/* severity filter bar under a pass */
+.finding-filter { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin: .1rem 0 .8rem; }
+.finding-filter-label { color: var(--dim); font-size: .82rem; }
+button.pill { cursor: pointer; font-family: var(--mono); opacity: .5; transition: opacity .1s, box-shadow .1s; }
+button.pill:hover { opacity: .8; }
+button.pill[aria-pressed=&#34;true&#34;] { opacity: 1; box-shadow: 0 0 0 2px var(--ink); }
+button.pill.neutral[aria-pressed=&#34;true&#34;] { box-shadow: 0 0 0 2px var(--dim); }
+
+table.findings { width: 100%; border-collapse: collapse; margin-top: .5rem; font-size: .9rem; }
+table.findings th, table.findings td {
+  text-align: left; padding: .45rem .5rem; border-bottom: 1px solid var(--line); vertical-align: top;
+}
+table.findings th { color: var(--dim); font-weight: 500; }
+table.findings code { font: 12px var(--mono); background: var(--bg); padding: .1rem .3rem; border-radius: 4px; }
+.sev { font-weight: 700; font-size: .78rem; }
+.sev.fatal { color: var(--fatal); }
+.sev.error { color: var(--error); }
+.sev.warning { color: var(--warning); }
+.finding-msg { display: block; margin-top: .15rem; }
+.finding-expl { color: var(--dim); font-size: .85rem; margin: .3rem 0 0; }
+
+.site-footer { color: var(--dim); font-size: .85rem; padding: 1.5rem 0 2rem; border-top: 1px solid var(--line); }
+.site-footer p { margin: 0; }
+.footer-links { display: flex; flex-wrap: wrap; gap: .35rem .9rem; margin-bottom: .5rem; }
+.footer-links a { font-weight: 500; }
+.demo-nav { align-items: baseline; margin: 0 0 1.25rem; font-size: .9rem; }
+.demo-nav strong { color: var(--ink); }
+
+/* /codes reference page */
+.codes-table { table-layout: fixed; }
+.codes-table th:nth-child(1), .codes-table td:nth-child(1) { width: 5.5rem; }
+.codes-table th:nth-child(2), .codes-table td:nth-child(2) { width: 16rem; }
+.codes-table code { overflow-wrap: anywhere; }
+tr.deprecated { opacity: .55; }
+
+.busy { opacity: .6; pointer-events: none; }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <div class="brand">
+      <img class="brand-mark" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlRpZHlFREkiPgogIDx0aXRsZT5UaWR5RURJPC90aXRsZT4KICA8cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHJ4PSIxNCIgZmlsbD0iIzFGNkI0RCIvPgogIDxyZWN0IHg9IjExIiB5PSIxNSIgd2lkdGg9IjM1IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIgb3BhY2l0eT0iMC4zNCIvPgogIDxyZWN0IHg9IjE4IiB5PSIyNiIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgogIDxyZWN0IHg9IjE4IiB5PSIzNyIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgogIDxyZWN0IHg9IjE4IiB5PSI0OCIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgo8L3N2Zz4K" alt="" width="40" height="40">
+      <h1>x12-tidy<span class="dim">-web</span> <span class="dim">/ demo</span></h1>
+    </div>
+    <p class="tagline">
+      A static snapshot — the sample below was repaired by
+      <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a> 0.1.0 (git 04bffa4)
+      and the result baked into this page. Nothing here talks to a server.
+      The live version, where you paste your own interchange, is at
+      <a href="https://github.com/tidyedi/web-facing">tidyedi/web-facing</a>.
+    </p>
+  </div>
+</header>
+
+<main class="wrap">
+  <nav class="footer-links demo-nav">
+    <span class="dim">Samples:</span>
+    
+      <strong>Forwarded email — 850 purchase order</strong>
+    
+      <a href="pipe-delimited.html">Pipe-delimited — 856 advance ship notice</a>
+    
+      <a href="lowercased-isa.html">Lowercased tag — 997 functional acknowledgement</a>
+    
+    <a href="codes.html">Code reference</a>
+  </nav>
+
+  <section class="panel">
+    <h2>Forwarded email — 850 purchase order</h2>
+    <p class="hint">A purchase order pasted straight out of a forwarded email: an email header sits before the ISA, four ISA elements were trimmed below their fixed width, and IEA01 claims two functional groups when there is one.</p>
+    <h3>The interchange as submitted</h3>
+    <textarea readonly spellcheck="false" rows="6">Subject: FW: Q1 reorder - please confirm
+From: purchasing@northwind-traders.example
+
+ISA*00*   *00*   *ZZ*NORTHWIND*ZZ*CONTOSO*240401*0915*U*00401*000000501*0*P*:~GS*PO*NORTHWIND*CONTOSO*20240401*0915*501*X*004010~ST*850*0001~BEG*00*NE*PO-2024-0501**20240401~N1*ST*Northwind Traders Warehouse 3~PO1*1*24*CA*18.50**BP*NW-COFFEE-005~PO1*2*6*EA*42.00**BP*NW-GRINDER-XL~CTT*2~SE*7*0001~GE*1*501~IEA*2*000000501~</textarea>
+  </section>
+
+  <div class="verdict residual">
+    Repaired, with findings x12-tidy cannot fix automatically.
+    <small>
+      2 passes ·
+      A pass reported findings but changed nothing; they cannot be auto-repaired. ·
+      corrected text differs from the input
+    </small>
+  </div>
+
+  <div class="result-grid">
+    <div class="panel">
+      <div class="panel-head"><h2>Corrected interchange</h2></div>
+      <textarea readonly spellcheck="false" rows="8">ISA*00*          *00*          *ZZ*NORTHWIND      *ZZ*CONTOSO        *240401*0915*U*00401*000000501*0*P*:~GS*PO*NORTHWIND*CONTOSO*20240401*0915*501*X*004010~ST*850*0001~BEG*00*NE*PO-2024-0501**20240401~N1*ST*Northwind Traders Warehouse 3~PO1*1*24*CA*18.50**BP*NW-COFFEE-005~PO1*2*6*EA*42.00**BP*NW-GRINDER-XL~CTT*2~SE*7*0001~GE*1*501~IEA*2*000000501~</textarea>
+    </div>
+
+    <div class="panel">
+      <h2>Envelope</h2>
+      
+      
+      <table class="facts"><tbody>
+        <tr><th>Sender</th><td><span>ZZ / NORTHWIND</span><span class="fact-src">From ISA05 (qualifier) and ISA06 (ID).</span></td></tr>
+        <tr><th>Receiver</th><td><span>ZZ / CONTOSO</span><span class="fact-src">From ISA07 (qualifier) and ISA08 (ID).</span></td></tr>
+        <tr><th>Usage indicator</th><td><span>P</span><span class="fact-src">ISA15 — P = production, T = test, I = information.</span></td></tr>
+        <tr><th>Interchange version</th><td><span>00401</span><span class="fact-src">ISA12 — the interchange control version number.</span></td></tr>
+        <tr><th>Date / time</th><td><span>240401 0915</span><span class="fact-src">ISA09 and ISA10 — when the interchange was prepared.</span></td></tr>
+        <tr><th>Functional groups</th><td><span>1</span><span class="fact-src">GS segments counted while walking the payload; IEA01 is checked against this.</span></td></tr>
+        <tr><th>Transaction sets</th><td><span>1</span><span class="fact-src">ST segments counted; each group's GE01 is checked against its own count.</span></td></tr>
+        <tr><th>Segments</th><td><span>10</span><span class="fact-src">Total segments in the cleansed payload; each SE01 is checked against its set's count.</span></td></tr>
+      </tbody></table>
+      
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Repair passes</h2>
+    <p class="hint">
+      The <strong>Byte</strong> column is the offset into the submitted text where
+      the flagged structure begins; ISA-line findings share a number, and a dash
+      means the finding isn't tied to one spot.
+    </p>
+    
+    <details class="pass" open>
+      <summary>
+        <span class="pass-label">Pass 1</span>
+        
+          <span class="pill fatal">1 fatal</span>
+        
+          <span class="pill error">4 error</span>
+        
+          <span class="pill warning">1 warning</span>
+        
+        
+        <span class="pass-status">changed the interchange</span>
+      </summary>
+      <div class="pass-body">
+        <p class="hint">
+          410 bytes in →
+          350 bytes out.
+        </p>
+        
+        <table class="findings">
+          <thead><tr><th>Severity</th><th>Code</th><th>Byte</th><th>Finding</th></tr></thead>
+          <tbody>
+          
+            <tr>
+              <td><span class="sev fatal">FATAL</span></td>
+              <td><code>structure.functional-group-count-mismatch</code></td>
+              <td>—</td>
+              <td>
+                <strong>IEA01 does not match the number of functional groups found</strong>
+                <span class="finding-msg">IEA01 is b&#39;2&#39; but 1 functional group(s) were found.</span>
+                <p class="finding-expl">IEA01 (Number of Included Functional Groups) must equal the actual count of GS segments in the interchange.</p>
+              </td>
+            </tr>
+          
+            <tr>
+              <td><span class="sev error">ERROR</span></td>
+              <td><code>isa.element-width</code></td>
+              <td>88</td>
+              <td>
+                <strong>An ISA element is not its fixed width</strong>
+                <span class="finding-msg">ISA02 is 3 byte(s); padded with spaces to its fixed width of 10.</span>
+                <p class="finding-expl">Every ISA element has a fixed width -- ISA06 is 15 bytes, ISA13 is 9, and so on. This element was shorter (space-padded on the right to fit) or longer only by trailing spaces (trimmed). The value itself is unchanged. A sender that right-trims blank fixed-width fields is the usual cause. This is an error, not a warning: the ISA line is no longer 105 bytes, and conventional VAN services and fixed-offset parsers cannot read the interchange at all until it is repaired.</p>
+              </td>
+            </tr>
+          
+            <tr>
+              <td><span class="sev error">ERROR</span></td>
+              <td><code>isa.element-width</code></td>
+              <td>88</td>
+              <td>
+                <strong>An ISA element is not its fixed width</strong>
+                <span class="finding-msg">ISA04 is 3 byte(s); padded with spaces to its fixed width of 10.</span>
+                <p class="finding-expl">Every ISA element has a fixed width -- ISA06 is 15 bytes, ISA13 is 9, and so on. This element was shorter (space-padded on the right to fit) or longer only by trailing spaces (trimmed). The value itself is unchanged. A sender that right-trims blank fixed-width fields is the usual cause. This is an error, not a warning: the ISA line is no longer 105 bytes, and conventional VAN services and fixed-offset parsers cannot read the interchange at all until it is repaired.</p>
+              </td>
+            </tr>
+          
+            <tr>
+              <td><span class="sev error">ERROR</span></td>
+              <td><code>isa.element-width</code></td>
+              <td>88</td>
+              <td>
+                <strong>An ISA element is not its fixed width</strong>
+                <span class="finding-msg">ISA06 is 9 byte(s); padded with spaces to its fixed width of 15.</span>
+                <p class="finding-expl">Every ISA element has a fixed width -- ISA06 is 15 bytes, ISA13 is 9, and so on. This element was shorter (space-padded on the right to fit) or longer only by trailing spaces (trimmed). The value itself is unchanged. A sender that right-trims blank fixed-width fields is the usual cause. This is an error, not a warning: the ISA line is no longer 105 bytes, and conventional VAN services and fixed-offset parsers cannot read the interchange at all until it is repaired.</p>
+              </td>
+            </tr>
+          
+            <tr>
+              <td><span class="sev error">ERROR</span></td>
+              <td><code>isa.element-width</code></td>
+              <td>88</td>
+              <td>
+                <strong>An ISA element is not its fixed width</strong>
+                <span class="finding-msg">ISA08 is 7 byte(s); padded with spaces to its fixed width of 15.</span>
+                <p class="finding-expl">Every ISA element has a fixed width -- ISA06 is 15 bytes, ISA13 is 9, and so on. This element was shorter (space-padded on the right to fit) or longer only by trailing spaces (trimmed). The value itself is unchanged. A sender that right-trims blank fixed-width fields is the usual cause. This is an error, not a warning: the ISA line is no longer 105 bytes, and conventional VAN services and fixed-offset parsers cannot read the interchange at all until it is repaired.</p>
+              </td>
+            </tr>
+          
+            <tr>
+              <td><span class="sev warning">WARNING</span></td>
+              <td><code>isa.leading-bytes</code></td>
+              <td>0</td>
+              <td>
+                <strong>Bytes precede the ISA segment</strong>
+                <span class="finding-msg">88 byte(s) precede the ISA segment (b&#39;Subject: FW: Q1 reorder - please confirm\r\nFrom: purchasing@northwind-traders.example\r\n\r\n&#39;); stripped before parsing.</span>
+                <p class="finding-expl">One or more bytes appear before the ISA segment. A conformant X12 file begins with &#39;ISA&#39; as its very first byte. Common causes are a UTF-8 byte-order mark, whitespace, or transport headers left in by the sender. x12-tidy strips them and continues; the reported bytes are what was removed.</p>
+              </td>
+            </tr>
+          
+          </tbody>
+        </table>
+        
+      </div>
+    </details>
+    
+    <details class="pass" open>
+      <summary>
+        <span class="pass-label">Pass 2</span>
+        
+          <span class="pill fatal">1 fatal</span>
+        
+          
+        
+          
+        
+        
+        <span class="pass-status">no change</span>
+      </summary>
+      <div class="pass-body">
+        <p class="hint">
+          350 bytes in →
+          350 bytes out.
+        </p>
+        
+        <table class="findings">
+          <thead><tr><th>Severity</th><th>Code</th><th>Byte</th><th>Finding</th></tr></thead>
+          <tbody>
+          
+            <tr>
+              <td><span class="sev fatal">FATAL</span></td>
+              <td><code>structure.functional-group-count-mismatch</code></td>
+              <td>—</td>
+              <td>
+                <strong>IEA01 does not match the number of functional groups found</strong>
+                <span class="finding-msg">IEA01 is b&#39;2&#39; but 1 functional group(s) were found.</span>
+                <p class="finding-expl">IEA01 (Number of Included Functional Groups) must equal the actual count of GS segments in the interchange.</p>
+              </td>
+            </tr>
+          
+          </tbody>
+        </table>
+        
+      </div>
+    </details>
+    
+  </div>
+</main>
+
+<footer class="wrap site-footer">
+  <nav class="footer-links">
+    <a href="index.html">All samples</a>
+    <a href="codes.html">Code reference</a>
+    <a href="https://github.com/tidyedi/web-facing">Source</a>
+    <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
+    <a href="https://tidyedi.com">TidyEDI</a>
+  </nav>
+  <p>x12-tidy-web 0.1.0 · x12-tidy 0.1.0 (git 04bffa4) · Apache-2.0 · static demo, nothing is sent anywhere</p>
+</footer>
+</body>
+</html>

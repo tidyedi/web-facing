@@ -50,9 +50,10 @@
         <input type="file" id="file" accept=".edi,.txt,.x12,text/plain">
         <span>Load a file…</span>
       </label>
-      <button type="button" id="sample-btn" class="ghost">Load a broken sample</button>
+      <button type="button" id="sample-btn" class="ghost">Load a random sample</button>
       <button type="submit" id="validate-btn" class="primary">Validate &amp; repair</button>
     </div>
+    <script type="application/json" id="samples-data">{{ samples | tojson }}</script>
     <p id="passes-help" class="hint">
       The repairer runs <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
       once, feeds the cleansed output back in, and repeats until the result is

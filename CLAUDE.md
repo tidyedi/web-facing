@@ -54,20 +54,34 @@ src/x12_tidy_web/
   reporting.py   render_report(run, fmt) -> Report(bytes, media_type, filename).
                  Formats: json (lossless), markdown, html, text, csv. Every
                  format except csv credits the x12-tidy build that produced it.
-  provenance.py  x12_tidy_version / _commit / _release: which x12-tidy is
-                 installed, read from its direct_url.json. Surfaced in the
-                 footer, /healthz, /api/codes, `--version`, and reports so a
-                 screenshot or a saved report pins the exact build.
+  provenance.py  x12_tidy_version / _commit / _release / _source_url: which
+                 x12-tidy is installed, read from its direct_url.json. Surfaced
+                 in the footer, /healthz, /api/codes, `--version`, reports, and
+                 the "diagnostic code registry" link, so a screenshot or saved
+                 report pins the exact build.
+  samples.py     SAMPLES: the three broken interchanges the form's "Load a
+                 random sample" and the demo pages both use. Source of truth;
+                 `python -m x12_tidy_web.samples` regenerates samples/*.edi.
+  demo.py        build_demo(out_dir): the static demo bundle (x12-tidy-web
+                 demo) — one self-contained HTML file per sample plus a static
+                 /codes and index. Inlines CSS + favicon; every link relative
+                 or absolute-external.
   models.py      Pydantic request schemas. The response is RepairRun.as_dict()
                  verbatim, so the wire shape has exactly one definition (engine).
   app.py         FastAPI: GET / (form), GET /codes (code reference page),
                  POST /api/validate, POST /api/report, GET /api/formats,
                  GET /api/codes, GET /healthz.
-  cli.py         `x12-tidy-web serve` and `x12-tidy-web repair FILE`.
-  templates/     server-rendered shells: index.html (the form) and
-                 codes.html (the /codes reference, from diagnostics.code_reference).
-  static/        styles.css + app.js. Vanilla JS, no build step, no CDN.
+  cli.py         `x12-tidy-web serve`, `x12-tidy-web repair FILE`, and
+                 `x12-tidy-web demo [OUT_DIR]`.
+  templates/     server-rendered shells: index.html (the form), codes.html
+                 (the /codes reference; also static-mode for the demo bundle),
+                 demo.html + demo_index.html (the static demo).
+  static/        styles.css, app.js, favicon.svg. Vanilla JS, no build, no CDN.
 ```
+
+The committed demo bundle lives in `docs/demo/`; regenerate it with
+`uv run x12-tidy-web demo docs/demo` after changing samples, templates, or the
+x12-tidy pin.
 
 ### Why iterate?
 

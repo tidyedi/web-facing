@@ -4,15 +4,22 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>x12-tidy-web — diagnostic code reference</title>
+  {% if static %}
+  <link rel="icon" type="image/svg+xml" href="{{ favicon }}">
+  <style>{{ inline_css }}</style>
+  {% else %}
   <link rel="icon" type="image/svg+xml" href="{{ url_for('static', path='favicon.svg') }}">
   <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
+  {% endif %}
 </head>
 <body>
+{% set favicon_src = favicon if static else url_for('static', path='favicon.svg') %}
+{% set home = home_href if static else '/' %}
 <header class="site-header">
   <div class="wrap">
     <div class="brand">
-      <img class="brand-mark" src="{{ url_for('static', path='favicon.svg') }}" alt="" width="40" height="40">
-      <h1><a href="/" class="plain">x12-tidy<span class="dim">-web</span></a> <span class="dim">/ codes</span></h1>
+      <img class="brand-mark" src="{{ favicon_src }}" alt="" width="40" height="40">
+      <h1><a href="{{ home }}" class="plain">x12-tidy<span class="dim">-web</span></a> <span class="dim">/ codes</span></h1>
     </div>
     <p class="tagline">
       Every finding x12-tidy&nbsp;<code>{{ x12_tidy_release }}</code> can emit, straight from its
@@ -57,7 +64,7 @@
 
 <footer class="wrap site-footer">
   <nav class="footer-links">
-    <a href="/">← Repairer</a>
+    <a href="{{ home }}">{% if static %}← Demo{% else %}← Repairer{% endif %}</a>
     <a href="https://docs.tidyedi.com">Docs</a>
     <a href="https://github.com/tidyedi/web-facing">Source</a>
     <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
