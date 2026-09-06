@@ -3,7 +3,7 @@
   &nbsp;x12-tidy-web
 </h1>
 
-[![CI](https://github.com/tidyedi/x12-tidy-web/actions/workflows/ci.yml/badge.svg)](https://github.com/tidyedi/x12-tidy-web/actions/workflows/ci.yml)
+[![CI](https://github.com/tidyedi/web-facing/actions/workflows/ci.yml/badge.svg)](https://github.com/tidyedi/web-facing/actions/workflows/ci.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
 A small web front end for [**x12-tidy**](https://github.com/tidyedi/x12-tidy).
