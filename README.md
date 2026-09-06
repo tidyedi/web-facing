@@ -8,11 +8,21 @@
 
 A small web front end for [**x12-tidy**](https://github.com/tidyedi/x12-tidy).
 Paste a malformed ANSI X12 interchange into a form; get back a cleansed,
-conformant copy plus a report of what each repair pass changed. Take the
-corrected string or leave it, and download the report in the format you want.
+conformant copy plus a per-pass report of what changed. Take the corrected
+string or leave it, and download the report as JSON, Markdown, HTML, text, or a
+CSV of findings. Nothing you paste is stored, logged, or sent anywhere — the
+repair runs in memory and is forgotten when the response is sent.
 
-Part of [TidyEDI](https://tidyedi.com). x12-tidy does all of the EDI work — this
-repo is just the loop around it and the HTTP layer.
+Part of [TidyEDI](https://github.com/tidyedi). x12-tidy does all of the EDI work
+— this repo is just the iteration loop around it and the HTTP layer.
+
+**See it without running anything:** the
+[static demo](https://tidyedi.github.io/web-facing/demo/) has five broken
+sample interchanges, each repaired with the result baked in.
+
+![The results view: verdict, corrected interchange, and envelope facts](docs/screenshot.png)
+
+Want to help? See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## What it does
 
