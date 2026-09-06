@@ -138,16 +138,21 @@ button.ghost { background: transparent; }
 #results { margin-top: 2rem; display: flex; flex-direction: column; gap: 1.25rem; }
 
 .verdict {
-  padding: .85rem 1.1rem;
+  padding: .9rem 1.1rem;
   border-radius: 8px;
   font-weight: 600;
   border: 1px solid var(--line);
+  border-left-width: 5px;
   background: var(--panel);
 }
-.verdict.ok       { border-left: 5px solid var(--ok); }
-.verdict.residual { border-left: 5px solid var(--error); }
-.verdict.fail     { border-left: 5px solid var(--fatal); }
-.verdict small { display: block; font-weight: 400; color: var(--dim); margin-top: .25rem; }
+.verdict::before { margin-right: .55rem; font-weight: 700; }
+.verdict.ok       { border-color: #bfe0cb; border-left-color: var(--ok); background: #f1f8f3; }
+.verdict.ok::before       { content: &#34;\2713&#34;; color: var(--ok); }
+.verdict.residual { border-color: #eed9b6; border-left-color: var(--error); background: #fdf6ec; }
+.verdict.residual::before { content: &#34;\0021&#34;; color: var(--error); }
+.verdict.fail     { border-color: #eec4c4; border-left-color: var(--fatal); background: #fdf1f1; }
+.verdict.fail::before      { content: &#34;\2715&#34;; color: var(--fatal); }
+.verdict small { display: block; font-weight: 400; color: var(--dim); margin-top: .3rem; }
 
 .result-grid {
   display: grid;
@@ -310,7 +315,9 @@ tr.deprecated { opacity: .55; }
       Every finding x12-tidy&nbsp;<code>0.1.0 (git 04bffa4)</code> can emit, straight from its
       <a href="https://github.com/tidyedi/x12-tidy/blob/04bffa4a4bbdd4c54f39cc1bee43830fb12368e7/src/x12_tidy/diagnostics/codes.py">diagnostic code registry</a> — the single source of truth that
       also backs <code>x12-tidy codes</code> and the library's own <code>docs/diagnostics.md</code>.
-      This repo copies none of it; it is read live from the installed package.
+      This repo copies none of it; the table is built from the installed package
+      at request time, so when a code's severity, title, or explanation changes
+      upstream and the pin is bumped, this page changes with it — no edit here.
     </p>
     <p class="tagline">
       <strong>Severity</strong> is x12-tidy's classification, resolved from the registry at report

@@ -137,16 +137,21 @@ button.ghost { background: transparent; }
 #results { margin-top: 2rem; display: flex; flex-direction: column; gap: 1.25rem; }
 
 .verdict {
-  padding: .85rem 1.1rem;
+  padding: .9rem 1.1rem;
   border-radius: 8px;
   font-weight: 600;
   border: 1px solid var(--line);
+  border-left-width: 5px;
   background: var(--panel);
 }
-.verdict.ok       { border-left: 5px solid var(--ok); }
-.verdict.residual { border-left: 5px solid var(--error); }
-.verdict.fail     { border-left: 5px solid var(--fatal); }
-.verdict small { display: block; font-weight: 400; color: var(--dim); margin-top: .25rem; }
+.verdict::before { margin-right: .55rem; font-weight: 700; }
+.verdict.ok       { border-color: #bfe0cb; border-left-color: var(--ok); background: #f1f8f3; }
+.verdict.ok::before       { content: &#34;\2713&#34;; color: var(--ok); }
+.verdict.residual { border-color: #eed9b6; border-left-color: var(--error); background: #fdf6ec; }
+.verdict.residual::before { content: &#34;\0021&#34;; color: var(--error); }
+.verdict.fail     { border-color: #eec4c4; border-left-color: var(--fatal); background: #fdf1f1; }
+.verdict.fail::before      { content: &#34;\2715&#34;; color: var(--fatal); }
+.verdict small { display: block; font-weight: 400; color: var(--dim); margin-top: .3rem; }
 
 .result-grid {
   display: grid;

@@ -43,7 +43,7 @@ def test_verdicts_match_the_samples(bundle: Path) -> None:
 
     pipe = (bundle / "pipe-delimited.html").read_text()
     assert "verdict ok" in pipe
-    assert "Clean — the interchange is conformant." in pipe
+    assert "Clean — the interchange is conformant, with nothing left to fix." in pipe
 
 
 def test_links_between_pages_are_relative(bundle: Path) -> None:

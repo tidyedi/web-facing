@@ -32,7 +32,7 @@ _REGISTRY_PATH = "src/x12_tidy/diagnostics/codes.py"
 
 _VERDICTS = {
     "unrecoverable": ("fail", "Unrecoverable — no ISA line could be located."),
-    "clean": ("ok", "Clean — the interchange is conformant."),
+    "clean": ("ok", "Clean — the interchange is conformant, with nothing left to fix."),
     "residual": ("residual", "Repaired, with findings x12-tidy cannot fix automatically."),
     "notconverged": ("fail", "Did not converge within the pass limit — treat the output with care."),
 }

@@ -26,7 +26,9 @@
       Every finding x12-tidy&nbsp;<code>{{ x12_tidy_release }}</code> can emit, straight from its
       <a href="{{ registry_url }}">diagnostic code registry</a> — the single source of truth that
       also backs <code>x12-tidy codes</code> and the library's own <code>docs/diagnostics.md</code>.
-      This repo copies none of it; it is read live from the installed package.
+      This repo copies none of it; the table is built from the installed package
+      at request time, so when a code's severity, title, or explanation changes
+      upstream and the pin is bumped, this page changes with it — no edit here.
     </p>
     <p class="tagline">
       <strong>Severity</strong> is x12-tidy's classification, resolved from the registry at report

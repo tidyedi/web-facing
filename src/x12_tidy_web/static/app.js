@@ -93,7 +93,7 @@ function renderVerdict(run) {
     headline = "Unrecoverable — no ISA line could be located.";
   } else if (run.clean) {
     verdictEl.classList.add("ok");
-    headline = "Clean — the interchange is conformant.";
+    headline = "Clean — the interchange is conformant, with nothing left to fix.";
   } else if (run.converged) {
     verdictEl.classList.add("residual");
     headline = "Repaired, with findings x12-tidy cannot fix automatically.";
