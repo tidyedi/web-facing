@@ -19,12 +19,17 @@ from pathlib import Path
 
 from x12_tidy_web import __version__
 from x12_tidy_web.engine import DEFAULT_MAX_ITERATIONS, repair
+from x12_tidy_web.provenance import x12_tidy_release
 from x12_tidy_web.reporting import FORMATS, render_report
 
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="x12-tidy-web", description=__doc__)
-    parser.add_argument("--version", action="version", version=f"x12-tidy-web {__version__}")
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"x12-tidy-web {__version__}, x12-tidy {x12_tidy_release()}",
+    )
     sub = parser.add_subparsers(dest="command", required=True)
 
     serve = sub.add_parser("serve", help="run the web application")

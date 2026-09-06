@@ -31,6 +31,9 @@ def test_healthz(client) -> None:
     body = client.get("/healthz").json()
     assert body["status"] == "ok"
     assert body["x12_tidy"] != "unknown"
+    # Installed from git in every supported environment, so the commit is pinned.
+    assert isinstance(body["x12_tidy_commit"], str)
+    assert len(body["x12_tidy_commit"]) == 40
 
 
 def test_validate_clean(client) -> None:
@@ -93,5 +96,11 @@ def test_codes_endpoint(client) -> None:
     body = client.get("/api/codes").json()
     assert body["count"] > 0
     assert body["count"] == len(body["codes"])
+    assert len(body["x12_tidy_commit"]) == 40
     sample = body["codes"][0]
     assert {"code", "area", "severity", "title"} <= sample.keys()
+
+
+def test_index_footer_shows_x12_tidy_commit(client) -> None:
+    text = client.get("/").text
+    assert "x12-tidy 0.1.0 (git " in text

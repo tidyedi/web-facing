@@ -52,7 +52,11 @@ The form is a thin client over a JSON API you can call directly.
 | `POST` | `/api/report` | `{"edi": "...", "max_iterations": 5, "format": "markdown"}` | the report as a file download |
 | `GET`  | `/api/formats` | — | the available report formats |
 | `GET`  | `/api/codes` | — | every diagnostic code the installed x12-tidy can emit |
-| `GET`  | `/healthz` | — | `{"status": "ok"}` |
+| `GET`  | `/healthz` | — | `{"status": "ok", "x12_tidy_web": "…", "x12_tidy": "…", "x12_tidy_commit": "…"}` |
+
+`/healthz`, `/api/codes`, the footer, `x12-tidy-web --version`, and every
+downloaded report (bar CSV) carry the git commit x12-tidy was installed from, so
+a screenshot or a saved report pins the exact build that produced a result.
 
 ```bash
 curl -s localhost:8000/api/validate \
@@ -99,8 +103,10 @@ uv run ruff check .
 uv run mypy src
 ```
 
-For a fast local loop against a checkout of x12-tidy, uncomment the
-`[tool.uv.sources]` line in `pyproject.toml` and `uv sync` again.
+x12-tidy is always imported from its git repo — never cloned, vendored, or
+path-linked into this one (`tests/test_dependency_provenance.py` enforces it).
+To test against unreleased x12-tidy work, push it to a branch and point the
+`x12-tidy @ git+…@<branch>` ref in `pyproject.toml` at it, then `uv lock`.
 
 ### Layout
 

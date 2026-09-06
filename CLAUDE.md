@@ -22,6 +22,25 @@ even a commented-out `[tool.uv.sources]` entry. It is imported like any other
 third-party package so that a change in x12-tidy reaches this repo only when you
 deliberately bump the ref and re-run `uv lock`. To test against unreleased
 x12-tidy work, push that work to a branch and point the ref at it.
+`tests/test_dependency_provenance.py` fails loudly if this is ever violated.
+
+### Which repo owns a bug?
+
+Reproduce against x12-tidy alone, no web layer:
+
+```
+uv run x12-tidy path/to/broken.edi
+uv run python -c "from x12_tidy import tidy; print(tidy(open('broken.edi','rb').read()))"
+```
+
+- Corrected string / a finding / severity / byte offset is wrong → **x12-tidy**.
+  Fix there, then `uv lock --upgrade-package x12-tidy` here.
+- One pass is right but the loop, the report, the JSON/CSV, the API, the form or
+  the CLI misbehaves → **here**.
+
+Every result is stamped with the x12-tidy git commit (footer, `/healthz`,
+`/api/codes`, `--version`, downloaded reports) — `provenance.py`. A bug report
+that includes any of those pins the exact build to reproduce against.
 
 ## Architecture
 
@@ -33,7 +52,12 @@ src/x12_tidy_web/
   diagnostics.py x12-tidy's severity-free Diagnostic -> DiagnosticView (severity
                  resolved, registry title/explanation attached).
   reporting.py   render_report(run, fmt) -> Report(bytes, media_type, filename).
-                 Formats: json (lossless), markdown, html, text, csv.
+                 Formats: json (lossless), markdown, html, text, csv. Every
+                 format except csv credits the x12-tidy build that produced it.
+  provenance.py  x12_tidy_version / _commit / _release: which x12-tidy is
+                 installed, read from its direct_url.json. Surfaced in the
+                 footer, /healthz, /api/codes, `--version`, and reports so a
+                 screenshot or a saved report pins the exact build.
   models.py      Pydantic request schemas. The response is RepairRun.as_dict()
                  verbatim, so the wire shape has exactly one definition (engine).
   app.py         FastAPI: GET / (form), POST /api/validate, POST /api/report,

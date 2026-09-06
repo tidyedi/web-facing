@@ -41,6 +41,16 @@ def test_json_report_is_valid_and_annotated(dirty_run) -> None:
     assert doc["schema"] == "x12-tidy-web/repair-run/1"
     assert "generated_at" in doc
     assert doc["generator"].startswith("x12-tidy-web")
+    # The x12-tidy build that produced the run, so a saved report is traceable.
+    assert doc["x12_tidy"]["version"] == "0.1.0"
+    assert len(doc["x12_tidy"]["commit"]) == 40
+    assert doc["x12_tidy"]["release"].startswith("0.1.0 (git ")
+
+
+@pytest.mark.parametrize("fmt", ["markdown", "text", "html"])
+def test_prose_reports_credit_the_x12_tidy_build(dirty_run, fmt: str) -> None:
+    text = render_report(dirty_run, fmt).content.decode()
+    assert "x12-tidy 0.1.0 (git " in text
 
 
 def test_markdown_report_mentions_key_facts(dirty_run) -> None:
