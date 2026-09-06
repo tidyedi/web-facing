@@ -106,7 +106,8 @@ CI additionally builds the Docker image and hits `/healthz` in the container.
 ## Not done / possible next steps
 
 - No rate limiting or request-size middleware beyond the `MAX_EDI_CHARS` check
-  in `models.py`. Add a reverse proxy or slowapi if deployed publicly.
+  in `models.py`. Add a reverse proxy or slowapi if deployed publicly — see
+  `docs/DEPLOYMENT.md`.
 - No persistence by design — nothing pasted is stored or logged. Keep it that
   way unless there's a deliberate decision otherwise.
 - Open UI issues on the remote (tidyedi/web-facing): #5/#6/#9/#12 (visual

@@ -42,6 +42,8 @@ Options: `x12-tidy-web serve --host 0.0.0.0 --port 8080 --reload`.
 docker compose up --build     # http://127.0.0.1:8000
 ```
 
+Putting it on a public URL: see [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
+
 ## The HTTP API
 
 The form is a thin client over a JSON API you can call directly.
