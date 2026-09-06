@@ -220,17 +220,67 @@ function renderFindingsTable(diagnostics) {
   return table;
 }
 
+// The severity filter bar for one pass: "all" plus one toggle per severity
+// present. Empty selection === show everything. Multiple can be active at once.
+function findingFilter(diagnostics, counts, onChange) {
+  const active = new Set();
+  const bar = el("div", { class: "finding-filter" });
+  bar.append(el("span", { class: "finding-filter-label", text: "Show" }));
+
+  const sevButtons = [];
+  const sync = () => {
+    allBtn.setAttribute("aria-pressed", active.size === 0 ? "true" : "false");
+    for (const [s, b] of sevButtons) {
+      b.setAttribute("aria-pressed", active.has(s) ? "true" : "false");
+    }
+    onChange(active);
+  };
+
+  const allBtn = el("button", { type: "button", class: "pill neutral", title: "Show every finding" }, "all");
+  allBtn.addEventListener("click", () => {
+    active.clear();
+    sync();
+  });
+  bar.append(allBtn);
+
+  for (const s of SEVERITIES) {
+    if (!counts[s]) continue;
+    const b = el(
+      "button",
+      { type: "button", class: `pill ${s}`, title: `Toggle ${s} findings` },
+      `${counts[s]} ${s}`
+    );
+    b.addEventListener("click", () => {
+      if (active.has(s)) active.delete(s);
+      else active.add(s);
+      sync();
+    });
+    sevButtons.push([s, b]);
+    bar.append(b);
+  }
+
+  sync();
+  return { bar, sevCount: sevButtons.length };
+}
+
 function renderPass(iter, isLast) {
   const details = el("details", { class: "pass" });
   if (isLast || iter.diagnostics.length) details.open = true;
 
-  const summary = el("summary", {}, `Pass ${iter.index}`);
   const counts = iter.severity_counts;
-  if (iter.was_clean) summary.append(pill("clean", "clean"));
+  const summary = el("summary", {});
+  summary.append(el("span", { class: "caret", "aria-hidden": "true" }));
+  summary.append(el("span", { class: "pass-label", text: `Pass ${iter.index}` }));
   for (const s of SEVERITIES) {
     if (counts[s] > 0) summary.append(pill(`${counts[s]} ${s}`, s));
   }
-  summary.append(pill(iter.changed ? "changed the interchange" : "no change", "neutral"));
+  if (iter.was_clean) summary.append(el("span", { class: "pass-status ok", text: "clean" }));
+  summary.append(
+    el("span", {
+      class: "pass-status",
+      text: iter.changed ? "changed the interchange" : "no change",
+    })
+  );
   details.append(summary);
 
   const body = el("div", { class: "pass-body" });
@@ -238,11 +288,24 @@ function renderPass(iter, isLast) {
   body.append(
     el("p", { class: "hint", text: `${iter.input_byte_length} bytes in → ${outBytes} out.` })
   );
-  if (iter.diagnostics.length) {
-    body.append(renderFindingsTable(iter.diagnostics));
-  } else {
+
+  if (!iter.diagnostics.length) {
     body.append(el("p", { class: "hint", text: "No findings on this pass." }));
+    details.append(body);
+    return details;
   }
+
+  const tableSlot = el("div");
+  const draw = (active) => {
+    const shown = active.size
+      ? iter.diagnostics.filter((d) => active.has(d.severity))
+      : iter.diagnostics;
+    tableSlot.replaceChildren(renderFindingsTable(shown));
+  };
+  const { bar, sevCount } = findingFilter(iter.diagnostics, counts, draw);
+  if (sevCount > 1) body.append(bar); // nothing to filter with only one severity
+  body.append(tableSlot);
+
   details.append(body);
   return details;
 }

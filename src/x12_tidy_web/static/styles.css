@@ -184,9 +184,22 @@ table.facts td > span:first-child { font-weight: 500; }
   gap: .5rem;
   align-items: center;
   flex-wrap: wrap;
+  list-style: none;
 }
 .pass > summary::-webkit-details-marker { display: none; }
+.pass > summary::marker { content: ""; }
 .pass .pass-body { padding: .5rem .9rem 1rem; }
+
+/* disclosure caret — makes it obvious a pass row expands */
+.caret { color: var(--dim); font-size: .8rem; transition: transform .12s ease; }
+.caret::before { content: "▶"; }
+.pass[open] > summary .caret { transform: rotate(90deg); }
+
+.pass-label { font-weight: 700; }
+/* plain status text, deliberately NOT a pill */
+.pass-status { font-weight: 400; font-size: .82rem; font-style: italic; color: var(--dim); }
+.pass-status::before { content: "· "; font-style: normal; }
+.pass-status.ok { color: var(--ok); font-style: normal; }
 
 .pill {
   font: 600 .72rem/1 var(--mono);
@@ -201,6 +214,14 @@ table.facts td > span:first-child { font-weight: 500; }
 .pill.warning { background: #f2e2a0; border-color: #d9c168; color: #5c4900; }
 .pill.clean   { background: var(--ok); }
 .pill.neutral { background: var(--bg); border-color: var(--line); color: var(--dim); }
+
+/* severity filter bar under a pass */
+.finding-filter { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin: .1rem 0 .8rem; }
+.finding-filter-label { color: var(--dim); font-size: .82rem; }
+button.pill { cursor: pointer; font-family: var(--mono); opacity: .5; transition: opacity .1s, box-shadow .1s; }
+button.pill:hover { opacity: .8; }
+button.pill[aria-pressed="true"] { opacity: 1; box-shadow: 0 0 0 2px var(--ink); }
+button.pill.neutral[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--dim); }
 
 table.findings { width: 100%; border-collapse: collapse; margin-top: .5rem; font-size: .9rem; }
 table.findings th, table.findings td {
