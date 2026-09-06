@@ -179,6 +179,68 @@ release.
 
 To redeploy after an update: re-run the same `gcloud run deploy` command.
 
+### Render (free web service)
+
+1. <https://dashboard.render.com> → **New → Web Service** → connect
+   `tidyedi/web-facing`.
+2. Runtime **Docker** (it finds the `Dockerfile`), instance type **Free**,
+   region of your choice. No start command — the `Dockerfile` `CMD` is used and
+   Render sets `$PORT`, which the CLI honours.
+3. Deploy. URL is `https://<name>.onrender.com`. Auto-redeploys on every push to
+   `main`.
+
+The free instance spins down after 15 minutes idle and cold-starts (~30–60 s)
+on the next request. No credit card.
+
+## Running on several free hosts at once
+
+The app is stateless — no database, no shared session state — so the same
+container can run on any number of hosts simultaneously, each with its own URL.
+Reasons to:
+
+- **Availability** — one host sleeping, cold, or down, visitors use another.
+- **Reachability** — different domains (`*.hf.space`, `*.onrender.com`,
+  `*.run.app`) have different reputations with corporate/network filters; a
+  visitor blocked from one may reach another.
+
+Each rate limit (`slowapi`) counts per instance, which is fine — it is per-IP
+either way. Nothing needs to be coordinated between instances.
+
+**No-credit-card pair:** Hugging Face Spaces + Render (both above). Add Cloud Run
+if you enable billing.
+
+### Keeping them in sync
+
+`render.yaml` (committed) lets Render pick up its own config; HF redeploys when
+you push to the Space remote. To avoid deploying by hand three times, a GitHub
+Action can fan a release out to all of them:
+
+```yaml
+# .github/workflows/deploy.yml  (sketch — fill in per-host secrets)
+name: Deploy
+on:
+  release:
+    types: [published]
+jobs:
+  huggingface:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - run: |
+          git remote add space https://user:${{ secrets.HF_TOKEN }}@huggingface.co/spaces/<owner>/x12-tidy-web
+          git push space HEAD:main --force
+  # Render and Cloud Run redeploy from GitHub automatically once connected;
+  # add explicit steps here only if you want the release to gate them.
+```
+
+### One URL in front of several
+
+If you want a single address that fails over between instances, put a free
+Cloudflare account in front of a custom domain (`tidy.tidyedi.com`) with a
+load-balancing / failover rule pointing at the instance URLs. Otherwise you
+publish the list of URLs (e.g. on the landing page) and let visitors pick.
+
 ## VPS path (Caddy + compose)
 
 ```

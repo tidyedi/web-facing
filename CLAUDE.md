@@ -139,6 +139,10 @@ CI additionally builds the Docker image and hits `/healthz` in the container.
 - Open issues on the remote (tidyedi/web-facing): #10 (server-sent email —
   declined for now, privacy), #15–#19 (marketing backlog, "later:"), #26
   (deployment — `docs/DEPLOYMENT.md` is the answer, waiting on a platform pick).
+- The app is stateless, so it can run on several free hosts at once for
+  availability + reachability behind network filters. `render.yaml` is a Render
+  blueprint; `docs/DEPLOYMENT.md` has the multi-host section (HF + Render +
+  Cloud Run, a fan-out Action sketch, and the single-URL failover option).
 - Feedback on a diagnostic code goes to x12-tidy's Q&A discussions, not here —
   the per-code "Discuss" links on `/codes` build a pre-filled URL
   (`diagnostics._discuss_url`). "Report a wrong result" is an opt-in `mailto:`

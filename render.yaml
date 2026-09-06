@@ -1,0 +1,11 @@
+# Render Blueprint — one of the free hosts in docs/DEPLOYMENT.md.
+# Connect the repo at https://dashboard.render.com and pick "Blueprint".
+services:
+  - type: web
+    name: x12-tidy-web
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /healthz
+    autoDeploy: true
+    # The Dockerfile CMD honours $PORT, which Render sets.
