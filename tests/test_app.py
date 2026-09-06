@@ -104,3 +104,24 @@ def test_codes_endpoint(client) -> None:
 def test_index_footer_shows_x12_tidy_commit(client) -> None:
     text = client.get("/").text
     assert "x12-tidy 0.1.0 (git " in text
+
+
+def test_index_has_privacy_callout_and_severity_legend(client) -> None:
+    text = client.get("/").text
+    assert "stored, logged, or sent anywhere" in text
+    assert 'class="legend"' in text
+    for sev in ("FATAL", "ERROR", "WARNING"):
+        assert sev in text
+
+
+def test_codes_page_renders(client) -> None:
+    resp = client.get("/codes")
+    assert resp.status_code == 200
+    text = resp.text
+    # A real code, its area heading, and the severity styling all present.
+    assert "isa.leading-bytes" in text
+    assert "ISA — interchange header" in text
+    assert 'class="sev fatal"' in text
+    # Reference is read from the installed x12-tidy, credited to its registry.
+    assert "0.1.0 (git " in text
+    assert "diagnostic registry" in text

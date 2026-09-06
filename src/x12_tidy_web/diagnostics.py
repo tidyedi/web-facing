@@ -17,11 +17,23 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from typing import Any
 
-from x12_tidy.diagnostics import Diagnostic, all_codes, meta, resolved_severity
+from x12_tidy.diagnostics import AREAS, Diagnostic, all_codes, meta, resolved_severity
 
 #: Severities x12-tidy can assign, ordered most severe first. Used to sort
 #: findings and to drive per-severity grouping in reports.
 SEVERITY_ORDER: tuple[str, ...] = ("fatal", "error", "warning")
+
+#: Display headings for x12-tidy's closed ``area`` vocabulary -- just the
+#: abbreviation spelled out, so the reference page can group codes. The areas
+#: themselves are x12-tidy's (:data:`x12_tidy.diagnostics.AREAS`); if that tuple
+#: grows, an unmapped area falls back to its bare name.
+AREA_LABELS: dict[str, str] = {
+    "isa": "ISA — interchange header",
+    "gs": "GS — functional-group envelope",
+    "st": "ST — transaction-set envelope",
+    "delimiter": "Delimiters",
+    "structure": "Structure & control counts",
+}
 
 
 @dataclass(frozen=True)
@@ -101,3 +113,15 @@ def code_catalog() -> list[dict[str, Any]]:
         )
     catalog.sort(key=lambda c: (c["area"], c["code"]))
     return catalog
+
+
+def code_reference() -> list[tuple[str, list[dict[str, Any]]]]:
+    """:func:`code_catalog` grouped by area, in x12-tidy's ``AREAS`` order.
+
+    For the ``/codes`` reference page. Areas x12-tidy defines but has no code
+    for yet are omitted; any area outside :data:`AREAS` sorts to the end.
+    """
+    catalog = code_catalog()
+    order = {area: i for i, area in enumerate(AREAS)}
+    areas_seen = sorted({c["area"] for c in catalog}, key=lambda a: order.get(a, len(order)))
+    return [(area, [c for c in catalog if c["area"] == area]) for area in areas_seen]

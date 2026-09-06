@@ -60,10 +60,12 @@ src/x12_tidy_web/
                  screenshot or a saved report pins the exact build.
   models.py      Pydantic request schemas. The response is RepairRun.as_dict()
                  verbatim, so the wire shape has exactly one definition (engine).
-  app.py         FastAPI: GET / (form), POST /api/validate, POST /api/report,
-                 GET /api/formats, GET /api/codes, GET /healthz.
+  app.py         FastAPI: GET / (form), GET /codes (code reference page),
+                 POST /api/validate, POST /api/report, GET /api/formats,
+                 GET /api/codes, GET /healthz.
   cli.py         `x12-tidy-web serve` and `x12-tidy-web repair FILE`.
-  templates/     one server-rendered shell (index.html).
+  templates/     server-rendered shells: index.html (the form) and
+                 codes.html (the /codes reference, from diagnostics.code_reference).
   static/        styles.css + app.js. Vanilla JS, no build step, no CDN.
 ```
 
@@ -105,6 +107,9 @@ CI additionally builds the Docker image and hits `/healthz` in the container.
 
 - No rate limiting or request-size middleware beyond the `MAX_EDI_CHARS` check
   in `models.py`. Add a reverse proxy or slowapi if deployed publicly.
-- `/api/codes` powers a reference page that does not exist yet in the UI.
 - No persistence by design — nothing pasted is stored or logged. Keep it that
   way unless there's a deliberate decision otherwise.
+- Open UI issues on the remote (tidyedi/web-facing): #5/#6/#9/#12 (visual
+  polish), #7 (a pretty-printed segment view — decide x12-tidy vs. local),
+  #10 (feature brainstorm). #1–#4, #8, #11 landed together as the
+  "explanation layer" pass.

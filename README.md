@@ -52,6 +52,7 @@ The form is a thin client over a JSON API you can call directly.
 | `POST` | `/api/report` | `{"edi": "...", "max_iterations": 5, "format": "markdown"}` | the report as a file download |
 | `GET`  | `/api/formats` | — | the available report formats |
 | `GET`  | `/api/codes` | — | every diagnostic code the installed x12-tidy can emit |
+| `GET`  | `/codes` | — | human-readable reference page for the above |
 | `GET`  | `/healthz` | — | `{"status": "ok", "x12_tidy_web": "…", "x12_tidy": "…", "x12_tidy_commit": "…"}` |
 
 `/healthz`, `/api/codes`, the footer, `x12-tidy-web --version`, and every

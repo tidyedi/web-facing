@@ -36,9 +36,24 @@ a { color: var(--accent); }
 }
 .site-header h1 { margin: 0; font-size: 1.9rem; letter-spacing: -0.02em; }
 .site-header .dim { color: var(--dim); font-weight: 400; }
-.tagline { margin: .5rem 0 0; color: var(--dim); max-width: 44rem; }
+.plain { color: inherit; text-decoration: none; }
+.plain:hover { text-decoration: underline; }
+.tagline { margin: .5rem 0 0; color: var(--dim); max-width: 48rem; }
+.tagline + .tagline { margin-top: .4rem; }
 
 main { padding: 1.5rem 0 3rem; }
+
+.privacy {
+  margin: 0 0 1.25rem;
+  padding: .7rem 1rem;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--ok);
+  border-radius: 8px;
+  background: #f1f8f3;
+  font-size: .9rem;
+  color: var(--ink);
+}
+.privacy strong { color: var(--ok); }
 
 #edi-form { display: flex; flex-direction: column; gap: .75rem; }
 
@@ -138,8 +153,14 @@ button.ghost { background: transparent; }
 .hint { color: var(--dim); font-size: .85rem; margin: .5rem 0 0; }
 
 table.facts { width: 100%; border-collapse: collapse; font-size: .9rem; }
-table.facts th, table.facts td { text-align: left; padding: .3rem .4rem; border-bottom: 1px solid var(--bg); }
-table.facts th { color: var(--dim); font-weight: 500; width: 42%; }
+table.facts th, table.facts td { text-align: left; padding: .35rem .4rem; border-bottom: 1px solid var(--bg); vertical-align: top; }
+table.facts th { color: var(--ink); font-weight: 500; width: 46%; }
+.fact-src { display: block; color: var(--dim); font: 400 .74rem/1.3 var(--mono); margin-top: .1rem; }
+
+.legend { margin: 0 0 .25rem; display: flex; flex-direction: column; gap: .35rem; }
+.legend > div { display: flex; gap: .6rem; align-items: baseline; }
+.legend dt { flex: 0 0 4.5rem; margin: 0; }
+.legend dd { margin: 0; color: var(--dim); font-size: .88rem; }
 
 .pass {
   border: 1px solid var(--line);
@@ -187,5 +208,12 @@ table.findings code { font: 12px var(--mono); background: var(--bg); padding: .1
 
 .site-footer { color: var(--dim); font-size: .85rem; padding: 1.5rem 0 2rem; border-top: 1px solid var(--line); }
 .site-footer p { margin: 0; }
+
+/* /codes reference page */
+.codes-table { table-layout: fixed; }
+.codes-table th:nth-child(1), .codes-table td:nth-child(1) { width: 5.5rem; }
+.codes-table th:nth-child(2), .codes-table td:nth-child(2) { width: 16rem; }
+.codes-table code { overflow-wrap: anywhere; }
+tr.deprecated { opacity: .55; }
 
 .busy { opacity: .6; pointer-events: none; }

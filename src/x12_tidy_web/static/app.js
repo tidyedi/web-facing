@@ -14,15 +14,23 @@ const SAMPLE_EDI =
   "ST*850*0001~BEG*00*NE*PO123**20240101~SE*3*0001~" +
   "GE*1*1~IEA*2*000000001~";
 
+const SAMPLE_NOTE =
+  "This sample has three planted defects: an email header (“Subject: …”) " +
+  "before the ISA, ISA elements trimmed below their fixed width, and IEA01 " +
+  "claiming 2 functional groups when there is 1. Validate to see each one " +
+  "repaired or flagged.";
+
 const $ = (id) => document.getElementById(id);
 
 const form = $("edi-form");
 const ediInput = $("edi");
 const maxIterInput = $("max-iterations");
 const formError = $("form-error");
+const sampleNote = $("sample-note");
 const results = $("results");
 const verdictEl = $("verdict");
 const correctedEl = $("corrected");
+const isaPadNote = $("isa-pad-note");
 const factsBody = $("facts").querySelector("tbody");
 const factsEmpty = $("facts-empty");
 const passesEl = $("passes");
@@ -85,27 +93,29 @@ function renderVerdict(run) {
     verdictEl.classList.add("fail");
     headline = "Did not converge within the pass limit — treat the output with care.";
   }
+  const stopDetail = run.stop_reason_detail || run.stop_reason;
   verdictEl.replaceChildren(
     document.createTextNode(headline),
     el("small", {
       text:
         `${run.iteration_count} pass${run.iteration_count === 1 ? "" : "es"} · ` +
-        `stop reason: ${run.stop_reason} · ` +
+        `${stopDetail} · ` +
         `corrected text ${run.changed ? "differs from" : "matches"} the input · ` +
         `final findings: ${countsSummary(run.residual_severity_counts)}`,
     })
   );
 }
 
+// label, value getter, and the envelope element the value is read from.
 const FACT_ROWS = [
-  ["Sender", (f) => `${f.sender_qualifier} / ${f.sender_id}`.replace(/^ \/ | \/ $/g, "")],
-  ["Receiver", (f) => `${f.receiver_qualifier} / ${f.receiver_id}`.replace(/^ \/ | \/ $/g, "")],
-  ["Usage indicator", (f) => f.usage_indicator],
-  ["Interchange version", (f) => f.interchange_version],
-  ["Date / time", (f) => `${f.interchange_date} ${f.interchange_time}`.trim()],
-  ["Functional groups", (f) => f.functional_group_count],
-  ["Transaction sets", (f) => f.transaction_set_count],
-  ["Segments", (f) => f.segment_count],
+  ["Sender", (f) => `${f.sender_qualifier} / ${f.sender_id}`.replace(/^ \/ | \/ $/g, ""), "ISA05 + ISA06"],
+  ["Receiver", (f) => `${f.receiver_qualifier} / ${f.receiver_id}`.replace(/^ \/ | \/ $/g, ""), "ISA07 + ISA08"],
+  ["Usage indicator", (f) => f.usage_indicator, "ISA15"],
+  ["Interchange version", (f) => f.interchange_version, "ISA12"],
+  ["Date / time", (f) => `${f.interchange_date} ${f.interchange_time}`.trim(), "ISA09 + ISA10"],
+  ["Functional groups", (f) => f.functional_group_count, "GS segments counted"],
+  ["Transaction sets", (f) => f.transaction_set_count, "ST segments counted"],
+  ["Segments", (f) => f.segment_count, "segments in the payload"],
 ];
 
 function renderFacts(facts) {
@@ -115,10 +125,15 @@ function renderFacts(facts) {
     return;
   }
   factsEmpty.hidden = true;
-  for (const [label, getter] of FACT_ROWS) {
+  for (const [label, getter, source] of FACT_ROWS) {
     const value = getter(facts);
     factsBody.append(
-      el("tr", {}, el("th", { text: label }), el("td", { text: value === "" || value == null ? "—" : String(value) }))
+      el(
+        "tr",
+        {},
+        el("th", {}, el("span", { text: label }), el("span", { class: "fact-src", text: source })),
+        el("td", { text: value === "" || value == null ? "—" : String(value) })
+      )
     );
   }
 }
@@ -202,6 +217,11 @@ function renderRun(run) {
   copyBtn.disabled = !hasCorrected;
   useBtn.disabled = !hasCorrected;
   downloadBtn.disabled = false;
+
+  const touchedIsa = run.iterations.some((it) =>
+    it.diagnostics.some((d) => d.code.startsWith("isa."))
+  );
+  isaPadNote.hidden = !(hasCorrected && touchedIsa);
 
   renderFacts(run.final_facts);
 
@@ -332,7 +352,12 @@ function loadFile(ev) {
 form.addEventListener("submit", validate);
 $("sample-btn").addEventListener("click", () => {
   ediInput.value = SAMPLE_EDI;
+  sampleNote.textContent = SAMPLE_NOTE;
+  sampleNote.hidden = false;
   clearError();
+});
+ediInput.addEventListener("input", () => {
+  if (!sampleNote.hidden) sampleNote.hidden = true;
 });
 $("file").addEventListener("change", loadFile);
 copyBtn.addEventListener("click", copyCorrected);

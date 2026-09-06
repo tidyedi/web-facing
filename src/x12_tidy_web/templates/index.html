@@ -19,6 +19,12 @@
 </header>
 
 <main class="wrap">
+  <p class="privacy">
+    <strong>Nothing you paste is stored, logged, or sent anywhere.</strong>
+    The repair runs in memory on this server and is gone the moment the response
+    is returned — no database, no files, no analytics.
+  </p>
+
   <form id="edi-form">
     <label for="edi" class="field-label">EDI interchange</label>
     <textarea id="edi" name="edi" spellcheck="false" autocomplete="off"
@@ -28,7 +34,8 @@
       <label class="inline">
         Max repair passes
         <input type="number" id="max-iterations" name="max_iterations"
-          value="{{ default_max_iterations }}" min="1" max="{{ max_allowed_iterations }}">
+          value="{{ default_max_iterations }}" min="1" max="{{ max_allowed_iterations }}"
+          aria-describedby="passes-help">
       </label>
       <label class="inline file-pick">
         <input type="file" id="file" accept=".edi,.txt,.x12,text/plain">
@@ -37,6 +44,13 @@
       <button type="button" id="sample-btn" class="ghost">Load a broken sample</button>
       <button type="submit" id="validate-btn" class="primary">Validate &amp; repair</button>
     </div>
+    <p id="passes-help" class="hint">
+      The repairer runs <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
+      once, feeds the cleansed output back in, and repeats until the result is
+      clean or stops changing. Most interchanges settle in one or two passes;
+      this number just caps a payload that never settles (1–{{ max_allowed_iterations }}).
+    </p>
+    <p id="sample-note" class="hint" hidden></p>
     <p id="form-error" class="form-error" hidden></p>
   </form>
 
@@ -56,12 +70,20 @@
         <textarea id="corrected" readonly spellcheck="false"
           placeholder="(no corrected interchange — the input could not be recovered)"></textarea>
         <p class="hint">Take it or leave it. “Use this” only edits the form above — nothing is saved.</p>
+        <p id="isa-pad-note" class="hint" hidden>
+          Runs of spaces in the ISA header are correct: ISA is a fixed-width
+          record, so every element is padded to an exact size (ISA05/07 to 2,
+          ISA06/08 to 15, and so on). VAN services and fixed-offset parsers read
+          the ISA by byte position, so the padding is required — see the
+          <code>isa.*</code> findings below.
+        </p>
       </div>
 
       <div class="panel">
         <h2>Envelope</h2>
         <table id="facts" class="facts"><tbody></tbody></table>
         <p id="facts-empty" class="hint" hidden>No envelope facts — no payload was produced.</p>
+        <p class="hint">Read by x12-tidy from the ISA/GS headers of the corrected payload; the element each value comes from is noted beside it.</p>
       </div>
     </div>
 
@@ -80,6 +102,16 @@
           <button type="button" id="download-btn" class="primary" disabled>Download</button>
         </div>
       </div>
+      <dl class="legend">
+        <div><dt><span class="sev fatal">FATAL</span></dt><dd>A conforming parser will reject the interchange. x12-tidy flags it but cannot make it valid.</dd></div>
+        <div><dt><span class="sev error">ERROR</span></dt><dd>A real conformance violation. x12-tidy repaired what it could; the value or structure was wrong.</dd></div>
+        <div><dt><span class="sev warning">WARNING</span></dt><dd>Advisory — a trust or QA signal worth a look, not a conformance failure.</dd></div>
+      </dl>
+      <p class="hint">
+        x12-tidy's classification. Every finding's code, title, and explanation
+        come straight from its diagnostic registry — the same source as
+        <a href="/codes">the full code reference</a> and <code>x12-tidy codes</code>.
+      </p>
       <div id="passes"></div>
     </div>
   </section>
@@ -88,8 +120,9 @@
 <footer class="wrap site-footer">
   <p>
     x12-tidy-web {{ app_version }} · x12-tidy {{ x12_tidy_release }} ·
+    <a href="/codes">code reference</a> ·
     <a href="https://github.com/tidyedi/x12-tidy-web">source</a> ·
-    Apache-2.0 · Nothing you paste is stored or logged.
+    Apache-2.0 · nothing you paste is stored or logged
   </p>
 </footer>
 

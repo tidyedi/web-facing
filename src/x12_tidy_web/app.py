@@ -7,6 +7,7 @@ Routes:
 * ``GET  /``            -- the single-page form (server-rendered shell).
 * ``POST /api/validate``-- run the iterative repair, return it as JSON.
 * ``POST /api/report``  -- same run, streamed back as a downloadable file.
+* ``GET  /codes``       -- human reference page for every diagnostic code.
 * ``GET  /api/formats`` -- the report formats on offer.
 * ``GET  /api/codes``   -- every diagnostic code the installed x12-tidy emits.
 * ``GET  /healthz``     -- liveness probe; also reports the x12-tidy git commit.
@@ -26,7 +27,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from x12_tidy_web import __version__
-from x12_tidy_web.diagnostics import code_catalog
+from x12_tidy_web.diagnostics import AREA_LABELS, code_catalog, code_reference
 from x12_tidy_web.engine import DEFAULT_MAX_ITERATIONS, MAX_ALLOWED_ITERATIONS, repair
 from x12_tidy_web.models import ReportRequest, ValidateRequest
 from x12_tidy_web.provenance import x12_tidy_commit, x12_tidy_release, x12_tidy_version
@@ -56,6 +57,24 @@ def create_app() -> FastAPI:
                 "default_max_iterations": DEFAULT_MAX_ITERATIONS,
                 "max_allowed_iterations": MAX_ALLOWED_ITERATIONS,
                 "formats": available_formats(),
+            },
+        )
+
+    @app.get("/codes", response_class=HTMLResponse)
+    def codes_page(request: Request) -> HTMLResponse:
+        catalog = code_catalog()
+        return _TEMPLATES.TemplateResponse(
+            request,
+            "codes.html",
+            {
+                "app_version": __version__,
+                "x12_tidy_release": x12_tidy_release(),
+                "codes": catalog,
+                "by_area": code_reference(),
+                "area_labels": AREA_LABELS,
+                "fatal_count": sum(c["severity"] == "fatal" for c in catalog),
+                "error_count": sum(c["severity"] == "error" for c in catalog),
+                "warning_count": sum(c["severity"] == "warning" for c in catalog),
             },
         )
 

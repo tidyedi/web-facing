@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>x12-tidy-web — diagnostic code reference</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <h1><a href="/" class="plain">x12-tidy<span class="dim">-web</span></a> <span class="dim">/ codes</span></h1>
+    <p class="tagline">
+      Every finding x12-tidy&nbsp;<code>{{ x12_tidy_release }}</code> can emit, straight from its
+      diagnostic registry — the single source of truth that also backs
+      <code>x12-tidy codes</code> and the library's own <code>docs/diagnostics.md</code>.
+      This repo copies none of it; it is read live from the installed package.
+    </p>
+    <p class="tagline">
+      <strong>Severity</strong> is x12-tidy's classification, resolved from the registry at report
+      time. <span class="sev fatal">FATAL</span> also stops a conforming parser;
+      <span class="sev error">ERROR</span> and <span class="sev warning">WARNING</span> are advisory.
+      Counts below: {{ codes | length }} codes ({{ fatal_count }} fatal, {{ error_count }} error,
+      {{ warning_count }} warning).
+    </p>
+  </div>
+</header>
+
+<main class="wrap">
+  {% for area, rows in by_area %}
+  <section class="panel">
+    <h2>{{ area_labels.get(area, area) }} <span class="dim">({{ rows | length }})</span></h2>
+    <table class="findings codes-table">
+      <thead>
+        <tr><th>Severity</th><th>Code</th><th>Finding</th></tr>
+      </thead>
+      <tbody>
+        {% for c in rows %}
+        <tr{% if c.deprecated %} class="deprecated"{% endif %}>
+          <td><span class="sev {{ c.severity }}">{{ c.severity.upper() }}</span></td>
+          <td><code>{{ c.code }}</code>{% if c.deprecated %} <span class="dim">(deprecated)</span>{% endif %}</td>
+          <td>
+            <strong>{{ c.title }}</strong>
+            <p class="finding-expl">{{ c.explanation }}</p>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+  {% endfor %}
+</main>
+
+<footer class="wrap site-footer">
+  <p>
+    <a href="/">← back to the repairer</a> ·
+    x12-tidy-web {{ app_version }} · x12-tidy {{ x12_tidy_release }} ·
+    <a href="https://github.com/tidyedi/x12-tidy-web">source</a> · Apache-2.0
+  </p>
+</footer>
+</body>
+</html>
