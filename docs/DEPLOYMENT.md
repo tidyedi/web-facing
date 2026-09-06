@@ -37,6 +37,8 @@ well under 128 MB RAM. Low-effort options:
 The build needs network access to `github.com` (x12-tidy is installed from git)
 and `git` in the builder stage — both already handled in the `Dockerfile`.
 
+For $0 options with step-by-step instructions, see [Deploying free](#deploying-free) below.
+
 ### 2. A reverse proxy in front (TLS + limits)
 
 Never expose uvicorn directly. Put Caddy, nginx, or the platform's built-in
@@ -85,7 +87,98 @@ anywhere." To keep that honest in production:
 - **Rollout** — the image is the release artifact; CI already builds it and
   smoke-tests `/healthz`. Tag images and keep the last known-good.
 
-## Minimal path (Caddy + compose on a VPS)
+## Deploying free
+
+Every option below costs $0 for this app's traffic. The trade is always one of:
+sleeps when idle, needs a card on file for verification (never charged), or you
+launch on the platform's URL instead of a custom domain.
+
+| Platform | Card needed? | Trade-off |
+| --- | --- | --- |
+| **Hugging Face Spaces** (Docker) | No | Sleeps after ~48 h idle, wakes in seconds; custom domain needs the paid tier. `*.hf.space` URL. |
+| **Google Cloud Run** | Yes (billing enabled, stays in free tier) | Scales to zero, ~1–3 s cold start; 2 M requests/mo free; custom domain + auto-HTTPS supported. |
+| **Render** (free web service) | No | Spins down after 15 min idle → 30–60 s cold start. `*.onrender.com` URL. |
+| **Oracle Cloud "Always Free" VM** | Yes (verification) | A real always-on VM; run `docker compose` + Caddy as in the VPS section below. No sleep. |
+
+Rate limiting on the managed platforms (HF, Render): you can't put nginx/Caddy in
+front, so either accept the risk for launch (the app still caps body size and
+iteration count) or add `slowapi` to the app. On Cloud Run, put Cloudflare's free
+tier in front of a custom domain.
+
+### Hugging Face Spaces (recommended for a no-cost launch)
+
+1. **Create the Space** — <https://huggingface.co/new-space>, SDK **Docker**,
+   blank template, visibility **Public**. Name it e.g. `x12-tidy-web`.
+2. **Add the Space metadata** to `README.md` — a YAML block at the very top:
+
+   ```yaml
+   ---
+   title: x12-tidy-web
+   emoji: "\U0001F9F9"
+   colorFrom: green
+   colorTo: gray
+   sdk: docker
+   app_port: 8000
+   pinned: false
+   license: apache-2.0
+   ---
+   ```
+
+   HF requires this; GitHub renders it as a small table above the README, which
+   is the normal cost of the pattern. `app_port` matches the container's default
+   (the CLI serves on `$PORT` if set, else 8000).
+3. **Push this repo to the Space:**
+
+   ```bash
+   git remote add space https://huggingface.co/spaces/<user>/x12-tidy-web
+   git push space main
+   ```
+
+   Authenticate with a write token from
+   <https://huggingface.co/settings/tokens> (use it as the git password, or run
+   `huggingface-cli login` first).
+4. The Space builds the `Dockerfile` automatically — watch the **Logs** tab. The
+   build fetches x12-tidy from GitHub (allowed) and takes a few minutes the
+   first time.
+5. Done: `https://<user>-x12-tidy-web.hf.space`.
+
+If the container fails to start with a permission error, HF runs containers as
+UID 1000 — change the `Dockerfile`'s `useradd --uid 10001 app` to `--uid 1000`
+and rebuild. (The app writes nothing, so this usually is not needed.)
+
+To keep the two copies in sync afterwards, push to both remotes (`git push
+origin main && git push space main`) or add a GitHub Action that mirrors on
+release.
+
+### Google Cloud Run
+
+1. Install the `gcloud` CLI, then `gcloud init` and pick/create a project with
+   billing enabled (Cloud Run's free tier — 2 M requests, 360k GB-s, 180k
+   vCPU-s per month — covers this app; you stay at $0, but a card must be on
+   file).
+2. From the repo root:
+
+   ```bash
+   gcloud run deploy x12-tidy-web \
+     --source . \
+     --region us-central1 \
+     --allow-unauthenticated \
+     --memory 512Mi --cpu 1 \
+     --timeout 30 --concurrency 40 --max-instances 3
+   ```
+
+   `--source .` builds the `Dockerfile` with Cloud Build (it has GitHub access
+   for the x12-tidy install) and enables the APIs it needs on first run.
+3. Cloud Run sets `$PORT` (8080); the CLI honours it, so no image change is
+   needed. The command prints the service URL (`https://x12-tidy-web-*.run.app`).
+4. Custom domain later: `gcloud run domain-mappings create --service
+   x12-tidy-web --domain tidy.tidyedi.com` (or map it through the console), then
+   add the DNS records it shows. Put Cloudflare's free tier in front for rate
+   limiting.
+
+To redeploy after an update: re-run the same `gcloud run deploy` command.
+
+## VPS path (Caddy + compose)
 
 ```
 # /etc/caddy/Caddyfile

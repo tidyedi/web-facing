@@ -14,6 +14,7 @@ recovered (``2``).
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -21,6 +22,15 @@ from x12_tidy_web import __version__
 from x12_tidy_web.engine import DEFAULT_MAX_ITERATIONS, repair
 from x12_tidy_web.provenance import x12_tidy_release
 from x12_tidy_web.reporting import FORMATS, render_report
+
+
+def _default_port() -> int:
+    """Serve port: ``$PORT`` if the host sets one (Cloud Run, Render, Fly,
+    Railway all do), otherwise 8000."""
+    raw = os.environ.get("PORT")
+    if raw and raw.isdigit():
+        return int(raw)
+    return 8000
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -34,7 +44,12 @@ def _build_parser() -> argparse.ArgumentParser:
 
     serve = sub.add_parser("serve", help="run the web application")
     serve.add_argument("--host", default="127.0.0.1", help="bind address (default: 127.0.0.1)")
-    serve.add_argument("--port", type=int, default=8000, help="bind port (default: 8000)")
+    serve.add_argument(
+        "--port",
+        type=int,
+        default=_default_port(),
+        help="bind port (default: $PORT if set, else 8000)",
+    )
     serve.add_argument("--reload", action="store_true", help="auto-reload on code changes (dev)")
     serve.add_argument("--log-level", default="info", help="uvicorn log level (default: info)")
 

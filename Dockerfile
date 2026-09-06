@@ -37,7 +37,9 @@ WORKDIR /home/app
 
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s \
-    CMD python -c "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/healthz').status==200 else 1)"
+    CMD python -c "import os,urllib.request,sys; p=os.environ.get('PORT','8000'); sys.exit(0 if urllib.request.urlopen(f'http://127.0.0.1:{p}/healthz').status==200 else 1)"
 
-# 0.0.0.0 so the port is reachable from outside the container.
-CMD ["x12-tidy-web", "serve", "--host", "0.0.0.0", "--port", "8000"]
+# 0.0.0.0 so the port is reachable from outside the container. No --port: the
+# CLI honours $PORT (Cloud Run, Render, Fly, Railway set it) and falls back to
+# 8000 (docker-compose, local).
+CMD ["x12-tidy-web", "serve", "--host", "0.0.0.0"]
