@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>x12-tidy-web — validate &amp; repair X12 EDI</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <h1>x12-tidy<span class="dim">-web</span></h1>
+    <p class="tagline">
+      Paste a malformed ANSI X12 interchange. Get a cleansed copy and a report of
+      what each repair pass changed. All EDI work is done by
+      <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>.
+    </p>
+  </div>
+</header>
+
+<main class="wrap">
+  <form id="edi-form">
+    <label for="edi" class="field-label">EDI interchange</label>
+    <textarea id="edi" name="edi" spellcheck="false" autocomplete="off"
+      placeholder="ISA*00*          *00*          *ZZ*SENDER…~GS*…~ST*…~SE*…~GE*…~IEA*…~"></textarea>
+
+    <div class="controls">
+      <label class="inline">
+        Max repair passes
+        <input type="number" id="max-iterations" name="max_iterations"
+          value="{{ default_max_iterations }}" min="1" max="{{ max_allowed_iterations }}">
+      </label>
+      <label class="inline file-pick">
+        <input type="file" id="file" accept=".edi,.txt,.x12,text/plain">
+        <span>Load a file…</span>
+      </label>
+      <button type="button" id="sample-btn" class="ghost">Load a broken sample</button>
+      <button type="submit" id="validate-btn" class="primary">Validate &amp; repair</button>
+    </div>
+    <p id="form-error" class="form-error" hidden></p>
+  </form>
+
+  <section id="results" hidden aria-live="polite">
+    <div id="verdict" class="verdict"></div>
+
+    <div class="result-grid">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Corrected interchange</h2>
+          <div class="panel-actions">
+            <button type="button" id="copy-btn" class="ghost" disabled>Copy</button>
+            <button type="button" id="use-btn" class="ghost" disabled
+              title="Replace the text in the form with this corrected version">Use this</button>
+          </div>
+        </div>
+        <textarea id="corrected" readonly spellcheck="false"
+          placeholder="(no corrected interchange — the input could not be recovered)"></textarea>
+        <p class="hint">Take it or leave it. “Use this” only edits the form above — nothing is saved.</p>
+      </div>
+
+      <div class="panel">
+        <h2>Envelope</h2>
+        <table id="facts" class="facts"><tbody></tbody></table>
+        <p id="facts-empty" class="hint" hidden>No envelope facts — no payload was produced.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Repair passes</h2>
+        <div class="panel-actions download">
+          <label class="inline">
+            Download report
+            <select id="format-select">
+              {% for f in formats %}
+              <option value="{{ f.key }}">{{ f.label }}</option>
+              {% endfor %}
+            </select>
+          </label>
+          <button type="button" id="download-btn" class="primary" disabled>Download</button>
+        </div>
+      </div>
+      <div id="passes"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap site-footer">
+  <p>
+    x12-tidy-web {{ app_version }} · x12-tidy {{ x12_tidy_version }} ·
+    <a href="https://github.com/tidyedi/x12-tidy-web">source</a> ·
+    Apache-2.0 · Nothing you paste is stored or logged.
+  </p>
+</footer>
+
+<script src="{{ url_for('static', path='app.js') }}"></script>
+</body>
+</html>

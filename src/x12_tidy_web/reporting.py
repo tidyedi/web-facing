@@ -1,0 +1,350 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Michael Schertz
+"""Render a :class:`~x12_tidy_web.engine.RepairRun` in a downloadable format.
+
+x12-tidy returns *data, not text* on purpose (see its "Formatting your own
+report" section); this module is one such consumer. Five formats:
+
+* ``json``      -- the run's ``as_dict()``, pretty-printed. The lossless one.
+* ``markdown``  -- a human report, grouped by pass then by severity.
+* ``html``      -- a standalone styled page, same content as the Markdown.
+* ``text``      -- plain text, close to the ``x12-tidy check`` CLI output.
+* ``csv``       -- one row per finding across all passes; for spreadsheets.
+
+Each renderer returns a :class:`Report` (bytes + media type + filename) so the
+web layer can hand it straight to a download response.
+"""
+
+from __future__ import annotations
+
+import csv
+import html
+import io
+import json
+from dataclasses import dataclass
+from datetime import datetime, timezone
+
+from x12_tidy_web import __version__
+from x12_tidy_web.diagnostics import SEVERITY_ORDER, DiagnosticView
+from x12_tidy_web.engine import Iteration, RepairRun
+
+#: format key -> (media type, file extension, human label)
+FORMATS: dict[str, tuple[str, str, str]] = {
+    "json": ("application/json", "json", "JSON (complete run)"),
+    "markdown": ("text/markdown", "md", "Markdown"),
+    "html": ("text/html", "html", "HTML page"),
+    "text": ("text/plain", "txt", "Plain text"),
+    "csv": ("text/csv", "csv", "CSV (findings only)"),
+}
+
+_FILENAME_STEM = "x12-tidy-report"
+
+
+@dataclass(frozen=True)
+class Report:
+    content: bytes
+    media_type: str
+    filename: str
+
+
+def available_formats() -> list[dict[str, str]]:
+    """The format list for the API / the download dropdown."""
+    return [
+        {"key": key, "label": label, "media_type": media, "extension": ext}
+        for key, (media, ext, label) in FORMATS.items()
+    ]
+
+
+def render_report(run: RepairRun, fmt: str) -> Report:
+    fmt = fmt.lower().strip()
+    if fmt not in FORMATS:
+        raise ValueError(
+            f"unknown report format {fmt!r}; choose one of {', '.join(FORMATS)}"
+        )
+    media_type, ext, _ = FORMATS[fmt]
+    body = _RENDERERS[fmt](run)
+    return Report(
+        content=body.encode("utf-8"),
+        media_type=media_type,
+        filename=f"{_FILENAME_STEM}.{ext}",
+    )
+
+
+def _now_iso() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%SZ")
+
+
+# --------------------------------------------------------------------------- #
+# JSON
+# --------------------------------------------------------------------------- #
+def _render_json(run: RepairRun) -> str:
+    doc = run.as_dict()
+    doc["generated_at"] = _now_iso()
+    doc["generator"] = f"x12-tidy-web {__version__}"
+    return json.dumps(doc, indent=2, ensure_ascii=False)
+
+
+# --------------------------------------------------------------------------- #
+# shared helpers for the prose formats
+# --------------------------------------------------------------------------- #
+def _verdict_line(run: RepairRun) -> str:
+    if not run.recovered:
+        return "UNRECOVERABLE — no ISA line could be located."
+    if run.clean:
+        return "CLEAN — the interchange is conformant."
+    if run.converged:
+        return (
+            "REPAIRED WITH RESIDUAL FINDINGS — a corrected copy was produced, but "
+            "x12-tidy still flags issues it cannot fix automatically."
+        )
+    return "DID NOT CONVERGE — hit the iteration cap; treat the output with care."
+
+
+def _facts_pairs(run: RepairRun) -> list[tuple[str, str]]:
+    facts = run.final_facts
+    if facts is None:
+        return []
+    return [
+        ("Sender", f"{facts.sender_qualifier} / {facts.sender_id}".strip(" /")),
+        ("Receiver", f"{facts.receiver_qualifier} / {facts.receiver_id}".strip(" /")),
+        ("Usage indicator", facts.usage_indicator),
+        ("Interchange version", facts.interchange_version),
+        ("Date / time", f"{facts.interchange_date} {facts.interchange_time}".strip()),
+        ("Functional groups", str(facts.functional_group_count)),
+        ("Transaction sets", str(facts.transaction_set_count)),
+        ("Segments", str(facts.segment_count)),
+    ]
+
+
+def _iter_findings_by_severity(it: Iteration) -> list[tuple[str, list[DiagnosticView]]]:
+    grouped: list[tuple[str, list[DiagnosticView]]] = []
+    for sev in SEVERITY_ORDER:
+        rows = [d for d in it.diagnostics if d.severity == sev]
+        if rows:
+            grouped.append((sev, rows))
+    return grouped
+
+
+# --------------------------------------------------------------------------- #
+# Markdown
+# --------------------------------------------------------------------------- #
+def _render_markdown(run: RepairRun) -> str:
+    out: list[str] = []
+    out.append("# EDI validation report")
+    out.append("")
+    out.append(f"_Generated {_now_iso()} by x12-tidy-web {__version__}._")
+    out.append("")
+    out.append(f"**Verdict:** {_verdict_line(run)}")
+    out.append("")
+    out.append(f"- Passes run: **{len(run.iterations)}** (cap {run.max_iterations})")
+    out.append(f"- Stop reason: **{run.stop_reason}** — {run.as_dict()['stop_reason_detail']}")
+    out.append(f"- Corrected text differs from input: **{'yes' if run.changed else 'no'}**")
+    counts = run.residual_severity_counts
+    out.append(
+        f"- Findings after the final pass: "
+        f"{counts['fatal']} fatal, {counts['error']} error, {counts['warning']} warning"
+    )
+    out.append("")
+
+    pairs = _facts_pairs(run)
+    if pairs:
+        out.append("## Envelope")
+        out.append("")
+        out.append("| Field | Value |")
+        out.append("| --- | --- |")
+        for label, value in pairs:
+            out.append(f"| {label} | {value or '—'} |")
+        out.append("")
+
+    out.append("## Passes")
+    out.append("")
+    for it in run.iterations:
+        out.append(f"### Pass {it.index}")
+        out.append("")
+        note = "no payload recovered" if it.output_text is None else (
+            "changed the interchange" if it.changed else "no change"
+        )
+        out.append(
+            f"{it.input_byte_length} bytes in → "
+            f"{'—' if it.output_byte_length is None else str(it.output_byte_length) + ' bytes'} out "
+            f"({note})."
+        )
+        out.append("")
+        if not it.diagnostics:
+            out.append("_No findings._")
+            out.append("")
+            continue
+        for sev, rows in _iter_findings_by_severity(it):
+            out.append(f"#### {sev.title()} ({len(rows)})")
+            out.append("")
+            for d in rows:
+                loc = "" if d.offset is None else f" _(byte {d.offset})_"
+                out.append(f"- **`{d.code}`**{loc} — {d.title}  ")
+                out.append(f"  {d.message}")
+            out.append("")
+
+    if run.final_text is not None:
+        out.append("## Corrected interchange")
+        out.append("")
+        out.append("```")
+        out.append(run.final_text)
+        out.append("```")
+        out.append("")
+
+    return "\n".join(out)
+
+
+# --------------------------------------------------------------------------- #
+# Plain text
+# --------------------------------------------------------------------------- #
+def _render_text(run: RepairRun) -> str:
+    out: list[str] = []
+    out.append("EDI VALIDATION REPORT")
+    out.append(f"generated {_now_iso()} by x12-tidy-web {__version__}")
+    out.append("")
+    out.append(_verdict_line(run))
+    out.append("")
+    out.append(f"passes run   : {len(run.iterations)} (cap {run.max_iterations})")
+    out.append(f"stop reason  : {run.stop_reason}")
+    out.append(f"text changed : {'yes' if run.changed else 'no'}")
+    c = run.residual_severity_counts
+    out.append(f"final findings: {c['fatal']} fatal, {c['error']} error, {c['warning']} warning")
+    out.append("")
+
+    for label, value in _facts_pairs(run):
+        out.append(f"  {label:<22}: {value or '-'}")
+    if run.final_facts is not None:
+        out.append("")
+
+    for it in run.iterations:
+        out.append(f"--- pass {it.index} " + "-" * 48)
+        if not it.diagnostics:
+            out.append("  (no findings)")
+        for d in it.diagnostics:
+            loc = "" if d.offset is None else f" @byte {d.offset}"
+            out.append(f"  [{d.severity.upper():7} {d.code}]{loc}")
+            out.append(f"      {d.message}")
+        out.append("")
+
+    if run.final_text is not None:
+        out.append("--- corrected interchange " + "-" * 38)
+        out.append(run.final_text)
+        out.append("")
+
+    return "\n".join(out)
+
+
+# --------------------------------------------------------------------------- #
+# CSV
+# --------------------------------------------------------------------------- #
+def _render_csv(run: RepairRun) -> str:
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerow(["pass", "severity", "code", "area", "byte_offset", "title", "message"])
+    for it in run.iterations:
+        for d in it.diagnostics:
+            writer.writerow(
+                [
+                    it.index,
+                    d.severity,
+                    d.code,
+                    d.area,
+                    "" if d.offset is None else d.offset,
+                    d.title,
+                    d.message,
+                ]
+            )
+    return buf.getvalue()
+
+
+# --------------------------------------------------------------------------- #
+# HTML
+# --------------------------------------------------------------------------- #
+_HTML_STYLE = """
+  body { font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+         max-width: 60rem; margin: 2rem auto; padding: 0 1rem; color: #1a1a1a; }
+  h1 { border-bottom: 2px solid #333; padding-bottom: .3rem; }
+  .verdict { font-weight: 600; padding: .75rem 1rem; border-radius: 6px; background: #f0f0f0; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #ccc; padding: .4rem .6rem; text-align: left; vertical-align: top; }
+  th { background: #f5f5f5; }
+  .pass { border: 1px solid #ddd; border-radius: 6px; padding: 1rem; margin: 1rem 0; }
+  .sev-fatal   { color: #b30000; font-weight: 600; }
+  .sev-error   { color: #c05600; font-weight: 600; }
+  .sev-warning { color: #806000; font-weight: 600; }
+  code { background: #f2f2f2; padding: .1rem .3rem; border-radius: 3px; }
+  pre { background: #1e1e1e; color: #eaeaea; padding: 1rem; border-radius: 6px; overflow-x: auto;
+        white-space: pre-wrap; word-break: break-all; }
+  .muted { color: #666; }
+""".strip()
+
+
+def _esc(value: object) -> str:
+    return html.escape(str(value), quote=True)
+
+
+def _render_html(run: RepairRun) -> str:
+    parts: list[str] = []
+    parts.append("<!doctype html><html lang='en'><head><meta charset='utf-8'>")
+    parts.append("<meta name='viewport' content='width=device-width, initial-scale=1'>")
+    parts.append("<title>EDI validation report</title>")
+    parts.append(f"<style>{_HTML_STYLE}</style></head><body>")
+    parts.append("<h1>EDI validation report</h1>")
+    parts.append(
+        f"<p class='muted'>Generated {_esc(_now_iso())} by x12-tidy-web {_esc(__version__)}.</p>"
+    )
+    parts.append(f"<p class='verdict'>{_esc(_verdict_line(run))}</p>")
+    parts.append("<ul>")
+    parts.append(f"<li>Passes run: <strong>{len(run.iterations)}</strong> (cap {run.max_iterations})</li>")
+    parts.append(f"<li>Stop reason: <strong>{_esc(run.stop_reason)}</strong></li>")
+    parts.append(f"<li>Corrected text differs from input: <strong>{'yes' if run.changed else 'no'}</strong></li>")
+    parts.append("</ul>")
+
+    pairs = _facts_pairs(run)
+    if pairs:
+        parts.append("<h2>Envelope</h2><table><tbody>")
+        for label, value in pairs:
+            parts.append(f"<tr><th>{_esc(label)}</th><td>{_esc(value or '—')}</td></tr>")
+        parts.append("</tbody></table>")
+
+    parts.append("<h2>Passes</h2>")
+    for it in run.iterations:
+        parts.append("<div class='pass'>")
+        parts.append(f"<h3>Pass {it.index}</h3>")
+        note = "no payload recovered" if it.output_text is None else (
+            "changed the interchange" if it.changed else "no change"
+        )
+        out_bytes = "—" if it.output_byte_length is None else f"{it.output_byte_length} bytes"
+        parts.append(
+            f"<p class='muted'>{it.input_byte_length} bytes in → {out_bytes} out ({note}).</p>"
+        )
+        if not it.diagnostics:
+            parts.append("<p><em>No findings.</em></p>")
+        else:
+            parts.append("<table><thead><tr><th>Severity</th><th>Code</th><th>Byte</th>"
+                         "<th>Finding</th></tr></thead><tbody>")
+            for d in it.diagnostics:
+                offset = "" if d.offset is None else _esc(d.offset)
+                parts.append(
+                    f"<tr><td class='sev-{_esc(d.severity)}'>{_esc(d.severity.upper())}</td>"
+                    f"<td><code>{_esc(d.code)}</code></td><td>{offset}</td>"
+                    f"<td><strong>{_esc(d.title)}</strong><br>{_esc(d.message)}</td></tr>"
+                )
+            parts.append("</tbody></table>")
+        parts.append("</div>")
+
+    if run.final_text is not None:
+        parts.append("<h2>Corrected interchange</h2>")
+        parts.append(f"<pre>{_esc(run.final_text)}</pre>")
+
+    parts.append("</body></html>")
+    return "".join(parts)
+
+
+_RENDERERS = {
+    "json": _render_json,
+    "markdown": _render_markdown,
+    "html": _render_html,
+    "text": _render_text,
+    "csv": _render_csv,
+}

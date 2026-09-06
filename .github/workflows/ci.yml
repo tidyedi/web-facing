@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Sync (installs x12-tidy from its git repo)
+        run: uv sync --frozen --extra dev --python ${{ matrix.python-version }}
+
+      - name: Lint
+        run: uv run ruff check .
+
+      - name: Type-check
+        run: uv run mypy src
+
+      - name: Test
+        run: uv run pytest -q
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: true
+          tags: x12-tidy-web:ci
+      - name: Smoke-test the container
+        run: |
+          docker run -d --name web -p 8000:8000 x12-tidy-web:ci
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:8000/healthz && break || sleep 1
+          done
+          curl -sf http://127.0.0.1:8000/healthz | grep -q '"status":"ok"'
+          docker rm -f web

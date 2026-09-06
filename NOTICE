@@ -1,0 +1,12 @@
+x12-tidy-web
+Copyright 2026 Michael Schertz
+
+This product includes software developed as part of the TidyEDI project
+(https://tidyedi.com).
+
+"TidyEDI" and the TidyEDI logo are trademarks of Michael Schertz; the
+Apache-2.0 license covers the code, not the name or the mark.
+
+This application depends on and imports x12-tidy
+(https://github.com/tidyedi/x12-tidy), also Apache-2.0. x12-tidy is not
+vendored here; it is installed as a dependency.
