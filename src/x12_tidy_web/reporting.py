@@ -22,7 +22,7 @@ import html
 import io
 import json
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from x12_tidy_web import __version__
 from x12_tidy_web.diagnostics import SEVERITY_ORDER, DiagnosticView
@@ -71,7 +71,7 @@ def render_report(run: RepairRun, fmt: str) -> Report:
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%SZ")
+    return datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%SZ")
 
 
 # --------------------------------------------------------------------------- #

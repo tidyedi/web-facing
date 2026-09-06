@@ -9,7 +9,10 @@ license-files = ["LICENSE", "NOTICE"]
 authors = [{ name = "Michael Schertz", email = "michael.schertz@gmail.com" }]
 
 dependencies = [
-    # The one external import. x12-tidy has no runtime deps of its own.
+    # The one external import. Pulled from the x12-tidy repo over the network and
+    # imported like any other third-party package -- never vendored, never a path
+    # link to a local checkout. Any fix to x12-tidy is made in the x12-tidy repo;
+    # here you only bump this ref (and re-run `uv lock`).
     "x12-tidy @ git+https://github.com/tidyedi/x12-tidy.git@main",
     "fastapi>=0.115",
     "uvicorn[standard]>=0.30",
@@ -40,16 +43,13 @@ allow-direct-references = true
 # Ships the whole package directory, templates/ and static/ included.
 packages = ["src/x12_tidy_web"]
 
-[tool.uv.sources]
-# For local development against a checkout of x12-tidy, uncomment:
-# x12-tidy = { path = "../x12-tidy", editable = true }
-
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 filterwarnings = [
     # Starlette's TestClient nudges toward a not-yet-released httpx2; harmless.
-    "ignore:Using `httpx` with `starlette.testclient`:DeprecationWarning",
-    "ignore::starlette.exceptions.StarletteDeprecationWarning",
+    # The warning is a StarletteDeprecationWarning (a UserWarning subclass), so it
+    # must be matched by that category, not DeprecationWarning.
+    "ignore:Using `httpx` with `starlette.testclient`:starlette.exceptions.StarletteDeprecationWarning",
 ]
 
 [tool.ruff]

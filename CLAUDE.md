@@ -17,8 +17,11 @@ is wrong or missing, fix it in x12-tidy and bump the pin.
 
 x12-tidy is a dependency pulled straight from its git repo (no PyPI release
 yet), pinned in `pyproject.toml` (`x12-tidy @ git+https://…@main`) and locked in
-`uv.lock`. For a fast local loop against a sibling checkout, uncomment the
-`[tool.uv.sources]` line and `uv sync`.
+`uv.lock`. **Never clone, vendor, or path-link x12-tidy into this repo** — not
+even a commented-out `[tool.uv.sources]` entry. It is imported like any other
+third-party package so that a change in x12-tidy reaches this repo only when you
+deliberately bump the ref and re-run `uv lock`. To test against unreleased
+x12-tidy work, push that work to a branch and point the ref at it.
 
 ## Architecture
 
