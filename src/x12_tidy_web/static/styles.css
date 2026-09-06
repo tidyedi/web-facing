@@ -160,8 +160,8 @@ button.ghost { background: transparent; }
 
 table.facts { width: 100%; border-collapse: collapse; font-size: .9rem; }
 table.facts th, table.facts td { text-align: left; padding: .35rem .4rem; border-bottom: 1px solid var(--bg); vertical-align: top; }
-table.facts th { color: var(--ink); font-weight: 500; width: 46%; }
-.fact-src { display: block; color: var(--dim); font: 400 .74rem/1.3 var(--mono); margin-top: .1rem; }
+table.facts th { color: var(--ink); font-weight: 500; width: 34%; white-space: nowrap; }
+.fact-src { display: block; color: var(--dim); font: 400 .74rem/1.35 var(--mono); margin-top: .15rem; }
 
 .legend { margin: .25rem 0 .5rem; display: flex; flex-direction: column; gap: .4rem; }
 .legend > div { display: flex; gap: .6rem; align-items: baseline; }

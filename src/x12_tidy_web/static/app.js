@@ -106,16 +106,17 @@ function renderVerdict(run) {
   );
 }
 
-// label, value getter, and the envelope element the value is read from.
+// label, value getter, and where x12-tidy gets the value: an ISA element it
+// reads, or a tally it counts while walking the cleansed payload.
 const FACT_ROWS = [
-  ["Sender", (f) => `${f.sender_qualifier} / ${f.sender_id}`.replace(/^ \/ | \/ $/g, ""), "ISA05 + ISA06"],
-  ["Receiver", (f) => `${f.receiver_qualifier} / ${f.receiver_id}`.replace(/^ \/ | \/ $/g, ""), "ISA07 + ISA08"],
-  ["Usage indicator", (f) => f.usage_indicator, "ISA15"],
-  ["Interchange version", (f) => f.interchange_version, "ISA12"],
-  ["Date / time", (f) => `${f.interchange_date} ${f.interchange_time}`.trim(), "ISA09 + ISA10"],
-  ["Functional groups", (f) => f.functional_group_count, "GS segments counted"],
-  ["Transaction sets", (f) => f.transaction_set_count, "ST segments counted"],
-  ["Segments", (f) => f.segment_count, "segments in the payload"],
+  ["Sender", (f) => `${f.sender_qualifier} / ${f.sender_id}`.replace(/^ \/ | \/ $/g, ""), "read from ISA05 + ISA06"],
+  ["Receiver", (f) => `${f.receiver_qualifier} / ${f.receiver_id}`.replace(/^ \/ | \/ $/g, ""), "read from ISA07 + ISA08"],
+  ["Usage indicator", (f) => f.usage_indicator, "read from ISA15"],
+  ["Interchange version", (f) => f.interchange_version, "read from ISA12"],
+  ["Date / time", (f) => `${f.interchange_date} ${f.interchange_time}`.trim(), "read from ISA09 + ISA10"],
+  ["Functional groups", (f) => f.functional_group_count, "GS segments counted — IEA01 is checked against this"],
+  ["Transaction sets", (f) => f.transaction_set_count, "ST segments counted — GE01 is checked against this"],
+  ["Segments", (f) => f.segment_count, "segments counted in the payload — SE01 is checked against this per set"],
 ];
 
 function renderFacts(facts) {
@@ -131,8 +132,13 @@ function renderFacts(facts) {
       el(
         "tr",
         {},
-        el("th", {}, el("span", { text: label }), el("span", { class: "fact-src", text: source })),
-        el("td", { text: value === "" || value == null ? "—" : String(value) })
+        el("th", { text: label }),
+        el(
+          "td",
+          {},
+          el("span", { text: value === "" || value == null ? "—" : String(value) }),
+          el("span", { class: "fact-src", text: source })
+        )
       )
     );
   }

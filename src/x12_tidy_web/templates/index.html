@@ -98,7 +98,12 @@
         <h2>Envelope</h2>
         <table id="facts" class="facts"><tbody></tbody></table>
         <p id="facts-empty" class="hint" hidden>No envelope facts — no payload was produced.</p>
-        <p class="hint">Read by x12-tidy from the ISA/GS headers of the corrected payload; the element each value comes from is noted beside it.</p>
+        <p class="hint">
+          The top five are read straight from the corrected ISA header. The three
+          counts are tallied by walking the cleansed payload — not taken from
+          IEA01 / GE01 / SE01, which are instead checked against them (see the
+          findings). Each value's source is noted beside it.
+        </p>
       </div>
     </div>
 
