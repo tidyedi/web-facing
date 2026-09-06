@@ -99,6 +99,15 @@ def test_codes_endpoint(client) -> None:
     assert len(body["x12_tidy_commit"]) == 40
     sample = body["codes"][0]
     assert {"code", "area", "severity", "title"} <= sample.keys()
+    from urllib.parse import parse_qs, urlparse
+
+    parsed = urlparse(sample["discuss_url"])
+    assert parsed.netloc == "github.com"
+    assert parsed.path == "/tidyedi/x12-tidy/discussions/new"
+    q = parse_qs(parsed.query)
+    assert q["category"] == ["q-a"]
+    assert sample["code"] in q["title"][0]
+    assert sample["code"] in q["body"][0]
 
 
 def test_index_footer_shows_x12_tidy_commit(client) -> None:
@@ -134,6 +143,9 @@ def test_codes_page_renders(client) -> None:
     assert "diagnostic code registry" in text
     assert "github.com/tidyedi/x12-tidy/blob/" in text
     assert "diagnostics/codes.py" in text
+    # per-code "Discuss" links into x12-tidy's discussions (#25)
+    assert text.count(">Discuss ↗<") == len(client.get("/api/codes").json()["codes"])
+    assert "x12-tidy/discussions/new?" in text
 
 
 def test_index_links_and_byte_note(client) -> None:

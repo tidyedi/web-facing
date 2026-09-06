@@ -16,12 +16,20 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from typing import Any
+from urllib.parse import urlencode
 
 from x12_tidy.diagnostics import AREAS, Diagnostic, all_codes, meta, resolved_severity
 
 #: Severities x12-tidy can assign, ordered most severe first. Used to sort
 #: findings and to drive per-severity grouping in reports.
 SEVERITY_ORDER: tuple[str, ...] = ("fatal", "error", "warning")
+
+#: Where a reader disputes a code's severity/wording/coverage. The codes are
+#: x12-tidy's (see "the one rule" in CLAUDE.md), so the conversation belongs on
+#: x12-tidy, not here -- issue #25. Q&A category so a maintainer can mark an
+#: answer.
+_DISCUSS_NEW = "https://github.com/tidyedi/x12-tidy/discussions/new"
+_DISCUSS_CATEGORY = "q-a"
 
 #: Display headings for x12-tidy's closed ``area`` vocabulary -- just the
 #: abbreviation spelled out, so the reference page can group codes. The areas
@@ -92,23 +100,38 @@ def severity_counts(views: list[DiagnosticView]) -> dict[str, int]:
     return counts
 
 
+def _discuss_url(code: str, severity: str, area: str, title: str) -> str:
+    """A pre-filled "new discussion" URL on x12-tidy for challenging one code."""
+    body = (
+        f"Diagnostic: `{code}`  (severity: {severity}, area: `{area}`)\n"
+        f"Registry title: {title}\n\n"
+        "What's your feedback — do you agree, disagree, or is there a case this "
+        "misses?\n"
+    )
+    query = urlencode({"category": _DISCUSS_CATEGORY, "title": f"{code}: ", "body": body})
+    return f"{_DISCUSS_NEW}?{query}"
+
+
 def code_catalog() -> list[dict[str, Any]]:
     """Every diagnostic code x12-tidy can emit -- for a reference page.
 
     Pulled live from the installed x12-tidy so it never drifts from the version
-    actually doing the work.
+    actually doing the work. ``discuss_url`` opens a pre-filled discussion on the
+    x12-tidy repo (issue #25).
     """
     catalog: list[dict[str, Any]] = []
     for code in all_codes():
         code_meta = meta(code)
+        severity = resolved_severity(code)
         catalog.append(
             {
                 "code": code.value,
                 "area": code.area,
-                "severity": resolved_severity(code),
+                "severity": severity,
                 "title": code_meta.title,
                 "explanation": code_meta.explanation,
                 "deprecated": code_meta.deprecated,
+                "discuss_url": _discuss_url(code.value, severity, code.area, code_meta.title),
             }
         )
     catalog.sort(key=lambda c: (c["area"], c["code"]))

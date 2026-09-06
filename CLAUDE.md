@@ -125,7 +125,11 @@ CI additionally builds the Docker image and hits `/healthz` in the container.
   at the proxy for a public deploy — see `docs/DEPLOYMENT.md`.
 - No persistence by design — nothing pasted is stored or logged. Keep it that
   way unless there's a deliberate decision otherwise.
-- Open UI issues on the remote (tidyedi/web-facing): #5/#6/#9/#12 (visual
-  polish), #7 (a pretty-printed segment view — decide x12-tidy vs. local),
-  #10 (feature brainstorm). #1–#4, #8, #11 landed together as the
-  "explanation layer" pass.
+- Open issues on the remote (tidyedi/web-facing): #7 (a pretty-printed segment
+  view — decide x12-tidy vs. local), #10/#14 (feedback/email — needs a
+  destination, in tension with no-persistence), #15–#19 (marketing backlog,
+  user-tagged "later:"), #26 (deployment — `docs/DEPLOYMENT.md` is the answer,
+  waiting on a platform decision).
+- Feedback on a diagnostic code goes to x12-tidy's Q&A discussions, not here —
+  the per-code "Discuss" links on `/codes` build a pre-filled URL
+  (`diagnostics._discuss_url`).

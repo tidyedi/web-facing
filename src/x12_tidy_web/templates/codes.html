@@ -34,6 +34,12 @@
       Counts below: {{ codes | length }} codes ({{ fatal_count }} fatal, {{ error_count }} error,
       {{ warning_count }} warning).
     </p>
+    <p class="tagline">
+      Think a code is wrong, too harsh, too lenient, or missing a case? Each row's
+      <strong>Discuss</strong> link opens a pre-filled thread in
+      <a href="https://github.com/tidyedi/x12-tidy/discussions/categories/q-a">x12-tidy's Q&amp;A discussions</a>
+      — that's where the change would be made.
+    </p>
   </div>
 </header>
 
@@ -49,7 +55,10 @@
         {% for c in rows %}
         <tr{% if c.deprecated %} class="deprecated"{% endif %}>
           <td><span class="sev {{ c.severity }}">{{ c.severity.upper() }}</span></td>
-          <td><code>{{ c.code }}</code>{% if c.deprecated %} <span class="dim">(deprecated)</span>{% endif %}</td>
+          <td>
+            <code>{{ c.code }}</code>{% if c.deprecated %} <span class="dim">(deprecated)</span>{% endif %}
+            <a class="discuss" href="{{ c.discuss_url }}" target="_blank" rel="noopener">Discuss ↗</a>
+          </td>
           <td>
             <strong>{{ c.title }}</strong>
             <p class="finding-expl">{{ c.explanation }}</p>
