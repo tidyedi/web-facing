@@ -65,10 +65,5 @@ All three must pass. CI additionally builds the Docker image and hits
 See [`CLAUDE.md`](CLAUDE.md) for the architecture and the reasoning behind the
 iteration loop.
 
-## Deploying a copy
-
-Anyone can host their own. [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) covers the
-free options (Hugging Face Spaces, Cloud Run) and what a public URL needs.
-
 [x12t]: https://github.com/tidyedi/x12-tidy
 [disc]: https://github.com/tidyedi/x12-tidy/discussions/categories/q-a

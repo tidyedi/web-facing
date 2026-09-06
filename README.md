@@ -49,7 +49,9 @@ Want to help? See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 4. **Download.** Export the whole run as JSON, Markdown, HTML, plain text, or a
    CSV of findings.
 
-## Run it
+## Run it locally
+
+For development, or to check a change against the real app:
 
 ```bash
 uv sync                       # installs x12-tidy from its git repo
@@ -73,11 +75,12 @@ Environment:
 docker compose up --build     # http://127.0.0.1:8000
 ```
 
-Putting it on a public URL: see [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
+Maintainer notes for standing up the hosted instance are in
+[`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
 
 ### Static demo
 
-For people who can't reach a running instance:
+For people who can't reach the hosted app:
 
 ```bash
 uv run x12-tidy-web demo            # writes ./x12-tidy-web-demo/

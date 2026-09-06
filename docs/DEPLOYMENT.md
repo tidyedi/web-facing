@@ -1,7 +1,9 @@
 # Deploying x12-tidy-web
 
-Answers to [#26](https://github.com/tidyedi/web-facing/issues/26): where this
-should live, and what "functional for all" actually requires.
+Maintainer notes for standing up the one hosted instance (see
+[#26](https://github.com/tidyedi/web-facing/issues/26)) — where it should live,
+and what "functional for all" actually requires. This is not an invitation to
+run separate public copies; the goal is a single canonical service.
 
 ## Should it go on the tidyedi site?
 

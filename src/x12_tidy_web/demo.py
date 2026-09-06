@@ -71,9 +71,9 @@ def build_demo(out_dir: Path) -> list[Path]:
 
     nav = [(s.slug, s.title) for s in SAMPLES]
     # in the static bundle: "Demo" is this index; "Code reference" is the static
-    # copy; "Repair" (the live app) has no URL yet, so send it to the repo.
+    # copy; "Repair" is the hosted app (via the landing page until it has a URL).
     static_nav = {
-        "home_href": "https://github.com/tidyedi/web-facing",
+        "home_href": "https://tidyedi.github.io/web-facing/",
         "demo_href": "index.html",
         "codes_href": "codes.html",
     }
