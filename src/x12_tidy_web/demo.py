@@ -39,8 +39,10 @@ _VERDICTS = {
     ),
     "unfixable": (
         "fail",
-        "Not repaired — the interchange is still non-conformant. x12-tidy flagged the "
-        "problems below but cannot fix them.",
+        (
+            "Not repaired — the interchange is still non-conformant. x12-tidy flagged the "
+            "problems below but cannot fix them."
+        ),
     ),
     "notconverged": ("fail", "Did not converge within the pass limit — treat the output with care."),
 }
