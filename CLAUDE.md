@@ -48,7 +48,11 @@ that includes any of those pins the exact build to reproduce against.
 src/x12_tidy_web/
   engine.py      repair() -> RepairRun. The loop: run x12_tidy.tidy(), feed the
                  cleansed payload back in, stop on clean | stable | unrecoverable
-                 | max-iterations. Pure — no I/O.
+                 | max-iterations. Pure — no I/O. RepairRun.verdict is the one
+                 place the top-line result (state, css class, headline) is
+                 decided — the app, the report, and the demo all render that,
+                 not their own logic. Any residual FATAL finding => "cannot be
+                 repaired", regardless of earlier cleanup.
   diagnostics.py x12-tidy's severity-free Diagnostic -> DiagnosticView (severity
                  resolved, registry title/explanation attached).
   reporting.py   render_report(run, fmt) -> Report(bytes, media_type, filename).

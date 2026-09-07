@@ -30,32 +30,13 @@ _TEMPLATES = _HERE / "templates"
 _STATIC = _HERE / "static"
 _REGISTRY_PATH = "src/x12_tidy/diagnostics/codes.py"
 
-_VERDICTS = {
-    "unrecoverable": ("fail", "Unrecoverable — no ISA line could be located."),
-    "clean": ("ok", "Clean — the interchange is conformant, with nothing left to fix."),
-    "residual": (
-        "residual",
-        "Repaired what it could — the findings below remain and x12-tidy cannot fix them automatically.",
-    ),
-    "unfixable": (
-        "fail",
-        (
-            "Not repaired — the interchange is still non-conformant. x12-tidy flagged the "
-            "problems below but cannot fix them."
-        ),
-    ),
-    "notconverged": ("fail", "Did not converge within the pass limit — treat the output with care."),
-}
-
-
 def _verdict(run_dict: dict[str, Any]) -> tuple[str, str]:
-    if not run_dict["recovered"]:
-        return _VERDICTS["unrecoverable"]
-    if run_dict["clean"]:
-        return _VERDICTS["clean"]
-    if run_dict["converged"]:
-        return _VERDICTS["residual"] if run_dict["changed"] else _VERDICTS["unfixable"]
-    return _VERDICTS["notconverged"]
+    """(css_class, text) for the demo panel -- straight from the engine's
+    single ``verdict`` definition, so the demo, the live app, and the
+    downloaded report always agree (including that any residual fatal finding
+    reads as "cannot be repaired")."""
+    v = run_dict["verdict"]
+    return v["css_class"], v["headline"]
 
 
 def _env() -> Environment:

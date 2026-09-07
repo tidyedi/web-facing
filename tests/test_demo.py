@@ -36,8 +36,11 @@ def test_each_file_is_self_contained(bundle: Path, name: str) -> None:
 
 
 def test_verdicts_match_the_samples(bundle: Path) -> None:
+    # forwarded-email ends with one residual fatal (a group-count mismatch), so
+    # the verdict must read as unfixable, not "repaired with residual findings".
     fwd = (bundle / "forwarded-email.html").read_text()
-    assert "verdict residual" in fwd
+    assert "verdict fail" in fwd
+    assert "Cannot be repaired — 1 fatal finding" in fwd
     assert "structure.functional-group-count-mismatch" in fwd
     assert "Forwarded email" in fwd
 
