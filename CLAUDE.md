@@ -27,15 +27,19 @@ carry back to it, and every other consumer would silently diverge from what this
 repo runs. Importing it as a plain pinned dependency keeps x12-tidy the single
 place its behaviour is defined and reviewed.
 
-Mechanically: x12-tidy is pulled straight from its git repo (no PyPI release
-yet), pinned in `pyproject.toml` (`x12-tidy @ git+https://…@main`) and locked in
-`uv.lock`, so an upstream change reaches this repo only when a maintainer
-deliberately bumps the ref and re-runs `uv lock`. **Never clone, vendor, or
-path-link x12-tidy into this repo** — not even a commented-out
-`[tool.uv.sources]` entry. To try this repo against unreleased x12-tidy work,
-push that work to an x12-tidy branch and point the ref at it — still an import,
-never a local edit. `tests/test_dependency_provenance.py` fails loudly if this
-is ever violated.
+Mechanically: x12-tidy is pinned to a commit of its git `main` in
+`pyproject.toml` (`x12-tidy @ git+https://…@main`) and locked in `uv.lock`, so
+an upstream change reaches this repo only when a maintainer deliberately bumps
+the ref and re-runs `uv lock`. **Never clone, vendor, or path-link x12-tidy into
+this repo** — not even a commented-out `[tool.uv.sources]` entry. To try this
+repo against unreleased x12-tidy work, push that work to an x12-tidy branch and
+point the ref at it — still an import, never a local edit.
+`tests/test_dependency_provenance.py` fails loudly if this is ever violated.
+
+x12-tidy has a PyPI release, but it lags `main` and this app depends on
+`main`-only work, so the pin stays on git for now. Once a PyPI release carries
+what we need, switch to `x12-tidy==X` — the discipline is identical, just a
+version instead of a git ref.
 
 ### Which repo owns a bug?
 
