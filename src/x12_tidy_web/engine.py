@@ -256,7 +256,6 @@ class RepairRun:
             n = counts["fatal"]
             noun = "finding" if n == 1 else "findings"
             them = "it" if n == 1 else "them"
-            has = "carries" if n == 1 else "carry"
             return {
                 "state": "unfixable",
                 "css_class": "fail",
@@ -268,8 +267,8 @@ class RepairRun:
                 ),
                 "output_label": "Partially repaired interchange — not conformant",
                 "output_caveat": (
-                    f"This still {has} {n} fatal {noun} that a conforming parser will reject. It "
-                    f"is not a drop-in replacement — resolve {them} in your source data and "
+                    f"This still carries {n} fatal {noun} that a conforming parser will reject. "
+                    f"It is not a drop-in replacement — resolve {them} in your source data and "
                     "repair again."
                 ),
             }
