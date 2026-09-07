@@ -3,8 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>x12-tidy-web</title>
-  <meta name="description" content="Repair malformed ANSI X12 EDI and see what each pass changed. A stateless web front end for x12-tidy.">
+  <title>x12-tidy-web — repair malformed X12 EDI</title>
+  <meta name="description" content="Paste a broken ANSI X12 interchange, get a clean copy and a per-pass report of every fix. No account, nothing stored.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://repair.tidyedi.com/">
+  <meta property="og:title" content="x12-tidy-web — repair malformed X12 EDI">
+  <meta property="og:description" content="Paste a broken ANSI X12 interchange, get a clean copy and a per-pass report of every fix. No account, nothing stored.">
+  <meta property="og:image" content="https://repair.tidyedi.com/social-preview.png">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlRpZHlFREkiPgogIDx0aXRsZT5UaWR5RURJPC90aXRsZT4KICA8cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHJ4PSIxNCIgZmlsbD0iIzFGNkI0RCIvPgogIDxyZWN0IHg9IjExIiB5PSIxNSIgd2lkdGg9IjM1IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIgb3BhY2l0eT0iMC4zNCIvPgogIDxyZWN0IHg9IjE4IiB5PSIyNiIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgogIDxyZWN0IHg9IjE4IiB5PSIzNyIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgogIDxyZWN0IHg9IjE4IiB5PSI0OCIgd2lkdGg9IjI4IiBoZWlnaHQ9IjUuNCIgcng9IjIuNyIgZmlsbD0iI0YzRjhGNSIvPgo8L3N2Zz4K">
   <style>
     :root { color-scheme: light; --ink:#1b1f24; --dim:#6a737d; --line:#d8dee4; --bg:#f6f8fa; --panel:#fff; --accent:#1f6feb; --brand:#1F6B4D; }
@@ -23,7 +29,9 @@
     .mark { width:44px; height:44px; border-radius:10px; flex:none; }
     h1 { margin:0; font-size:2rem; letter-spacing:-.02em; }
     h1 .dim { color:var(--dim); font-weight:400; }
-    .lede { color:var(--dim); margin:1rem 0 2rem; font-size:1.05rem; }
+    .lede { color:var(--dim); margin:1rem 0 1.5rem; font-size:1.05rem; }
+    .hero { display:block; width:100%; height:auto; border:1px solid var(--line);
+      border-radius:12px; margin:0 0 2rem; }
     .cards { display:grid; gap:1rem; grid-template-columns:1fr 1fr; }
     @media (max-width:34rem){ .cards{ grid-template-columns:1fr; } }
     a.card { display:block; text-decoration:none; color:inherit; background:var(--panel);
@@ -55,10 +63,16 @@
     <h1>x12-tidy<span class="dim">-web</span></h1>
   </div>
   <p class="lede">
-    Repair a malformed ANSI X12 interchange and see what each pass changed.
-    Nothing you paste is stored or sent anywhere. All EDI work is done by
+    Paste a broken ANSI X12 interchange. Get a clean, conformant copy and a
+    report of every fix. Nothing you paste is stored, logged, or sent anywhere.
+    All EDI work is done by
     <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>.
   </p>
+
+  <img class="hero" src="social-preview.png" width="1280" height="640"
+       alt="Broken X12 EDI becomes a clean copy plus a per-pass report: leading email
+            junk removed, the ISA tag cased and its elements padded to fixed width, the
+            envelope rebuilt — with each finding's severity, code, and byte offset.">
 
   <div class="cards">
     <!-- LIVE-APP-CARD: the live app is on Render at x12-tidy-web.onrender.com.
