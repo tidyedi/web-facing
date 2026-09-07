@@ -83,7 +83,8 @@ src/x12_tidy_web/
 GitHub Pages (source: `main` `/docs`, `docs/.nojekyll`, `docs/CNAME` =
 `repair.tidyedi.com`) serves **the published entry point**:
 - `docs/index.html` at <https://repair.tidyedi.com> — the landing page. Two
-  cards: **Live app** (→ the Render URL) and **Static version** (→ `demo/`).
+  cards: **"Repair your file"** (→ the Render URL) and **"See worked
+  examples"** (→ `demo/`).
   This page is deliberately on GitHub Pages, not the app's host: a visitor whose
   network blocks Render can't be helped by anything *on* Render (block pages are
   intercepted, not detectable; the free instance's ~50 s cold start defeats

@@ -18,15 +18,16 @@ Part of [TidyEDI](https://github.com/tidyedi). x12-tidy does all of the EDI work
 
 **Use it: <https://repair.tidyedi.com>** — a landing page with two ways in:
 
-- **Live app** — paste your own interchange. Hosted on a free instance, so the
-  first request after an idle spell can take up to a minute to wake.
-- **Static version** — five broken samples repaired with the result baked in.
-  Plain pages on GitHub, nothing to reach or wait for; works on locked-down
-  networks. Read-only.
+- **Repair your file** — paste your own interchange, take the corrected copy and
+  a downloadable report. Hosted on a free instance, so the first request after
+  an idle spell can take up to a minute to wake.
+- **See worked examples** — five broken samples already repaired: findings,
+  corrected envelope, pass-by-pass diff. Plain pages, no account, nothing to
+  enter — a quick look at what the tool does.
 
-If a corporate network blocks everything under `tidyedi.com`, the static
-version is also at its raw address:
-<https://tidyedi.github.io/web-facing/demo/>.
+The worked examples are plain GitHub Pages, so they're also reachable at the
+raw address <https://tidyedi.github.io/web-facing/demo/> if a network can't
+resolve `repair.tidyedi.com`.
 
 ![The results view: verdict, corrected interchange, and envelope facts](docs/screenshot.png)
 
