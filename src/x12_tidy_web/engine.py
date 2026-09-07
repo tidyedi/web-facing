@@ -213,6 +213,80 @@ class RepairRun:
     def residual_severity_counts(self) -> dict[str, int]:
         return severity_counts(self.residual_diagnostics)
 
+    @property
+    def verdict(self) -> dict[str, str]:
+        """The single source of truth for the top-line result.
+
+        Returns a stable ``state`` key, the ``css_class`` the web and demo
+        panels style on, and the ``headline`` sentence shown to the visitor.
+        Every renderer -- the live app (``static/app.js``), the downloaded
+        report (``reporting.py``), and the static demo (``demo.py``) -- reads
+        this and nothing else, so the wording and, crucially, the rule that
+        **any residual fatal finding means the interchange cannot be
+        repaired** are defined here once.
+
+        A fatal finding is one a conforming parser rejects outright; x12-tidy
+        reports it but, by design, will not fabricate or guess the fix. So a
+        run that ends with even one fatal residual is "cannot be repaired",
+        regardless of how much structural cleanup earlier passes achieved.
+        """
+        counts = self.residual_severity_counts
+        if not self.recovered:
+            return {
+                "state": "unrecoverable",
+                "css_class": "fail",
+                "headline": (
+                    "Unrecoverable — no ISA line could be located, so there was nothing to repair."
+                ),
+            }
+        if self.clean:
+            return {
+                "state": "clean",
+                "css_class": "ok",
+                "headline": "Clean — the interchange is conformant, with nothing left to fix.",
+            }
+        if counts["fatal"]:
+            n = counts["fatal"]
+            noun = "finding" if n == 1 else "findings"
+            them = "it" if n == 1 else "them"
+            return {
+                "state": "unfixable",
+                "css_class": "fail",
+                "headline": (
+                    f"Cannot be repaired — {n} fatal {noun} below. A conforming parser rejects "
+                    "an interchange that carries any fatal finding, and x12-tidy cannot fix "
+                    f"{them} automatically. Any structural repairs earlier passes made are still "
+                    "applied to the corrected text below."
+                ),
+            }
+        if not self.converged:
+            return {
+                "state": "notconverged",
+                "css_class": "fail",
+                "headline": (
+                    "Did not converge within the pass limit — treat the corrected output with care."
+                ),
+            }
+        if counts["error"]:
+            n = counts["error"]
+            noun = "finding" if n == 1 else "findings"
+            return {
+                "state": "residual-error",
+                "css_class": "residual",
+                "headline": (
+                    f"Partly repaired — {n} conformance {noun} below could not be auto-repaired. "
+                    "None are fatal, so a conforming parser will not reject the interchange outright."
+                ),
+            }
+        return {
+            "state": "residual-advisory",
+            "css_class": "residual",
+            "headline": (
+                "Repaired — no conformance errors remain. The findings below are advisory: trust "
+                "and QA signals x12-tidy reports but does not change."
+            ),
+        }
+
     def as_dict(self) -> dict[str, Any]:
         return {
             "schema": "x12-tidy-web/repair-run/1",
@@ -222,6 +296,7 @@ class RepairRun:
             "changed": self.changed,
             "stop_reason": self.stop_reason,
             "stop_reason_detail": STOP_REASONS.get(self.stop_reason, ""),
+            "verdict": self.verdict,
             "max_iterations": self.max_iterations,
             "codec": self.codec,
             "iteration_count": len(self.iterations),

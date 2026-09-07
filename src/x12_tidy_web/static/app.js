@@ -86,26 +86,12 @@ function countsSummary(counts) {
 // rendering
 // --------------------------------------------------------------------------- //
 function renderVerdict(run) {
+  // The verdict — its wording, its style, and the rule that any residual fatal
+  // finding means "cannot be repaired" — is computed once, server-side, in the
+  // engine (RepairRun.verdict). This just paints it.
   verdictEl.className = "verdict";
-  let headline;
-  if (!run.recovered) {
-    verdictEl.classList.add("fail");
-    headline = "Unrecoverable — no ISA line could be located.";
-  } else if (run.clean) {
-    verdictEl.classList.add("ok");
-    headline = "Clean — the interchange is conformant, with nothing left to fix.";
-  } else if (run.converged && run.changed) {
-    verdictEl.classList.add("residual");
-    headline =
-      "Repaired what it could — the findings below remain and x12-tidy cannot fix them automatically.";
-  } else if (run.converged) {
-    verdictEl.classList.add("fail");
-    headline =
-      "Not repaired — the interchange is still non-conformant. x12-tidy flagged the problems below but cannot fix them.";
-  } else {
-    verdictEl.classList.add("fail");
-    headline = "Did not converge within the pass limit — treat the output with care.";
-  }
+  verdictEl.classList.add(run.verdict.css_class);
+  const headline = run.verdict.headline;
   const stopDetail = run.stop_reason_detail || run.stop_reason;
   verdictEl.replaceChildren(
     document.createTextNode(headline),
@@ -408,10 +394,7 @@ function renderPass(iter, isLast) {
 }
 
 function verdictHeadline(run) {
-  if (!run.recovered) return "unrecoverable";
-  if (run.clean) return "clean";
-  if (run.converged) return "repaired with residual findings";
-  return "did not converge";
+  return run.verdict.state; // e.g. "clean", "unfixable", "residual-error"
 }
 
 function updateReportLink(run) {

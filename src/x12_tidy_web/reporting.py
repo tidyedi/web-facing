@@ -100,16 +100,10 @@ def _render_json(run: RepairRun) -> str:
 # shared helpers for the prose formats
 # --------------------------------------------------------------------------- #
 def _verdict_line(run: RepairRun) -> str:
-    if not run.recovered:
-        return "UNRECOVERABLE — no ISA line could be located."
-    if run.clean:
-        return "CLEAN — the interchange is conformant."
-    if run.converged:
-        return (
-            "REPAIRED WITH RESIDUAL FINDINGS — a corrected copy was produced, but "
-            "x12-tidy still flags issues it cannot fix automatically."
-        )
-    return "DID NOT CONVERGE — hit the iteration cap; treat the output with care."
+    """The report's headline verdict -- the engine's single ``verdict``
+    definition, so a downloaded report says exactly what the web panel did
+    (a residual fatal finding reads as "cannot be repaired")."""
+    return run.verdict["headline"]
 
 
 def _facts_pairs(run: RepairRun) -> list[tuple[str, str]]:

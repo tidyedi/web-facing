@@ -39,6 +39,27 @@ def test_dirty_input_is_repaired_and_reports_residual(dirty_edi: bytes) -> None:
     assert not run.clean
 
 
+def test_verdict_reads_as_unfixable_when_a_fatal_finding_remains(dirty_edi: bytes) -> None:
+    # dirty_edi stabilises with a fatal control-count mismatch. However much
+    # structural cleanup passed 1 did, any residual fatal must dominate the
+    # verdict: a conforming parser rejects it and x12-tidy will not guess.
+    run = repair(dirty_edi)
+    assert run.residual_severity_counts["fatal"] >= 1
+    v = run.verdict
+    assert v["state"] == "unfixable"
+    assert v["css_class"] == "fail"
+    assert v["headline"].startswith("Cannot be repaired")
+    assert "fatal" in v["headline"]
+    assert run.as_dict()["verdict"] == v
+
+
+def test_verdict_clean_and_unrecoverable(clean_edi: bytes, not_edi: bytes) -> None:
+    assert repair(clean_edi).verdict["state"] == "clean"
+    assert repair(clean_edi).verdict["css_class"] == "ok"
+    assert repair(not_edi).verdict["state"] == "unrecoverable"
+    assert repair(not_edi).verdict["css_class"] == "fail"
+
+
 def test_second_pass_does_not_change_bytes(dirty_edi: bytes) -> None:
     run = repair(dirty_edi)
     assert len(run.iterations) == 2
