@@ -8,12 +8,12 @@
   <link rel="icon" type="image/svg+xml" href="{{ favicon }}">
   <style>{{ inline_css }}</style>
   {% else %}
-  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', path='favicon.svg') }}">
-  <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="stylesheet" href="/static/styles.css">
   {% endif %}
 </head>
 <body>
-{% set favicon_src = favicon if static else url_for('static', path='favicon.svg') %}
+{% set favicon_src = favicon if static else '/static/favicon.svg' %}
 {% set home = demo_href if static else '/' %}
 <nav class="navbar" aria-label="Site"><div class="wrap">{% include "_nav.html" %}</div></nav>
 <header class="site-header">

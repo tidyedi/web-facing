@@ -130,6 +130,19 @@ def test_favicon_and_brand_mark_are_served(client) -> None:
     assert svg.headers["content-type"].startswith("image/svg")
 
 
+def test_asset_urls_are_scheme_relative(client) -> None:
+    """Assets are linked root-relative (``/static/...``), never as absolute
+    ``http://host/...`` URLs -- an absolute ``http`` URL is blocked as mixed
+    content when the page is served over HTTPS behind a TLS-terminating proxy.
+    """
+    for path in ("/", "/codes"):
+        text = client.get(path).text
+        assert 'href="/static/styles.css"' in text
+        assert 'src="/static/favicon.svg"' in text
+        assert "http://testserver" not in text
+        assert "https://testserver" not in text
+
+
 def test_codes_page_renders(client) -> None:
     resp = client.get("/codes")
     assert resp.status_code == 200
