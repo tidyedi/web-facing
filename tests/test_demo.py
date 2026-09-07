@@ -43,10 +43,19 @@ def test_verdicts_match_the_samples(bundle: Path) -> None:
     assert "Cannot be repaired — 1 fatal finding" in fwd
     assert "structure.functional-group-count-mismatch" in fwd
     assert "Forwarded email" in fwd
+    # the corrected-output panel itself must warn — not just the verdict box
+    assert "Partially repaired — not yet valid" in fwd
+    assert 'class="panel-warning"' in fwd
+    assert "a conforming parser will still reject this interchange" in fwd
 
     pipe = (bundle / "pipe-delimited.html").read_text()
     assert "verdict ok" in pipe
     assert "Clean — the interchange is conformant, with nothing left to fix." in pipe
+    # a clean sample keeps the plain heading and shows no warning banner
+    # (the .panel-warning rule is in the inlined CSS either way; the element isn't)
+    assert "Corrected interchange" in pipe
+    assert 'class="panel-warning"' not in pipe
+    assert "Partially repaired" not in pipe
 
 
 def test_links_between_pages_are_relative(bundle: Path) -> None:

@@ -153,6 +153,21 @@ button.ghost { background: transparent; }
 .verdict.fail::before      { content: &#34;\2715&#34;; color: var(--fatal); }
 .verdict small { display: block; font-weight: 400; color: var(--dim); margin-top: .3rem; }
 
+/* Inline warning inside a result panel — e.g. the corrected-interchange panel
+   when a fatal finding means the payload is still not conformant. */
+.panel-warning {
+  margin: 0 0 .7rem;
+  padding: .6rem .8rem;
+  border: 1px solid #eec4c4;
+  border-left: 4px solid var(--fatal);
+  border-radius: 6px;
+  background: #fdf1f1;
+  color: var(--fatal);
+  font-weight: 600;
+  font-size: .92rem;
+}
+.panel-warning::before { content: &#34;\26A0\FE0F&#34;; margin-right: .45rem; }
+
 .result-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -197,12 +212,20 @@ table.facts td &gt; span:first-child { font-weight: 500; }
 .legend dt { flex: 0 0 4.5rem; margin: 0; text-align: left; }
 .legend dd { margin: 0; color: var(--dim); font-size: .88rem; }
 
+/* the list of passes, set off from the legend/notes above it */
+#passes {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+
 .pass {
   border: 1px solid var(--line);
   border-radius: 8px;
   margin-top: .75rem;
   overflow: hidden;
 }
+.pass:first-child { margin-top: 0; }
 .pass &gt; summary {
   cursor: pointer;
   padding: .6rem .9rem;

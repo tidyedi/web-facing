@@ -86,7 +86,7 @@
     <div class="result-grid">
       <div class="panel">
         <div class="panel-head">
-          <h2>Corrected interchange</h2>
+          <h2 id="corrected-title">Corrected interchange</h2>
           <div class="panel-actions">
             <button type="button" id="copy-btn" class="ghost" disabled
               title="Copy the corrected interchange to your clipboard">Copy</button>
@@ -94,10 +94,11 @@
               title="Put the corrected interchange back in the form above">Use this</button>
           </div>
         </div>
+        <p id="corrected-warning" class="panel-warning" hidden></p>
         <textarea id="corrected" readonly spellcheck="false"
           placeholder="(no corrected interchange — the input could not be recovered)"></textarea>
         <p class="hint">
-          <strong>Copy</strong> puts the corrected interchange on your clipboard.
+          <strong>Copy</strong> puts this interchange on your clipboard.
           <strong>Use this</strong> drops it back into the form above, so you can
           re-run the repair on it or hand-edit and re-check. Neither is saved
           anywhere — it stays in your browser.

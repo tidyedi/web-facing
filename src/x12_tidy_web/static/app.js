@@ -36,6 +36,8 @@ const verdictEl = $("verdict");
 const reportWrong = $("report-wrong");
 const reportLink = $("report-link");
 const correctedEl = $("corrected");
+const correctedTitle = $("corrected-title");
+const correctedWarning = $("corrected-warning");
 const isaPadNote = $("isa-pad-note");
 const explodedWrap = $("exploded-wrap");
 const explodedEl = $("exploded");
@@ -422,6 +424,21 @@ function renderRun(run) {
   copyBtn.disabled = !hasCorrected;
   useBtn.disabled = !hasCorrected;
   downloadBtn.disabled = false;
+
+  // When a fatal finding remains, the payload in this panel is NOT a drop-in
+  // replacement — say so right here, not only in the verdict box above.
+  const unfixable = run.verdict.state === "unfixable";
+  correctedTitle.textContent = unfixable
+    ? "Partially repaired — not yet valid"
+    : "Corrected interchange";
+  correctedWarning.hidden = !unfixable;
+  if (unfixable) {
+    const n = run.residual_severity_counts.fatal;
+    correctedWarning.textContent =
+      `${n} fatal finding${n === 1 ? "" : "s"} below — a conforming parser will still ` +
+      `reject this interchange. Do not send it as-is; resolve ${n === 1 ? "it" : "them"} in ` +
+      "your source data and repair again.";
+  }
 
   const touchedIsa = run.iterations.some((it) =>
     it.diagnostics.some((d) => d.code.startsWith("isa."))

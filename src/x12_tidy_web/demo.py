@@ -77,11 +77,14 @@ def build_demo(out_dir: Path) -> list[Path]:
         run = repair(sample.edi)
         run_dict = run.as_dict()
         verdict_class, verdict_text = _verdict(run_dict)
+        unfixable = run_dict["verdict"]["state"] == "unfixable"
         html = demo_tmpl.render(
             sample=sample,
             run=run_dict,
             verdict_class=verdict_class,
             verdict_text=verdict_text,
+            unfixable=unfixable,
+            fatal_count=run_dict["residual_severity_counts"]["fatal"],
             nav=nav,
             current=sample.slug,
             inline_css=css,
