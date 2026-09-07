@@ -145,10 +145,17 @@ CI additionally builds the Docker image and hits `/healthz` in the container.
   way unless there's a deliberate decision otherwise.
 - The app is stateless (no DB, no shared state), so it can run on more than one
   host. Deployment specifics are in the private ops repo.
-- Feedback on a diagnostic code goes to x12-tidy's Q&A discussions, not here —
-  the per-code "Discuss" links on `/codes` build a pre-filled URL
-  (`diagnostics._discuss_url`). "Report a wrong result" is an opt-in `mailto:`
-  (`X12_TIDY_WEB_FEEDBACK_EMAIL`); the interchange is never auto-attached.
+- Feedback paths (no dedicated form — a `feedback.html` form was built and
+  rejected; the main funnel is the Medium/LinkedIn article comment sections):
+  - **"Feedback"** nav link + the post-repair prompt → a new **Ideas**
+    discussion on `tidyedi/web-facing`
+    (`/discussions/new?category=ideas` — hard-coded in `_nav.html`,
+    `templates/index.html`, `docs/index.html`). Needs a GitHub account.
+  - Per-code **"Discuss"** on `/codes` → a pre-filled x12-tidy Q&A discussion
+    (`diagnostics._discuss_url`) — that's where diagnostic changes are made.
+  - **"report a wrong result"** — opt-in `mailto:` on the results panel
+    (`X12_TIDY_WEB_FEEDBACK_EMAIL`, unset → hidden; the interchange is never
+    auto-attached). The one no-account path.
 - The "read it segment by segment" view (#7) is JS-only in `app.js`
   (`explodeSegments`): it splits the corrected bytes on the terminator x12-tidy
   fixed at ISA byte 105 and re-lays them out. Not ported to the demo pages.
