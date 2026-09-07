@@ -10,19 +10,32 @@ returns the corrected string plus a per-pass report the visitor can download.
 
 ## The one rule
 
-**All X12 knowledge lives in x12-tidy and is imported, never copied here.**
-Locating the ISA line, recovering delimiters, reconstructing the envelope,
-auditing control numbers — none of that logic belongs in this repo. If a finding
-is wrong or missing, fix it in x12-tidy and bump the pin.
+This is a rule for **the maintainers, when working in this repo**. x12-tidy
+itself changes the normal way — through its own repo's review-and-release
+process. What is forbidden is changing x12-tidy *from here*.
 
-x12-tidy is a dependency pulled straight from its git repo (no PyPI release
+**All X12 knowledge lives in x12-tidy and is imported, never copied or edited
+here.** Locating the ISA line, recovering delimiters, reconstructing the
+envelope, auditing control numbers — none of that logic belongs in this repo.
+When you are in `web-facing` and find an x12-tidy finding that is wrong or
+missing, the fix does **not** go here: make it in the x12-tidy repo, land it
+there through its own process, then bump the pin in this one.
+
+Why the rule exists: if x12-tidy logic were vendored, path-linked, or patched
+inside `web-facing`, that change would have no history in x12-tidy, would not
+carry back to it, and every other consumer would silently diverge from what this
+repo runs. Importing it as a plain pinned dependency keeps x12-tidy the single
+place its behaviour is defined and reviewed.
+
+Mechanically: x12-tidy is pulled straight from its git repo (no PyPI release
 yet), pinned in `pyproject.toml` (`x12-tidy @ git+https://…@main`) and locked in
-`uv.lock`. **Never clone, vendor, or path-link x12-tidy into this repo** — not
-even a commented-out `[tool.uv.sources]` entry. It is imported like any other
-third-party package so that a change in x12-tidy reaches this repo only when you
-deliberately bump the ref and re-run `uv lock`. To test against unreleased
-x12-tidy work, push that work to a branch and point the ref at it.
-`tests/test_dependency_provenance.py` fails loudly if this is ever violated.
+`uv.lock`, so an upstream change reaches this repo only when a maintainer
+deliberately bumps the ref and re-runs `uv lock`. **Never clone, vendor, or
+path-link x12-tidy into this repo** — not even a commented-out
+`[tool.uv.sources]` entry. To try this repo against unreleased x12-tidy work,
+push that work to an x12-tidy branch and point the ref at it — still an import,
+never a local edit. `tests/test_dependency_provenance.py` fails loudly if this
+is ever violated.
 
 ### Which repo owns a bug?
 
