@@ -133,8 +133,8 @@ Left here as a warning: as of 2026 a **Docker** Space needs an HF **PRO**
 subscription ($9/mo). `hf repo create --repo-type space --space_sdk docker`
 returns `402 Payment Required` on a free account. The free tier is
 static-Spaces-only, which cannot run this app (it is a live uvicorn process).
-The Space metadata block in `README.md` is inert but harmless — leave it or
-strip it.
+The Space metadata YAML block was removed from `README.md` in the go-live
+commit.
 
 ### Google Cloud Run
 
@@ -193,8 +193,8 @@ container can run on any number of hosts simultaneously, each with its own URL.
 Reasons to:
 
 - **Availability** — one host sleeping, cold, or down, visitors use another.
-- **Reachability** — different domains (`*.hf.space`, `*.onrender.com`,
-  `*.run.app`) have different reputations with corporate/network filters; a
+- **Reachability** — different domains (`*.onrender.com`, `*.run.app`,
+  `*.koyeb.app`) have different reputations with corporate/network filters; a
   visitor blocked from one may reach another.
 
 Each rate limit (`slowapi`) counts per instance, which is fine — it is per-IP
