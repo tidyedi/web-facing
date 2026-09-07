@@ -1,10 +1,11 @@
-# Render Blueprint — one of the free hosts in docs/DEPLOYMENT.md.
-# Connect the repo at https://dashboard.render.com and pick "Blueprint".
+# Render Blueprint. Connect the repo at https://dashboard.render.com and pick
+# "Blueprint". Paid "starter" plan: always-on, no free-tier spin-down. Billing
+# (card on file) is set up in the Render dashboard, not here.
 services:
   - type: web
     name: x12-tidy-web
     runtime: docker
-    plan: free
+    plan: starter
     dockerfilePath: ./Dockerfile
     healthCheckPath: /healthz
     autoDeploy: true
