@@ -83,26 +83,24 @@ src/x12_tidy_web/
 GitHub Pages (source: `main` `/docs`, `docs/.nojekyll`, `docs/CNAME` =
 `repair.tidyedi.com`) serves **the published entry point**:
 - `docs/index.html` at <https://repair.tidyedi.com> — the landing page. Two
-  cards: **"Repair your file"** (→ the Render URL) and **"See worked
-  examples"** (→ `demo/`).
-  This page is deliberately on GitHub Pages, not the app's host: a visitor whose
-  network blocks Render can't be helped by anything *on* Render (block pages are
-  intercepted, not detectable; the free instance's ~50 s cold start defeats
-  timeouts too), so the entry point must be a plain page on a rarely-filtered
-  host that just shows both options. Don't "improve" this with auto-detection.
+  cards: **"Repair your file"** (→ the live app) and **"See worked examples"**
+  (→ `demo/`). It lives on GitHub Pages, separate from the app, so it stays
+  fast and available regardless of the app's state and gives the visitor a
+  clear choice between the two. Keep it a plain static page.
 - `docs/demo/` — the generated bundle, also at
   <https://repair.tidyedi.com/demo/>. Regenerate with
   `uv run x12-tidy-web demo docs/demo` after changing samples, templates, or the
   x12-tidy pin, then commit. Pages redeploys on push. (`build_demo` writes named
   files, doesn't wipe the dir, so `docs/CNAME` is safe.)
 
-The live app itself is on Render at `x12-tidy-web.onrender.com` (free tier,
-Docker, auto-deploys on push; `render.yaml`). See `docs/DEPLOYMENT.md`.
+The live app is on Render (Docker, auto-deploys on push; `render.yaml`).
+Deployment, hosting, and operational detail live in a **private** repo, not
+here — ask a maintainer.
 
 If the app's URL changes (moves host, gets its own `*.tidyedi.com`), update all
 of: the `<!-- LIVE-APP-CARD -->` href in `docs/index.html`, the repo Website
 field (`gh repo edit … --homepage`), `demo.py`'s `static_nav["home_href"]`,
-`_nav.html`'s `demo_href` default, `README.md`, and `docs/DEPLOYMENT.md`.
+`_nav.html`'s `demo_href` default, and `README.md`.
 
 ### Why iterate?
 
@@ -142,17 +140,11 @@ CI additionally builds the Docker image and hits `/healthz` in the container.
 
 - Per-IP rate limiting on the two repair endpoints is built in (`slowapi`,
   30/min shared, `X12_TIDY_WEB_RATE_LIMIT` to tune or `off` to disable). No
-  request-size middleware beyond `MAX_EDI_CHARS` in `models.py`; put a body cap
-  at the proxy for a public deploy — see `docs/DEPLOYMENT.md`.
+  request-size middleware beyond `MAX_EDI_CHARS` in `models.py`.
 - No persistence by design — nothing pasted is stored or logged. Keep it that
   way unless there's a deliberate decision otherwise.
-- Open issues on the remote (tidyedi/web-facing): #10 (server-sent email —
-  declined for now, privacy), #15–#19 (marketing backlog, "later:"), #26
-  (deployment — `docs/DEPLOYMENT.md` is the answer, waiting on a platform pick).
-- The app is stateless, so it can run on several free hosts at once for
-  availability + reachability behind network filters. `render.yaml` is a Render
-  blueprint; `docs/DEPLOYMENT.md` has the multi-host section (HF + Render +
-  Cloud Run, a fan-out Action sketch, and the single-URL failover option).
+- The app is stateless (no DB, no shared state), so it can run on more than one
+  host. Deployment specifics are in the private ops repo.
 - Feedback on a diagnostic code goes to x12-tidy's Q&A discussions, not here —
   the per-code "Discuss" links on `/codes` build a pre-filled URL
   (`diagnostics._discuss_url`). "Report a wrong result" is an opt-in `mailto:`

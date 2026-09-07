@@ -19,15 +19,13 @@ Part of [TidyEDI](https://github.com/tidyedi). x12-tidy does all of the EDI work
 **Use it: <https://repair.tidyedi.com>** — a landing page with two ways in:
 
 - **Repair your file** — paste your own interchange, take the corrected copy and
-  a downloadable report. Hosted on a free instance, so the first request after
-  an idle spell can take up to a minute to wake.
+  a downloadable report.
 - **See worked examples** — five broken samples already repaired: findings,
   corrected envelope, pass-by-pass diff. Plain pages, no account, nothing to
   enter — a quick look at what the tool does.
 
-The worked examples are plain GitHub Pages, so they're also reachable at the
-raw address <https://tidyedi.github.io/web-facing/demo/> if a network can't
-resolve `repair.tidyedi.com`.
+The worked examples are also served directly at
+<https://tidyedi.github.io/web-facing/demo/>.
 
 ![The results view: verdict, corrected interchange, and envelope facts](docs/screenshot.png)
 
@@ -72,12 +70,14 @@ Environment:
 docker compose up --build     # http://127.0.0.1:8000
 ```
 
-Maintainer notes for standing up the hosted instance are in
-[`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
+The container is the release artifact — `python:3.12-slim`, non-root,
+read-only, a `HEALTHCHECK` on `/healthz`, and it honours `$PORT`. Any host that
+runs a container runs this. Deployment and operational notes are kept in a
+separate private repo.
 
 ### Static demo
 
-For people who can't reach the hosted app:
+For a zero-install look, or an environment that can't reach the live app:
 
 ```bash
 uv run x12-tidy-web demo            # writes ./x12-tidy-web-demo/
