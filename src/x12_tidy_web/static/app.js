@@ -36,6 +36,8 @@ const verdictEl = $("verdict");
 const reportWrong = $("report-wrong");
 const reportLink = $("report-link");
 const correctedEl = $("corrected");
+const correctedTitle = $("corrected-title");
+const correctedWarning = $("corrected-warning");
 const isaPadNote = $("isa-pad-note");
 const explodedWrap = $("exploded-wrap");
 const explodedEl = $("exploded");
@@ -99,7 +101,7 @@ function renderVerdict(run) {
       text:
         `${run.iteration_count} pass${run.iteration_count === 1 ? "" : "es"} · ` +
         `${stopDetail} · ` +
-        `corrected text ${run.changed ? "differs from" : "matches"} the input · ` +
+        `output ${run.changed ? "differs from" : "matches"} the input · ` +
         `final findings: ${countsSummary(run.residual_severity_counts)}`,
     })
   );
@@ -422,6 +424,18 @@ function renderRun(run) {
   copyBtn.disabled = !hasCorrected;
   useBtn.disabled = !hasCorrected;
   downloadBtn.disabled = false;
+
+  // Label the payload honestly (it is only a "corrected interchange" when the
+  // run came out clean) and carry the caveat right here, not only in the
+  // verdict box above. Both strings come from the engine's verdict.
+  correctedTitle.textContent = run.verdict.output_label;
+  const caveat = run.verdict.output_caveat;
+  correctedWarning.hidden = !caveat;
+  correctedWarning.textContent = caveat;
+  correctedWarning.classList.toggle(
+    "is-fatal",
+    run.verdict.state === "unfixable" || run.verdict.state === "notconverged"
+  );
 
   const touchedIsa = run.iterations.some((it) =>
     it.diagnostics.some((d) => d.code.startsWith("isa."))

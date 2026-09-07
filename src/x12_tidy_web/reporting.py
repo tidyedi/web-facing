@@ -144,7 +144,7 @@ def _render_markdown(run: RepairRun) -> str:
     out.append("")
     out.append(f"- Passes run: **{len(run.iterations)}** (cap {run.max_iterations})")
     out.append(f"- Stop reason: **{run.stop_reason}** — {run.as_dict()['stop_reason_detail']}")
-    out.append(f"- Corrected text differs from input: **{'yes' if run.changed else 'no'}**")
+    out.append(f"- Output differs from input: **{'yes' if run.changed else 'no'}**")
     counts = run.residual_severity_counts
     out.append(
         f"- Findings after the final pass: "
@@ -190,8 +190,11 @@ def _render_markdown(run: RepairRun) -> str:
             out.append("")
 
     if run.final_text is not None:
-        out.append("## Corrected interchange")
+        out.append(f"## {run.verdict['output_label']}")
         out.append("")
+        if run.verdict["output_caveat"]:
+            out.append(f"> ⚠ {run.verdict['output_caveat']}")
+            out.append("")
         out.append("```")
         out.append(run.final_text)
         out.append("```")
@@ -233,7 +236,11 @@ def _render_text(run: RepairRun) -> str:
         out.append("")
 
     if run.final_text is not None:
-        out.append("--- corrected interchange " + "-" * 38)
+        label = run.verdict["output_label"].lower()
+        out.append(f"--- {label} " + "-" * max(3, 63 - len(label)))
+        if run.verdict["output_caveat"]:
+            out.append(f"!! {run.verdict['output_caveat']}")
+            out.append("")
         out.append(run.final_text)
         out.append("")
 
@@ -303,7 +310,7 @@ def _render_html(run: RepairRun) -> str:
     parts.append("<ul>")
     parts.append(f"<li>Passes run: <strong>{len(run.iterations)}</strong> (cap {run.max_iterations})</li>")
     parts.append(f"<li>Stop reason: <strong>{_esc(run.stop_reason)}</strong></li>")
-    parts.append(f"<li>Corrected text differs from input: <strong>{'yes' if run.changed else 'no'}</strong></li>")
+    parts.append(f"<li>Output differs from input: <strong>{'yes' if run.changed else 'no'}</strong></li>")
     parts.append("</ul>")
 
     pairs = _facts_pairs(run)
@@ -340,7 +347,9 @@ def _render_html(run: RepairRun) -> str:
         parts.append("</div>")
 
     if run.final_text is not None:
-        parts.append("<h2>Corrected interchange</h2>")
+        parts.append(f"<h2>{_esc(run.verdict['output_label'])}</h2>")
+        if run.verdict["output_caveat"]:
+            parts.append(f"<p class='verdict'>⚠ {_esc(run.verdict['output_caveat'])}</p>")
         parts.append(f"<pre>{_esc(run.final_text)}</pre>")
 
     parts.append("</body></html>")

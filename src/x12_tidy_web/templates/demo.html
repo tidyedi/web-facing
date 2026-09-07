@@ -46,14 +46,17 @@
     <small>
       {{ run.iteration_count }} pass{{ '' if run.iteration_count == 1 else 'es' }} ·
       {{ run.stop_reason_detail }} ·
-      corrected text {{ 'differs from' if run.changed else 'matches' }} the input
+      output {{ 'differs from' if run.changed else 'matches' }} the input
     </small>
   </div>
 
   <div class="result-grid">
     <div class="panel">
-      <div class="panel-head"><h2>Corrected interchange</h2></div>
-      <textarea readonly spellcheck="false" rows="8">{{ run.final_text or '(no corrected interchange — the input could not be recovered)' }}</textarea>
+      <div class="panel-head"><h2>{{ run.verdict.output_label }}</h2></div>
+      {% if run.verdict.output_caveat %}
+      <p class="panel-warning{{ ' is-fatal' if run.verdict.state in ('unfixable', 'notconverged') else '' }}">{{ run.verdict.output_caveat }}</p>
+      {% endif %}
+      <textarea readonly spellcheck="false" rows="8">{{ run.final_text or '(no output — the input could not be recovered)' }}</textarea>
     </div>
 
     <div class="panel">
@@ -83,6 +86,7 @@
       the flagged structure begins; ISA-line findings share a number, and a dash
       means the finding isn't tied to one spot.
     </p>
+    <div id="passes">
     {% for it in run.iterations %}
     <details class="pass" open>
       <summary>
@@ -122,6 +126,7 @@
       </div>
     </details>
     {% endfor %}
+    </div>
   </div>
 </main>
 

@@ -146,6 +146,28 @@ button.ghost { background: transparent; }
 .verdict.fail::before      { content: "\2715"; color: var(--fatal); }
 .verdict small { display: block; font-weight: 400; color: var(--dim); margin-top: .3rem; }
 
+/* Inline caveat inside a result panel — e.g. the output panel when the run
+   did not come out clean. Amber by default; red when the result is fatal /
+   non-conformant (.is-fatal). */
+.panel-warning {
+  margin: 0 0 .7rem;
+  padding: .6rem .8rem;
+  border: 1px solid #eed9b6;
+  border-left: 4px solid var(--error);
+  border-radius: 6px;
+  background: #fdf6ec;
+  color: #8a5a00;
+  font-weight: 600;
+  font-size: .92rem;
+}
+.panel-warning::before { content: "\26A0\FE0F"; margin-right: .45rem; }
+.panel-warning.is-fatal {
+  border-color: #eec4c4;
+  border-left-color: var(--fatal);
+  background: #fdf1f1;
+  color: var(--fatal);
+}
+
 .result-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -190,12 +212,20 @@ table.facts td > span:first-child { font-weight: 500; }
 .legend dt { flex: 0 0 4.5rem; margin: 0; text-align: left; }
 .legend dd { margin: 0; color: var(--dim); font-size: .88rem; }
 
+/* the list of passes, set off from the legend/notes above it */
+#passes {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+
 .pass {
   border: 1px solid var(--line);
   border-radius: 8px;
   margin-top: .75rem;
   overflow: hidden;
 }
+.pass:first-child { margin-top: 0; }
 .pass > summary {
   cursor: pointer;
   padding: .6rem .9rem;

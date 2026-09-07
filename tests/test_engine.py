@@ -50,7 +50,16 @@ def test_verdict_reads_as_unfixable_when_a_fatal_finding_remains(dirty_edi: byte
     assert v["css_class"] == "fail"
     assert v["headline"].startswith("Cannot be repaired")
     assert "fatal" in v["headline"]
+    # the payload is NOT labelled "corrected" when it is still non-conformant
+    assert v["output_label"] == "Partially repaired interchange — not conformant"
+    assert "fatal" in v["output_caveat"] and "repair again" in v["output_caveat"]
     assert run.as_dict()["verdict"] == v
+
+
+def test_verdict_labels_a_clean_run_corrected(clean_edi: bytes) -> None:
+    v = repair(clean_edi).verdict
+    assert v["output_label"] == "Corrected interchange"
+    assert v["output_caveat"] == ""
 
 
 def test_verdict_clean_and_unrecoverable(clean_edi: bytes, not_edi: bytes) -> None:

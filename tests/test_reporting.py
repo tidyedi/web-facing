@@ -22,6 +22,11 @@ def broken_run(not_edi: bytes):
     return repair(not_edi)
 
 
+@pytest.fixture
+def clean_run(clean_edi: bytes):
+    return repair(clean_edi)
+
+
 @pytest.mark.parametrize("fmt", sorted(FORMATS))
 def test_every_format_renders_nonempty(dirty_run, fmt: str) -> None:
     report = render_report(dirty_run, fmt)
@@ -58,7 +63,16 @@ def test_markdown_report_mentions_key_facts(dirty_run) -> None:
     assert "# EDI validation report" in text
     assert "## Passes" in text
     assert "isa.element-width" in text
+    # dirty_run ends with a residual fatal, so the output is NOT labelled
+    # "corrected" — it is a partial repair, and the section says so.
+    assert "## Partially repaired interchange — not conformant" in text
+    assert "⚠ This still carries 1 fatal finding that" in text
+
+
+def test_clean_report_labels_the_output_corrected(clean_run) -> None:
+    text = render_report(clean_run, "markdown").content.decode()
     assert "## Corrected interchange" in text
+    assert "⚠" not in text
 
 
 def test_csv_report_has_one_row_per_finding(dirty_run) -> None:

@@ -153,6 +153,28 @@ button.ghost { background: transparent; }
 .verdict.fail::before      { content: &#34;\2715&#34;; color: var(--fatal); }
 .verdict small { display: block; font-weight: 400; color: var(--dim); margin-top: .3rem; }
 
+/* Inline caveat inside a result panel — e.g. the output panel when the run
+   did not come out clean. Amber by default; red when the result is fatal /
+   non-conformant (.is-fatal). */
+.panel-warning {
+  margin: 0 0 .7rem;
+  padding: .6rem .8rem;
+  border: 1px solid #eed9b6;
+  border-left: 4px solid var(--error);
+  border-radius: 6px;
+  background: #fdf6ec;
+  color: #8a5a00;
+  font-weight: 600;
+  font-size: .92rem;
+}
+.panel-warning::before { content: &#34;\26A0\FE0F&#34;; margin-right: .45rem; }
+.panel-warning.is-fatal {
+  border-color: #eec4c4;
+  border-left-color: var(--fatal);
+  background: #fdf1f1;
+  color: var(--fatal);
+}
+
 .result-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -197,12 +219,20 @@ table.facts td &gt; span:first-child { font-weight: 500; }
 .legend dt { flex: 0 0 4.5rem; margin: 0; text-align: left; }
 .legend dd { margin: 0; color: var(--dim); font-size: .88rem; }
 
+/* the list of passes, set off from the legend/notes above it */
+#passes {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+
 .pass {
   border: 1px solid var(--line);
   border-radius: 8px;
   margin-top: .75rem;
   overflow: hidden;
 }
+.pass:first-child { margin-top: 0; }
 .pass &gt; summary {
   cursor: pointer;
   padding: .6rem .9rem;
@@ -347,17 +377,20 @@ tr.deprecated { opacity: .55; }
   </section>
 
   <div class="verdict fail">
-    Cannot be repaired — 3 fatal findings below. A conforming parser rejects an interchange that carries any fatal finding, and x12-tidy cannot fix them automatically. Any structural repairs earlier passes made are still applied to the corrected text below.
+    Cannot be repaired — 3 fatal findings below. A conforming parser rejects an interchange that carries any fatal finding, and x12-tidy cannot fix them automatically. The structural repairs earlier passes made are still shown below, but the result is not a conformant interchange.
     <small>
       1 pass ·
       A pass reported findings but changed nothing; they cannot be auto-repaired. ·
-      corrected text matches the input
+      output matches the input
     </small>
   </div>
 
   <div class="result-grid">
     <div class="panel">
-      <div class="panel-head"><h2>Corrected interchange</h2></div>
+      <div class="panel-head"><h2>Partially repaired interchange — not conformant</h2></div>
+      
+      <p class="panel-warning is-fatal">This still carry 3 fatal findings that a conforming parser will reject. It is not a drop-in replacement — resolve them in your source data and repair again.</p>
+      
       <textarea readonly spellcheck="false" rows="8">ISA*00*          *00*          *ZZ*ACME HEALTH    *ZZ*PAYERCENTRAL   *240610*1015*U*00401*000004242*0*P*:~GS*HC*ACMEHEALTH*PAYERCENTRAL*20240610*1015*4242*X*004010X098A1~ST*837*0001~BHT*0019*00*REF-88*20240610*1015*CH~NM1*41*2*ACME HEALTH SERVICES*****46*ACME01~PER*IC*BILLING DEPT*TE*5551234567~</textarea>
     </div>
 
@@ -386,6 +419,7 @@ tr.deprecated { opacity: .55; }
       the flagged structure begins; ISA-line findings share a number, and a dash
       means the finding isn't tied to one spot.
     </p>
+    <div id="passes">
     
     <details class="pass" open>
       <summary>
@@ -449,6 +483,7 @@ tr.deprecated { opacity: .55; }
       </div>
     </details>
     
+    </div>
   </div>
 </main>
 
