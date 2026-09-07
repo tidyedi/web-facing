@@ -69,10 +69,13 @@
     <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>.
   </p>
 
-  <img class="hero" src="social-preview.png" width="1280" height="640"
-       alt="Broken X12 EDI becomes a clean copy plus a per-pass report: leading email
-            junk removed, the ISA tag cased and its elements padded to fixed width, the
-            envelope rebuilt — with each finding's severity, code, and byte offset.">
+  <img class="hero" src="social-preview.png" width="1280" height="566"
+       alt="Three steps: a malformed X12 file (email header before the ISA, lowercase tag,
+            short elements, wrong group count) → iterative repair (locate the ISA, recover
+            delimiters, pad to fixed width, rebuild the envelope, re-run until clean or
+            stable) → a conformant copy plus a per-pass report of every finding with its
+            code and byte offset. Private by design; exports to JSON/Markdown/HTML/text/CSV;
+            no account, nothing to install.">
 
   <div class="cards">
     <!-- LIVE-APP-CARD: the live app is on Render at x12-tidy-web.onrender.com.

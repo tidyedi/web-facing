@@ -6,7 +6,7 @@
 [![CI](https://github.com/tidyedi/web-facing/actions/workflows/ci.yml/badge.svg)](https://github.com/tidyedi/web-facing/actions/workflows/ci.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-[![Repair malformed X12 EDI — paste a broken interchange, get a clean copy and a report of every fix. No account, nothing stored.](docs/social-preview.png)](https://repair.tidyedi.com)
+[![Repair malformed X12 EDI: a malformed file (email header before the ISA, lowercase tag, short elements, wrong group count) → iterative repair (locate the ISA, recover delimiters, pad to fixed width, rebuild the envelope) → a conformant copy plus a per-pass report of every finding. Private by design, no account, nothing to install.](docs/social-preview.png)](https://repair.tidyedi.com)
 
 A small web front end for [**x12-tidy**](https://github.com/tidyedi/x12-tidy).
 Paste a malformed ANSI X12 interchange into a form; get back a cleansed,
