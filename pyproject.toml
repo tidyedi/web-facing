@@ -39,7 +39,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.metadata]
-# x12-tidy is installed straight from its git repo (it has no PyPI release yet).
+# x12-tidy is pinned to a commit of its git `main`, not the PyPI package: the
+# PyPI release lags `main`, and this app depends on `main`-only work. Revisit
+# once a PyPI release carries what we need.
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]

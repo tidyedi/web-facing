@@ -1,5 +1,36 @@
 # Changelog
 
+## Unreleased
+
+Changes on `main` since the v0.1.0 tag, not yet cut as a new version.
+
+### Deployed
+
+- **The canonical instance is live.** Landing page at
+  <https://repair.tidyedi.com> (GitHub Pages, `main` `/docs`); the app on
+  Render (Docker, `render.yaml`, Starter plan — always-on). Worked examples at
+  <https://repair.tidyedi.com/demo/>. Deployment and ops detail moved to a
+  private repo.
+- Static assets are linked root-relative and `serve` trusts the platform's
+  `X-Forwarded-Proto`, so the app renders correctly behind Render's
+  TLS-terminating proxy (previously served `http://` asset URLs that the
+  browser blocked as mixed content). This also makes the per-IP rate limit
+  key on the real client IP.
+
+### Changed
+
+- **The verdict is decided in one place** (`RepairRun.verdict`) and rendered by
+  the app, the report, and the demo alike. Any residual **fatal** finding now
+  reads as "Cannot be repaired", and the payload is labelled a *partially
+  repaired interchange — not conformant* with a caveat, never a "corrected
+  interchange".
+- The "Repair passes" section and every report format now explain the pass
+  model (pass 1 repairs your input; later passes run on the prior output).
+- Reports say "Why it stopped: <plain sentence>" instead of the internal
+  `stop_reason` key.
+- `CLAUDE.md`'s "one rule" reworded as maintainer-facing guidance about the
+  x12-tidy import boundary.
+
 ## v0.1.0 — 2026-09-06
 
 First tagged release. A stateless web front end for
@@ -38,13 +69,10 @@ interchange, get an iteratively-repaired copy and a per-pass report.
   `X12_TIDY_WEB_RATE_LIMIT`).
 - `serve` honours `$PORT`; the Docker image runs read-only, non-root.
 - Opt-in "report a wrong result" `mailto:` (`X12_TIDY_WEB_FEEDBACK_EMAIL`).
-- Static demo bundle in `docs/demo/`, published at
-  <https://tidyedi.github.io/web-facing/demo/>; landing page at
-  <https://tidyedi.github.io/web-facing/>.
-- Deployment guide (Hugging Face Spaces, Cloud Run, VPS) in
-  `docs/DEPLOYMENT.md`.
+- Static demo bundle in `docs/demo/`, published on GitHub Pages.
+- Deployment guide in `docs/DEPLOYMENT.md` (later moved to a private ops repo;
+  see the Unreleased section).
 
 ### Not yet done
 
-Hosting the canonical instance, an update mailing list, and a few
-marketing/links items — see the open issues.
+An update mailing list and a few marketing/links items — see the open issues.
