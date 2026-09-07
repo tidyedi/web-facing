@@ -194,6 +194,9 @@ button.ghost { background: transparent; }
 .panel-actions.download { flex-wrap: wrap; }
 
 .hint { color: var(--dim); font-size: .85rem; margin: .5rem 0 0; }
+/* a hint that carries a real explanation, not just an aside — readable size,
+   normal text colour, a bit of separation */
+.hint.lead { color: var(--ink); font-size: .92rem; margin: .35rem 0 1rem; line-height: 1.5; }
 
 .exploded-box { margin-top: .6rem; }
 .exploded-box &gt; summary { cursor: pointer; font-size: .9rem; color: var(--accent); }
@@ -380,7 +383,6 @@ tr.deprecated { opacity: .55; }
     Clean — the interchange is conformant, with nothing left to fix.
     <small>
       2 passes ·
-      A pass returned no findings. ·
       output differs from the input
     </small>
   </div>
@@ -412,6 +414,13 @@ tr.deprecated { opacity: .55; }
 
   <div class="panel">
     <h2>Repair passes</h2>
+    <p class="hint lead">
+      Each pass runs x12-tidy once. <strong>Pass&nbsp;1</strong> works on the
+      interchange as submitted and does the structural repairs.
+      <strong>Pass&nbsp;2</strong> (and any later pass) runs on the previous
+      pass's output, so it shows only what is still wrong after those repairs.
+      The loop stops when a pass changes nothing or finds nothing.
+    </p>
     <p class="hint">
       The <strong>Byte</strong> column is the offset into the submitted text where
       the flagged structure begins; ISA-line findings share a number, and a dash
