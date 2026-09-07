@@ -33,6 +33,20 @@ def _default_port() -> int:
     return 8000
 
 
+def _forwarded_allow_ips() -> str:
+    """Which client IPs uvicorn trusts to set ``X-Forwarded-Proto`` / ``-For``.
+
+    On a managed host (Render, Cloud Run, Fly, Railway) the container port is
+    reachable *only* through the platform's TLS-terminating proxy, which always
+    sets these headers -- so the safe, correct default is to trust them (``"*"``).
+    Without this, ``url_for`` sees the proxy->app hop as plain ``http`` and emits
+    ``http://`` asset URLs that the browser then blocks as mixed content on the
+    ``https`` page. Set ``X12_TIDY_WEB_FORWARDED_ALLOW_IPS`` to a comma-separated
+    list (or ``""``) to narrow it when you run behind your own proxy.
+    """
+    return os.environ.get("X12_TIDY_WEB_FORWARDED_ALLOW_IPS", "*")
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="x12-tidy-web", description=__doc__)
     parser.add_argument(
@@ -90,6 +104,8 @@ def _cmd_serve(args: argparse.Namespace) -> int:
         port=args.port,
         reload=args.reload,
         log_level=args.log_level,
+        proxy_headers=True,
+        forwarded_allow_ips=_forwarded_allow_ips(),
     )
     return 0
 
