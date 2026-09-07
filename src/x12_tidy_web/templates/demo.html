@@ -46,17 +46,17 @@
     <small>
       {{ run.iteration_count }} pass{{ '' if run.iteration_count == 1 else 'es' }} ·
       {{ run.stop_reason_detail }} ·
-      corrected text {{ 'differs from' if run.changed else 'matches' }} the input
+      output {{ 'differs from' if run.changed else 'matches' }} the input
     </small>
   </div>
 
   <div class="result-grid">
     <div class="panel">
-      <div class="panel-head"><h2>{{ 'Partially repaired — not yet valid' if unfixable else 'Corrected interchange' }}</h2></div>
-      {% if unfixable %}
-      <p class="panel-warning">{{ fatal_count }} fatal finding{{ '' if fatal_count == 1 else 's' }} below — a conforming parser will still reject this interchange. Do not send it as-is; resolve {{ 'it' if fatal_count == 1 else 'them' }} in your source data and repair again.</p>
+      <div class="panel-head"><h2>{{ run.verdict.output_label }}</h2></div>
+      {% if run.verdict.output_caveat %}
+      <p class="panel-warning{{ ' is-fatal' if run.verdict.state in ('unfixable', 'notconverged') else '' }}">{{ run.verdict.output_caveat }}</p>
       {% endif %}
-      <textarea readonly spellcheck="false" rows="8">{{ run.final_text or '(no corrected interchange — the input could not be recovered)' }}</textarea>
+      <textarea readonly spellcheck="false" rows="8">{{ run.final_text or '(no output — the input could not be recovered)' }}</textarea>
     </div>
 
     <div class="panel">

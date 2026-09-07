@@ -43,10 +43,11 @@ def test_verdicts_match_the_samples(bundle: Path) -> None:
     assert "Cannot be repaired — 1 fatal finding" in fwd
     assert "structure.functional-group-count-mismatch" in fwd
     assert "Forwarded email" in fwd
-    # the corrected-output panel itself must warn — not just the verdict box
-    assert "Partially repaired — not yet valid" in fwd
-    assert 'class="panel-warning"' in fwd
-    assert "a conforming parser will still reject this interchange" in fwd
+    # the output panel itself is labelled honestly and warns — not just the
+    # verdict box. It is a partial repair, not a "corrected interchange".
+    assert "Partially repaired interchange — not conformant" in fwd
+    assert 'class="panel-warning is-fatal"' in fwd
+    assert "not a drop-in replacement" in fwd
 
     pipe = (bundle / "pipe-delimited.html").read_text()
     assert "verdict ok" in pipe

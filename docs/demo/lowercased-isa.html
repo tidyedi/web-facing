@@ -153,20 +153,27 @@ button.ghost { background: transparent; }
 .verdict.fail::before      { content: &#34;\2715&#34;; color: var(--fatal); }
 .verdict small { display: block; font-weight: 400; color: var(--dim); margin-top: .3rem; }
 
-/* Inline warning inside a result panel — e.g. the corrected-interchange panel
-   when a fatal finding means the payload is still not conformant. */
+/* Inline caveat inside a result panel — e.g. the output panel when the run
+   did not come out clean. Amber by default; red when the result is fatal /
+   non-conformant (.is-fatal). */
 .panel-warning {
   margin: 0 0 .7rem;
   padding: .6rem .8rem;
-  border: 1px solid #eec4c4;
-  border-left: 4px solid var(--fatal);
+  border: 1px solid #eed9b6;
+  border-left: 4px solid var(--error);
   border-radius: 6px;
-  background: #fdf1f1;
-  color: var(--fatal);
+  background: #fdf6ec;
+  color: #8a5a00;
   font-weight: 600;
   font-size: .92rem;
 }
 .panel-warning::before { content: &#34;\26A0\FE0F&#34;; margin-right: .45rem; }
+.panel-warning.is-fatal {
+  border-color: #eec4c4;
+  border-left-color: var(--fatal);
+  background: #fdf1f1;
+  color: var(--fatal);
+}
 
 .result-grid {
   display: grid;
@@ -374,7 +381,7 @@ tr.deprecated { opacity: .55; }
     <small>
       2 passes ·
       A pass returned no findings. ·
-      corrected text differs from the input
+      output differs from the input
     </small>
   </div>
 

@@ -101,7 +101,7 @@ function renderVerdict(run) {
       text:
         `${run.iteration_count} pass${run.iteration_count === 1 ? "" : "es"} · ` +
         `${stopDetail} · ` +
-        `corrected text ${run.changed ? "differs from" : "matches"} the input · ` +
+        `output ${run.changed ? "differs from" : "matches"} the input · ` +
         `final findings: ${countsSummary(run.residual_severity_counts)}`,
     })
   );
@@ -425,20 +425,17 @@ function renderRun(run) {
   useBtn.disabled = !hasCorrected;
   downloadBtn.disabled = false;
 
-  // When a fatal finding remains, the payload in this panel is NOT a drop-in
-  // replacement — say so right here, not only in the verdict box above.
-  const unfixable = run.verdict.state === "unfixable";
-  correctedTitle.textContent = unfixable
-    ? "Partially repaired — not yet valid"
-    : "Corrected interchange";
-  correctedWarning.hidden = !unfixable;
-  if (unfixable) {
-    const n = run.residual_severity_counts.fatal;
-    correctedWarning.textContent =
-      `${n} fatal finding${n === 1 ? "" : "s"} below — a conforming parser will still ` +
-      `reject this interchange. Do not send it as-is; resolve ${n === 1 ? "it" : "them"} in ` +
-      "your source data and repair again.";
-  }
+  // Label the payload honestly (it is only a "corrected interchange" when the
+  // run came out clean) and carry the caveat right here, not only in the
+  // verdict box above. Both strings come from the engine's verdict.
+  correctedTitle.textContent = run.verdict.output_label;
+  const caveat = run.verdict.output_caveat;
+  correctedWarning.hidden = !caveat;
+  correctedWarning.textContent = caveat;
+  correctedWarning.classList.toggle(
+    "is-fatal",
+    run.verdict.state === "unfixable" || run.verdict.state === "notconverged"
+  );
 
   const touchedIsa = run.iterations.some((it) =>
     it.diagnostics.some((d) => d.code.startsWith("isa."))

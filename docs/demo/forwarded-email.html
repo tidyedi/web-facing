@@ -153,20 +153,27 @@ button.ghost { background: transparent; }
 .verdict.fail::before      { content: &#34;\2715&#34;; color: var(--fatal); }
 .verdict small { display: block; font-weight: 400; color: var(--dim); margin-top: .3rem; }
 
-/* Inline warning inside a result panel — e.g. the corrected-interchange panel
-   when a fatal finding means the payload is still not conformant. */
+/* Inline caveat inside a result panel — e.g. the output panel when the run
+   did not come out clean. Amber by default; red when the result is fatal /
+   non-conformant (.is-fatal). */
 .panel-warning {
   margin: 0 0 .7rem;
   padding: .6rem .8rem;
-  border: 1px solid #eec4c4;
-  border-left: 4px solid var(--fatal);
+  border: 1px solid #eed9b6;
+  border-left: 4px solid var(--error);
   border-radius: 6px;
-  background: #fdf1f1;
-  color: var(--fatal);
+  background: #fdf6ec;
+  color: #8a5a00;
   font-weight: 600;
   font-size: .92rem;
 }
 .panel-warning::before { content: &#34;\26A0\FE0F&#34;; margin-right: .45rem; }
+.panel-warning.is-fatal {
+  border-color: #eec4c4;
+  border-left-color: var(--fatal);
+  background: #fdf1f1;
+  color: var(--fatal);
+}
 
 .result-grid {
   display: grid;
@@ -373,19 +380,19 @@ ISA*00*   *00*   *ZZ*NORTHWIND*ZZ*CONTOSO*240401*0915*U*00401*000000501*0*P*:~GS
   </section>
 
   <div class="verdict fail">
-    Cannot be repaired — 1 fatal finding below. A conforming parser rejects an interchange that carries any fatal finding, and x12-tidy cannot fix it automatically. Any structural repairs earlier passes made are still applied to the corrected text below.
+    Cannot be repaired — 1 fatal finding below. A conforming parser rejects an interchange that carries any fatal finding, and x12-tidy cannot fix it automatically. The structural repairs earlier passes made are still shown below, but the result is not a conformant interchange.
     <small>
       2 passes ·
       A pass reported findings but changed nothing; they cannot be auto-repaired. ·
-      corrected text differs from the input
+      output differs from the input
     </small>
   </div>
 
   <div class="result-grid">
     <div class="panel">
-      <div class="panel-head"><h2>Partially repaired — not yet valid</h2></div>
+      <div class="panel-head"><h2>Partially repaired interchange — not conformant</h2></div>
       
-      <p class="panel-warning">1 fatal finding below — a conforming parser will still reject this interchange. Do not send it as-is; resolve it in your source data and repair again.</p>
+      <p class="panel-warning is-fatal">This still carries 1 fatal finding that a conforming parser will reject. It is not a drop-in replacement — resolve it in your source data and repair again.</p>
       
       <textarea readonly spellcheck="false" rows="8">ISA*00*          *00*          *ZZ*NORTHWIND      *ZZ*CONTOSO        *240401*0915*U*00401*000000501*0*P*:~GS*PO*NORTHWIND*CONTOSO*20240401*0915*501*X*004010~ST*850*0001~BEG*00*NE*PO-2024-0501**20240401~N1*ST*Northwind Traders Warehouse 3~PO1*1*24*CA*18.50**BP*NW-COFFEE-005~PO1*2*6*EA*42.00**BP*NW-GRINDER-XL~CTT*2~SE*7*0001~GE*1*501~IEA*2*000000501~</textarea>
     </div>

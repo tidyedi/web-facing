@@ -218,17 +218,20 @@ class RepairRun:
         """The single source of truth for the top-line result.
 
         Returns a stable ``state`` key, the ``css_class`` the web and demo
-        panels style on, and the ``headline`` sentence shown to the visitor.
-        Every renderer -- the live app (``static/app.js``), the downloaded
-        report (``reporting.py``), and the static demo (``demo.py``) -- reads
-        this and nothing else, so the wording and, crucially, the rule that
-        **any residual fatal finding means the interchange cannot be
-        repaired** are defined here once.
+        panels style on, the ``headline`` sentence, and how to label the
+        payload x12-tidy produced -- ``output_label`` (a section heading /
+        panel title) and ``output_caveat`` (a warning line, or ``""``). Every
+        renderer -- the live app (``static/app.js``), the downloaded report
+        (``reporting.py``), and the static demo (``demo.py``) -- reads this and
+        nothing else.
 
-        A fatal finding is one a conforming parser rejects outright; x12-tidy
-        reports it but, by design, will not fabricate or guess the fix. So a
-        run that ends with even one fatal residual is "cannot be repaired",
-        regardless of how much structural cleanup earlier passes achieved.
+        The rule defined here once: **any residual fatal finding means the
+        interchange cannot be repaired.** A fatal finding is one a conforming
+        parser rejects outright; x12-tidy reports it but, by design, will not
+        fabricate or guess the fix. So a run that ends with even one fatal
+        residual is not a "corrected interchange" no matter how much structural
+        cleanup earlier passes did -- it is a *partial repair that is still not
+        conformant*, and both the label and the caveat say so.
         """
         counts = self.residual_severity_counts
         if not self.recovered:
@@ -238,25 +241,36 @@ class RepairRun:
                 "headline": (
                     "Unrecoverable — no ISA line could be located, so there was nothing to repair."
                 ),
+                "output_label": "No output",
+                "output_caveat": "",
             }
         if self.clean:
             return {
                 "state": "clean",
                 "css_class": "ok",
                 "headline": "Clean — the interchange is conformant, with nothing left to fix.",
+                "output_label": "Corrected interchange",
+                "output_caveat": "",
             }
         if counts["fatal"]:
             n = counts["fatal"]
             noun = "finding" if n == 1 else "findings"
             them = "it" if n == 1 else "them"
+            has = "carries" if n == 1 else "carry"
             return {
                 "state": "unfixable",
                 "css_class": "fail",
                 "headline": (
                     f"Cannot be repaired — {n} fatal {noun} below. A conforming parser rejects "
                     "an interchange that carries any fatal finding, and x12-tidy cannot fix "
-                    f"{them} automatically. Any structural repairs earlier passes made are still "
-                    "applied to the corrected text below."
+                    f"{them} automatically. The structural repairs earlier passes made are still "
+                    "shown below, but the result is not a conformant interchange."
+                ),
+                "output_label": "Partially repaired interchange — not conformant",
+                "output_caveat": (
+                    f"This still {has} {n} fatal {noun} that a conforming parser will reject. It "
+                    f"is not a drop-in replacement — resolve {them} in your source data and "
+                    "repair again."
                 ),
             }
         if not self.converged:
@@ -264,7 +278,12 @@ class RepairRun:
                 "state": "notconverged",
                 "css_class": "fail",
                 "headline": (
-                    "Did not converge within the pass limit — treat the corrected output with care."
+                    "Did not converge within the pass limit — treat this output with care."
+                ),
+                "output_label": "Best-effort output — did not converge",
+                "output_caveat": (
+                    "The repair loop hit its pass limit without settling. Check this against the "
+                    "passes above before relying on it."
                 ),
             }
         if counts["error"]:
@@ -277,6 +296,11 @@ class RepairRun:
                     f"Partly repaired — {n} conformance {noun} below could not be auto-repaired. "
                     "None are fatal, so a conforming parser will not reject the interchange outright."
                 ),
+                "output_label": "Repaired interchange — residual findings",
+                "output_caveat": (
+                    f"{n} conformance {noun} could not be auto-repaired (none fatal). Review the "
+                    "passes above."
+                ),
             }
         return {
             "state": "residual-advisory",
@@ -285,6 +309,8 @@ class RepairRun:
                 "Repaired — no conformance errors remain. The findings below are advisory: trust "
                 "and QA signals x12-tidy reports but does not change."
             ),
+            "output_label": "Repaired interchange",
+            "output_caveat": "",
         }
 
     def as_dict(self) -> dict[str, Any]:
