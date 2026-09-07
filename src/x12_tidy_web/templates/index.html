@@ -150,6 +150,15 @@
           <button type="button" id="download-btn" class="primary" disabled>Download</button>
         </div>
       </div>
+      <p class="hint lead">
+        Each pass runs <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
+        once. <strong>Pass&nbsp;1</strong> works on the interchange you submitted
+        and does the structural repairs. <strong>Pass&nbsp;2</strong> (and any
+        later pass) runs on the <em>previous pass's output</em>, so it shows only
+        what is still wrong after those repairs — usually things x12-tidy can flag
+        but not safely fix on its own. The loop stops when a pass changes nothing
+        or finds nothing; most interchanges settle in one or two passes.
+      </p>
       <dl class="legend">
         <div><dt><span class="pill fatal">fatal</span></dt><dd>A conforming parser will reject the interchange. x12-tidy flags it but cannot make it valid.</dd></div>
         <div><dt><span class="pill error">error</span></dt><dd>A real conformance violation. x12-tidy repaired what it could; the value or structure was wrong.</dd></div>

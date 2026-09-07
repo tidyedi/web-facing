@@ -75,6 +75,16 @@ def test_clean_report_labels_the_output_corrected(clean_run) -> None:
     assert "⚠" not in text
 
 
+@pytest.mark.parametrize("fmt", ["markdown", "text", "html"])
+def test_reports_explain_the_stop_and_the_pass_model(dirty_run, fmt: str) -> None:
+    text = render_report(dirty_run, fmt).content.decode()
+    # the bare internal stop-reason key is never shown; the sentence is
+    assert "Stop reason" not in text and "stop reason" not in text
+    assert "the repair settled" in text
+    # the pass model is spelled out for the reader
+    assert "Pass 1 works on the interchange you submitted" in text
+
+
 def test_csv_report_has_one_row_per_finding(dirty_run) -> None:
     import csv
     import io

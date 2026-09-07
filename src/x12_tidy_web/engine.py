@@ -149,12 +149,19 @@ class Iteration:
         }
 
 
-#: The four ways :func:`repair` can stop, and whether each counts as converged.
+#: The four ways :func:`repair` can stop. The value is a plain-language
+#: explanation shown to the visitor wherever a run is summarised (the report,
+#: the verdict sub-line, the demo) -- never show the bare key.
 STOP_REASONS: dict[str, str] = {
-    "clean": "A pass returned no findings.",
-    "stable": "A pass reported findings but changed nothing; they cannot be auto-repaired.",
-    "unrecoverable": "No ISA line could be located; there is nothing to repair.",
-    "max-iterations": "Hit the iteration cap before converging.",
+    "clean": "the last pass came back with nothing left to flag.",
+    "stable": (
+        "the repair settled — running it again would change nothing, and the findings that "
+        "remain are ones x12-tidy reports but does not attempt to fix."
+    ),
+    "unrecoverable": "no ISA header could be found, so there was no interchange to repair.",
+    "max-iterations": (
+        "it hit the pass limit before the result stopped changing — treat the output with care."
+    ),
 }
 
 
@@ -212,6 +219,11 @@ class RepairRun:
     @property
     def residual_severity_counts(self) -> dict[str, int]:
         return severity_counts(self.residual_diagnostics)
+
+    @property
+    def stop_reason_detail(self) -> str:
+        """Plain-language explanation of why the loop stopped (never the bare key)."""
+        return STOP_REASONS.get(self.stop_reason, "")
 
     @property
     def verdict(self) -> dict[str, str]:
@@ -320,7 +332,7 @@ class RepairRun:
             "clean": self.clean,
             "changed": self.changed,
             "stop_reason": self.stop_reason,
-            "stop_reason_detail": STOP_REASONS.get(self.stop_reason, ""),
+            "stop_reason_detail": self.stop_reason_detail,
             "verdict": self.verdict,
             "max_iterations": self.max_iterations,
             "codec": self.codec,

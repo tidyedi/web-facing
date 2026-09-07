@@ -143,7 +143,7 @@ def _render_markdown(run: RepairRun) -> str:
     out.append(f"**Verdict:** {_verdict_line(run)}")
     out.append("")
     out.append(f"- Passes run: **{len(run.iterations)}** (cap {run.max_iterations})")
-    out.append(f"- Stop reason: **{run.stop_reason}** — {run.as_dict()['stop_reason_detail']}")
+    out.append(f"- Why it stopped: {run.stop_reason_detail}")
     out.append(f"- Output differs from input: **{'yes' if run.changed else 'no'}**")
     counts = run.residual_severity_counts
     out.append(
@@ -163,6 +163,13 @@ def _render_markdown(run: RepairRun) -> str:
         out.append("")
 
     out.append("## Passes")
+    out.append("")
+    out.append(
+        "Each pass runs x12-tidy once. Pass 1 works on the interchange you submitted and does "
+        "the structural repairs. Every later pass runs on the previous pass's output, so it "
+        "shows only what is still wrong after those repairs. The loop stops when a pass changes "
+        "nothing or finds nothing."
+    )
     out.append("")
     for it in run.iterations:
         out.append(f"### Pass {it.index}")
@@ -213,9 +220,9 @@ def _render_text(run: RepairRun) -> str:
     out.append("")
     out.append(_verdict_line(run))
     out.append("")
-    out.append(f"passes run   : {len(run.iterations)} (cap {run.max_iterations})")
-    out.append(f"stop reason  : {run.stop_reason}")
-    out.append(f"text changed : {'yes' if run.changed else 'no'}")
+    out.append(f"passes run    : {len(run.iterations)} (cap {run.max_iterations})")
+    out.append(f"why it stopped: {run.stop_reason_detail}")
+    out.append(f"output changed: {'yes' if run.changed else 'no'}")
     c = run.residual_severity_counts
     out.append(f"final findings: {c['fatal']} fatal, {c['error']} error, {c['warning']} warning")
     out.append("")
@@ -224,6 +231,13 @@ def _render_text(run: RepairRun) -> str:
         out.append(f"  {label:<22}: {value or '-'}")
     if run.final_facts is not None:
         out.append("")
+
+    out.append(
+        "Each pass runs x12-tidy once. Pass 1 works on the interchange you submitted and does\n"
+        "the structural repairs; every later pass runs on the previous pass's output and shows\n"
+        "only what is still wrong. The loop stops when a pass changes nothing or finds nothing."
+    )
+    out.append("")
 
     for it in run.iterations:
         out.append(f"--- pass {it.index} " + "-" * 48)
@@ -309,7 +323,7 @@ def _render_html(run: RepairRun) -> str:
     parts.append(f"<p class='verdict'>{_esc(_verdict_line(run))}</p>")
     parts.append("<ul>")
     parts.append(f"<li>Passes run: <strong>{len(run.iterations)}</strong> (cap {run.max_iterations})</li>")
-    parts.append(f"<li>Stop reason: <strong>{_esc(run.stop_reason)}</strong></li>")
+    parts.append(f"<li>Why it stopped: {_esc(run.stop_reason_detail)}</li>")
     parts.append(f"<li>Output differs from input: <strong>{'yes' if run.changed else 'no'}</strong></li>")
     parts.append("</ul>")
 
@@ -321,6 +335,12 @@ def _render_html(run: RepairRun) -> str:
         parts.append("</tbody></table>")
 
     parts.append("<h2>Passes</h2>")
+    parts.append(
+        "<p class='muted'>Each pass runs x12-tidy once. Pass 1 works on the interchange you "
+        "submitted and does the structural repairs; every later pass runs on the previous "
+        "pass's output and shows only what is still wrong. The loop stops when a pass changes "
+        "nothing or finds nothing.</p>"
+    )
     for it in run.iterations:
         parts.append("<div class='pass'>")
         parts.append(f"<h3>Pass {it.index}</h3>")

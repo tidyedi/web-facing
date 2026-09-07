@@ -182,6 +182,9 @@ def test_index_links_and_byte_note(client) -> None:
     assert "https://tidyedi.com" not in text and "//tidyedi.com/" not in text
     assert "github.com/tidyedi/x12-tidy/blob/" in text  # registry link in the passes note
     assert "The <strong>Byte</strong> column" in text
+    # the pass model is explained on the page, not left for the visitor to infer
+    assert "Pass&nbsp;1</strong> works on the interchange you submitted" in text
+    assert "runs on the <em>previous pass's output</em>" in text
     # "Feedback" -> a web-facing discussion (not Issues), nav + footer + results prompt
     assert text.count("tidyedi/web-facing/discussions/new?category=ideas") == 3
     assert "tidyedi/web-facing/issues" not in text

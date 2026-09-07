@@ -93,14 +93,14 @@ function renderVerdict(run) {
   // engine (RepairRun.verdict). This just paints it.
   verdictEl.className = "verdict";
   verdictEl.classList.add(run.verdict.css_class);
-  const headline = run.verdict.headline;
-  const stopDetail = run.stop_reason_detail || run.stop_reason;
+  // The headline already says *why* the run ended the way it did; this sub-line
+  // is just the compact facts. (The full "why it stopped" wording is in the
+  // downloaded report, which has room for it.)
   verdictEl.replaceChildren(
-    document.createTextNode(headline),
+    document.createTextNode(run.verdict.headline),
     el("small", {
       text:
         `${run.iteration_count} pass${run.iteration_count === 1 ? "" : "es"} · ` +
-        `${stopDetail} · ` +
         `output ${run.changed ? "differs from" : "matches"} the input · ` +
         `final findings: ${countsSummary(run.residual_severity_counts)}`,
     })
