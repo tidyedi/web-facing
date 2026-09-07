@@ -21,6 +21,7 @@
     a.card { display:block; text-decoration:none; color:inherit; background:var(--panel);
       border:1px solid var(--line); border-radius:12px; padding:1.15rem 1.25rem; transition:border-color .12s, transform .12s; }
     a.card:hover { border-color:var(--brand); transform:translateY(-2px); }
+    a.card.primary { border-color:var(--brand); box-shadow:0 0 0 1px var(--brand); }
     a.card h2 { margin:0 0 .3rem; font-size:1.05rem; }
     a.card p { margin:0; color:var(--dim); font-size:.9rem; }
     .tag { display:inline-block; font-size:.7rem; font-weight:600; border-radius:999px;
@@ -45,13 +46,14 @@
   </p>
 
   <div class="cards">
-    <!-- LIVE-APP-CARD: when hosted, set href to the app URL, change the tag to
-         `tag live`>Live, and the copy to "Paste your own interchange…". -->
-    <a class="card" href="https://github.com/tidyedi/web-facing/subscription">
-      <h2>Live app <span class="tag soon">coming soon</span></h2>
+    <!-- LIVE-APP-CARD: hosted at Render (free tier — first request after idle
+         can take ~50 s to wake). If a custom domain (tidy.tidyedi.com) is added
+         later, update href here and the repo Website field. -->
+    <a class="card primary" href="https://x12-tidy-web.onrender.com">
+      <h2>Live app <span class="tag live">live</span></h2>
       <p>Paste your own interchange and repair it — hosted, nothing to install.
-        Not up yet: watch the repo (<em>Releases only</em>, needs a GitHub
-        account) to hear when it launches.</p>
+        Free instance: the first request after a quiet spell can take up to a
+        minute to wake, then it's fast.</p>
     </a>
     <a class="card" href="demo/">
       <h2>Static demo <span class="tag live">ready</span></h2>

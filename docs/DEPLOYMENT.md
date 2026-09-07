@@ -5,6 +5,22 @@ Maintainer notes for standing up the one hosted instance (see
 and what "functional for all" actually requires. This is not an invitation to
 run separate public copies; the goal is a single canonical service.
 
+## Current deployment
+
+**Live at <https://x12-tidy-web.onrender.com>** — Render free web service,
+Docker runtime, auto-deploys on every push to `main` (see `render.yaml`).
+The free instance **spins down after ~15 min idle**; the first request after
+that takes ~50 s to wake, then it's fast. To remove the spin-down, upgrade the
+service to Render's Starter plan ($7/mo) — one dropdown in the service
+settings, no reconfiguration.
+
+Not yet done: a custom domain (`tidy.tidyedi.com` → Render), and a second host
+on a different domain for reachability behind corporate network filters.
+**Google Cloud Run** is the best candidate for that second host — $0 at this
+traffic, ~1 s cold start — but it requires a credit card on file (never
+charged). `gcloud run deploy --source .` from the repo root, or the Cloud Run
+console's "deploy from a GitHub repository" flow.
+
 ## Should it go on the tidyedi site?
 
 Yes — as its own thing, not bolted into a marketing page. It is a live server
@@ -94,62 +110,31 @@ Every option below costs $0 for this app's traffic. The trade is always one of:
 sleeps when idle, needs a card on file for verification (never charged), or you
 launch on the platform's URL instead of a custom domain.
 
+**As of 2026, "free + always-on + no card" no longer exists** — every genuinely
+free host spins down when idle. Pick which constraint to drop.
+
 | Platform | Card needed? | Trade-off |
 | --- | --- | --- |
-| **Hugging Face Spaces** (Docker) | No | Sleeps after ~48 h idle, wakes in seconds; custom domain needs the paid tier. `*.hf.space` URL. |
-| **Google Cloud Run** | Yes (billing enabled, stays in free tier) | Scales to zero, ~1–3 s cold start; 2 M requests/mo free; custom domain + auto-HTTPS supported. |
-| **Render** (free web service) | No | Spins down after 15 min idle → 30–60 s cold start. `*.onrender.com` URL. |
-| **Oracle Cloud "Always Free" VM** | Yes (verification) | A real always-on VM; run `docker compose` + Caddy as in the VPS section below. No sleep. |
+| **Render** (free web service) | No | **In use.** Spins down after 15 min idle → ~50 s cold start. `*.onrender.com` URL; custom domain + TLS free. |
+| **Google Cloud Run** | Yes (billing enabled, stays in free tier) | Scales to zero, ~1 s cold start; 2 M requests/mo free; custom domain + auto-HTTPS. Best second host. |
+| **Koyeb** (free) | Usually no (region-dependent) | 1 service, 512 MB. Scales to zero after 1 h idle (can't be disabled on free), 1–5 s cold start. |
+| **Oracle Cloud "Always Free" VM** | Yes (verification) | A real always-on VM; run `docker compose` + Caddy as in the VPS section below. No sleep. ARM capacity is often unavailable. |
+| ~~**Hugging Face Spaces** (Docker)~~ | — | **No longer free.** As of 2026 a Docker Space requires HF PRO ($9/mo); the free tier is static-only. Do not use. |
 
-Rate limiting on the managed platforms (HF, Render): you can't put nginx/Caddy in
-front, but the app's built-in per-IP limit on the repair endpoints (30/min,
-`X12_TIDY_WEB_RATE_LIMIT`) covers you. On Cloud Run or a VPS you can also put
-Cloudflare's free tier in front of a custom domain for whole-site limiting.
+Rate limiting on the managed platforms (Render, Koyeb, Cloud Run): you can't put
+nginx/Caddy in front, but the app's built-in per-IP limit on the repair
+endpoints (30/min, `X12_TIDY_WEB_RATE_LIMIT`) covers you. On Cloud Run or a VPS
+you can also put Cloudflare's free tier in front of a custom domain for
+whole-site limiting.
 
-### Hugging Face Spaces (recommended for a no-cost launch)
+### Hugging Face Spaces — no longer usable
 
-1. **Create the Space** — <https://huggingface.co/new-space>, SDK **Docker**,
-   blank template, visibility **Public**. Name it e.g. `x12-tidy-web`.
-2. **Add the Space metadata** to `README.md` — a YAML block at the very top:
-
-   ```yaml
-   ---
-   title: x12-tidy-web
-   emoji: "\U0001F9F9"
-   colorFrom: green
-   colorTo: gray
-   sdk: docker
-   app_port: 8000
-   pinned: false
-   license: apache-2.0
-   ---
-   ```
-
-   HF requires this; GitHub renders it as a small table above the README, which
-   is the normal cost of the pattern. `app_port` matches the container's default
-   (the CLI serves on `$PORT` if set, else 8000).
-3. **Push this repo to the Space:**
-
-   ```bash
-   git remote add space https://huggingface.co/spaces/<user>/x12-tidy-web
-   git push space main
-   ```
-
-   Authenticate with a write token from
-   <https://huggingface.co/settings/tokens> (use it as the git password, or run
-   `huggingface-cli login` first).
-4. The Space builds the `Dockerfile` automatically — watch the **Logs** tab. The
-   build fetches x12-tidy from GitHub (allowed) and takes a few minutes the
-   first time.
-5. Done: `https://<user>-x12-tidy-web.hf.space`.
-
-If the container fails to start with a permission error, HF runs containers as
-UID 1000 — change the `Dockerfile`'s `useradd --uid 10001 app` to `--uid 1000`
-and rebuild. (The app writes nothing, so this usually is not needed.)
-
-To keep the two copies in sync afterwards, push to both remotes (`git push
-origin main && git push space main`) or add a GitHub Action that mirrors on
-release.
+Left here as a warning: as of 2026 a **Docker** Space needs an HF **PRO**
+subscription ($9/mo). `hf repo create --repo-type space --space_sdk docker`
+returns `402 Payment Required` on a free account. The free tier is
+static-Spaces-only, which cannot run this app (it is a live uvicorn process).
+The Space metadata block in `README.md` is inert but harmless — leave it or
+strip it.
 
 ### Google Cloud Run
 
@@ -179,18 +164,27 @@ release.
 
 To redeploy after an update: re-run the same `gcloud run deploy` command.
 
-### Render (free web service)
+### Render (free web service) — the current deployment
+
+Already set up. `render.yaml` (committed) is a Blueprint, but the live service
+was created via the dashboard's plain **New → Web Service** flow:
 
 1. <https://dashboard.render.com> → **New → Web Service** → connect
-   `tidyedi/web-facing`.
-2. Runtime **Docker** (it finds the `Dockerfile`), instance type **Free**,
-   region of your choice. No start command — the `Dockerfile` `CMD` is used and
-   Render sets `$PORT`, which the CLI honours.
-3. Deploy. URL is `https://<name>.onrender.com`. Auto-redeploys on every push to
-   `main`.
+   `tidyedi/web-facing` (install the Render GitHub App on the `tidyedi` org,
+   grant it `web-facing`).
+2. Name `x12-tidy-web`, runtime **Docker** (auto-detected), branch `main`,
+   instance type **Free**. Health Check Path `/healthz`. No start command — the
+   `Dockerfile` `CMD` is used and Render sets `$PORT`, which the CLI honours.
+3. Deploy. URL: <https://x12-tidy-web.onrender.com>. Auto-redeploys on every
+   push to `main` (Auto-Deploy: On Commit).
 
-The free instance spins down after 15 minutes idle and cold-starts (~30–60 s)
-on the next request. No credit card.
+The free instance spins down after 15 minutes idle and cold-starts (~50 s) on
+the next request. No credit card. To remove the spin-down: service **Settings →
+Instance Type → Starter** ($7/mo), or downgrade back just as easily.
+
+Custom domain (`tidy.tidyedi.com`): service **Settings → Custom Domains → Add**,
+then add the `CNAME` it shows in Namecheap's Advanced DNS for `tidyedi.com`.
+Render issues the TLS cert automatically.
 
 ## Running on several free hosts at once
 
