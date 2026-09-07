@@ -16,9 +16,17 @@ repair runs in memory and is forgotten when the response is sent.
 Part of [TidyEDI](https://github.com/tidyedi). x12-tidy does all of the EDI work
 — this repo is just the iteration loop around it and the HTTP layer.
 
-**See it without running anything:** the
-[static demo](https://tidyedi.github.io/web-facing/demo/) has five broken
-sample interchanges, each repaired with the result baked in.
+**Use it: <https://repair.tidyedi.com>** — a landing page with two ways in:
+
+- **Live app** — paste your own interchange. Hosted on a free instance, so the
+  first request after an idle spell can take up to a minute to wake.
+- **Static version** — five broken samples repaired with the result baked in.
+  Plain pages on GitHub, nothing to reach or wait for; works on locked-down
+  networks. Read-only.
+
+If a corporate network blocks everything under `tidyedi.com`, the static
+version is also at its raw address:
+<https://tidyedi.github.io/web-facing/demo/>.
 
 ![The results view: verdict, corrected interchange, and envelope facts](docs/screenshot.png)
 
@@ -77,7 +85,8 @@ uv run x12-tidy-web demo            # writes ./x12-tidy-web-demo/
 One self-contained HTML file per sample — CSS and favicon inlined, every link
 relative or external, no server. A committed copy is in
 [`docs/demo/`](docs/demo/), served rendered at
-**<https://tidyedi.github.io/web-facing/demo/>**.
+**<https://repair.tidyedi.com/demo/>** (and its raw GitHub Pages address,
+<https://tidyedi.github.io/web-facing/demo/>).
 
 ## The HTTP API
 

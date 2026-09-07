@@ -40,25 +40,31 @@
     <h1>x12-tidy<span class="dim">-web</span></h1>
   </div>
   <p class="lede">
-    Paste a malformed ANSI X12 interchange, get a cleansed conformant copy plus a
-    per-pass report of what changed. Nothing you paste is stored or sent anywhere.
-    All EDI work is done by <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>.
+    Repair a malformed ANSI X12 interchange and see what each pass changed.
+    Two ways in — pick whichever your network allows. Nothing you paste is
+    stored or sent anywhere. All EDI work is done by
+    <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>.
   </p>
 
   <div class="cards">
-    <!-- LIVE-APP-CARD: hosted at Render (free tier — first request after idle
-         can take ~50 s to wake). If a custom domain (tidy.tidyedi.com) is added
-         later, update href here and the repo Website field. -->
+    <!-- LIVE-APP-CARD: the live app is on Render at x12-tidy-web.onrender.com.
+         This page is the published entry point (repair.tidyedi.com, GitHub
+         Pages) precisely so a visitor whose network blocks Render still lands
+         somewhere and can choose the static version. If the app ever moves or
+         gets its own *.tidyedi.com host, update the href below + the repo
+         Website field + src/x12_tidy_web/{demo.py,templates/_nav.html}. -->
     <a class="card primary" href="https://x12-tidy-web.onrender.com">
       <h2>Live app <span class="tag live">live</span></h2>
       <p>Paste your own interchange and repair it — hosted, nothing to install.
-        Free instance: the first request after a quiet spell can take up to a
-        minute to wake, then it's fast.</p>
+        On a free instance: if it's been idle, the first request can take up to
+        a minute to wake, then it's fast. Blocked or too slow? Come back and use
+        the static version.</p>
     </a>
     <a class="card" href="demo/">
-      <h2>Static demo <span class="tag live">ready</span></h2>
-      <p>Five broken sample interchanges, each repaired with the result baked in.
-        No server, nothing to install — open it now.</p>
+      <h2>Static version <span class="tag live">always works</span></h2>
+      <p>Five broken sample interchanges, each repaired with the result baked
+        in. Plain pages on GitHub — no server to reach, nothing to wait for,
+        works on locked-down networks. Read-only: you can't paste your own.</p>
     </a>
   </div>
 

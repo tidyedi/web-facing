@@ -163,9 +163,10 @@ def test_index_links_and_byte_note(client) -> None:
     # the shared nav appears twice — a top bar and in the footer
     assert text.count('class="navlinks"') == 2
     assert 'class="navbar"' in text
-    assert text.count("tidyedi.github.io/web-facing/demo/") == 2  # a "Demo" link in each
+    assert text.count("https://repair.tidyedi.com/demo/") == 2  # a "Demo" link in each
     assert "https://docs.tidyedi.com" in text
-    assert "tidyedi.com" not in text.replace("docs.tidyedi.com", "")  # the dead bare domain is gone
+    # the bare apex is reserved for a future product — never linked here
+    assert "https://tidyedi.com" not in text and "//tidyedi.com/" not in text
     assert "github.com/tidyedi/x12-tidy/blob/" in text  # registry link in the passes note
     assert "The <strong>Byte</strong> column" in text
 

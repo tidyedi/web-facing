@@ -2,13 +2,15 @@
    `current` ("repair" | "codes" | "demo") renders that entry as plain text
    instead of a link — no point linking the page you're on. home_href /
    codes_href / demo_href default to the live-app routes; the static demo
-   passes its own. #}
+   passes its own (see demo.py static_nav). The published entry point is
+   repair.tidyedi.com — a GitHub Pages landing page that offers both the live
+   app and the static version. #}
 <div class="navlinks">
   {% if current == "repair" %}<span class="here">Repair</span>
   {% else %}<a href="{{ home_href | default('/', true) }}">Repair</a>{% endif %}
 
   {% if current == "demo" %}<span class="here">Demo</span>
-  {% else %}<a href="{{ demo_href | default('https://tidyedi.github.io/web-facing/demo/', true) }}">Demo</a>{% endif %}
+  {% else %}<a href="{{ demo_href | default('https://repair.tidyedi.com/demo/', true) }}">Demo</a>{% endif %}
 
   {% if current == "codes" %}<span class="here">Code reference</span>
   {% else %}<a href="{{ codes_href | default('/codes', true) }}">Code reference</a>{% endif %}

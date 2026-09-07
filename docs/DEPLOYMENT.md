@@ -7,19 +7,31 @@ run separate public copies; the goal is a single canonical service.
 
 ## Current deployment
 
-**Live at <https://x12-tidy-web.onrender.com>** — Render free web service,
-Docker runtime, auto-deploys on every push to `main` (see `render.yaml`).
-The free instance **spins down after ~15 min idle**; the first request after
-that takes ~50 s to wake, then it's fast. To remove the spin-down, upgrade the
-service to Render's Starter plan ($7/mo) — one dropdown in the service
-settings, no reconfiguration.
+Two hosts, on purpose — the published URL is on the host least likely to be
+filtered:
 
-Not yet done: a custom domain (`tidy.tidyedi.com` → Render), and a second host
-on a different domain for reachability behind corporate network filters.
-**Google Cloud Run** is the best candidate for that second host — $0 at this
-traffic, ~1 s cold start — but it requires a credit card on file (never
-charged). `gcloud run deploy --source .` from the repo root, or the Cloud Run
-console's "deploy from a GitHub repository" flow.
+| URL | Host | What it serves |
+| --- | --- | --- |
+| **<https://repair.tidyedi.com>** | GitHub Pages (`main` `/docs`, `docs/CNAME`) | the landing page — two cards, "Live app" / "Static version". **This is the URL to publish.** Static version at `/demo/`. |
+| <https://x12-tidy-web.onrender.com> | Render free web service, Docker, auto-deploys on push to `main` (`render.yaml`) | the live app. The landing page's "Live app" card links here. |
+
+Why split it: a visitor whose corporate network blocks Render gets an
+*intercepted* block page, not a detectable failure — and the free Render
+instance can take ~50 s to wake, so a client-side "is it up?" check gives false
+negatives. The only thing that works is a plain landing page on a rarely-blocked
+host (GitHub Pages) that shows both options and lets the visitor choose. See
+`../CLAUDE.md` and the reachability note below.
+
+**Render spin-down:** free instance sleeps after ~15 min idle; first request
+after that takes ~50 s. Remove it by upgrading the service to Render's Starter
+plan ($7/mo) — one dropdown, no reconfiguration.
+
+**Not yet done:** a second *live-app* host on a different domain, so "Live app"
+also has a fallback (right now only the static version does). **Google Cloud
+Run** is the best candidate — $0 at this traffic, ~1 s cold start — but needs a
+credit card on file (never charged). `gcloud run deploy --source .` from the
+repo root, or the Cloud Run console's "deploy from a GitHub repository" flow.
+Add it as a second card, or as an alternate link on the "Live app" card.
 
 ## Should it go on the tidyedi site?
 

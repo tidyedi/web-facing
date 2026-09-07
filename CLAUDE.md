@@ -80,19 +80,28 @@ src/x12_tidy_web/
   static/        styles.css, app.js, favicon.svg. Vanilla JS, no build, no CDN.
 ```
 
-GitHub Pages (source: `main` `/docs`, with `docs/.nojekyll`) serves:
-- `docs/index.html` — the hand-maintained landing page at
-  <https://tidyedi.github.io/web-facing/> (the repo's Website link). It offers
-  "live app" and "static demo". **When the app is hosted somewhere, edit the
-  `<!-- LIVE-APP-CARD -->` anchor**: drop `disabled`, add `primary`, set `href`
-  to the real URL — and move `primary` off the demo card.
-- `docs/demo/` — the generated bundle. Regenerate with
+GitHub Pages (source: `main` `/docs`, `docs/.nojekyll`, `docs/CNAME` =
+`repair.tidyedi.com`) serves **the published entry point**:
+- `docs/index.html` at <https://repair.tidyedi.com> — the landing page. Two
+  cards: **Live app** (→ the Render URL) and **Static version** (→ `demo/`).
+  This page is deliberately on GitHub Pages, not the app's host: a visitor whose
+  network blocks Render can't be helped by anything *on* Render (block pages are
+  intercepted, not detectable; the free instance's ~50 s cold start defeats
+  timeouts too), so the entry point must be a plain page on a rarely-filtered
+  host that just shows both options. Don't "improve" this with auto-detection.
+- `docs/demo/` — the generated bundle, also at
+  <https://repair.tidyedi.com/demo/>. Regenerate with
   `uv run x12-tidy-web demo docs/demo` after changing samples, templates, or the
-  x12-tidy pin, then commit. Pages redeploys on push.
+  x12-tidy pin, then commit. Pages redeploys on push. (`build_demo` writes named
+  files, doesn't wipe the dir, so `docs/CNAME` is safe.)
 
-When a hosted URL exists, also update: the repo Website field, `demo.py`'s
-`static_nav["home_href"]`, and the `_nav.html` "Repair" default if it stops
-being `/`.
+The live app itself is on Render at `x12-tidy-web.onrender.com` (free tier,
+Docker, auto-deploys on push; `render.yaml`). See `docs/DEPLOYMENT.md`.
+
+If the app's URL changes (moves host, gets its own `*.tidyedi.com`), update all
+of: the `<!-- LIVE-APP-CARD -->` href in `docs/index.html`, the repo Website
+field (`gh repo edit … --homepage`), `demo.py`'s `static_nav["home_href"]`,
+`_nav.html`'s `demo_href` default, `README.md`, and `docs/DEPLOYMENT.md`.
 
 ### Why iterate?
 
