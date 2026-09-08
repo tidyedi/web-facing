@@ -187,6 +187,17 @@ button.ghost { background: transparent; }
 .panel-actions.download { flex-wrap: wrap; }
 
 .hint { color: var(--dim); font-size: .85rem; margin: .5rem 0 0; }
+
+/* the post-repair feedback prompt — readable, not a dim footnote */
+.feedback-line {
+  margin: 0;
+  padding: .6rem .85rem;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  background: var(--panel);
+  font-size: .9rem;
+}
 /* a hint that carries a real explanation, not just an aside — readable size,
    normal text colour, a bit of separation */
 .hint.lead { color: var(--ink); font-size: .92rem; margin: .35rem 0 1rem; line-height: 1.5; }

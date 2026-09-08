@@ -17,7 +17,6 @@
 
   <a href="https://docs.tidyedi.com">Docs</a>
   <a href="https://github.com/tidyedi/web-facing">Source</a>
-  <a href="https://github.com/tidyedi/web-facing/discussions/new?category=ideas"
-     title="Opens a GitHub discussion — a free account is needed to post">Feedback</a>
+  <a href="{{ feedback_href | default('https://github.com/tidyedi/web-facing/discussions/new?category=ideas', true) }}">Feedback</a>
   <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
 </div>

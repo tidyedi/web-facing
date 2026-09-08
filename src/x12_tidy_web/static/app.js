@@ -33,7 +33,7 @@ const formError = $("form-error");
 const sampleNote = $("sample-note");
 const results = $("results");
 const verdictEl = $("verdict");
-const reportWrong = $("report-wrong");
+const feedbackPrompt = $("feedback-prompt");
 const reportLink = $("report-link");
 const correctedEl = $("corrected");
 const correctedTitle = $("corrected-title");
@@ -400,8 +400,8 @@ function verdictHeadline(run) {
 }
 
 function updateReportLink(run) {
-  if (!CONFIG.feedbackEmail) return; // deployer didn't opt in
-  const subject = `[x12-tidy-web] wrong result: ${verdictHeadline(run)}`;
+  if (!CONFIG.feedbackEmail) return; // no address configured — leave it hidden
+  const subject = `[x12-tidy-web] feedback: ${verdictHeadline(run)}`;
   const body =
     `x12-tidy ${CONFIG.x12TidyRelease || "?"}\n` +
     `verdict: ${verdictHeadline(run)} (stop reason: ${run.stop_reason})\n` +
@@ -411,7 +411,7 @@ function updateReportLink(run) {
   reportLink.href = `mailto:${CONFIG.feedbackEmail}?subject=${encodeURIComponent(
     subject
   )}&body=${encodeURIComponent(body)}`;
-  reportWrong.hidden = false;
+  feedbackPrompt.hidden = false;
 }
 
 function renderRun(run) {

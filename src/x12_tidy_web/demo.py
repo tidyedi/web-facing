@@ -69,6 +69,8 @@ def build_demo(out_dir: Path) -> list[Path]:
         "home_href": "https://repair.tidyedi.com/",
         "demo_href": "index.html",
         "codes_href": "codes.html",
+        # the published bundle is tidyedi's, so "Feedback" is the email path
+        "feedback_href": "mailto:repair-feedback@tidyedi.com?subject=x12-tidy-web%20feedback",
     }
     written: list[Path] = []
 
