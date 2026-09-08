@@ -227,6 +227,11 @@ def test_index_has_the_segment_outline_and_config(client) -> None:
     assert 'id="app-config"' in text
 
 
+def test_index_has_a_clear_button(client) -> None:
+    # lets a visitor blank the form to paste a fresh interchange after one run
+    assert 'id="clear-btn"' in client.get("/").text
+
+
 def _app_config(html: str) -> dict:
     blob = html.split('id="app-config">', 1)[1].split("</script>", 1)[0]
     return json.loads(blob)

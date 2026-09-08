@@ -556,6 +556,26 @@ function useCorrected() {
   ediInput.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
+// Wipe the form back to a blank slate so a second interchange can be pasted
+// without hand-clearing the box. Also drops the saved draft and the results.
+function resetForm() {
+  ediInput.value = "";
+  maxIterInput.value = maxIterInput.defaultValue;
+  $("file").value = "";
+  $("sample-select").value = "";
+  sampleNote.hidden = true;
+  clearError();
+  results.hidden = true;
+  lastSampleSlug = null;
+  lastRun = null;
+  try {
+    sessionStorage.removeItem(DRAFT_KEY);
+  } catch {
+    /* storage unavailable — nothing to clear */
+  }
+  ediInput.focus();
+}
+
 function loadFile(ev) {
   const file = ev.target.files && ev.target.files[0];
   if (!file) return;
@@ -633,6 +653,7 @@ ediInput.addEventListener("input", () => {
 });
 maxIterInput.addEventListener("change", saveDraft);
 $("file").addEventListener("change", loadFile);
+$("clear-btn").addEventListener("click", resetForm);
 copyBtn.addEventListener("click", copyCorrected);
 useBtn.addEventListener("click", useCorrected);
 downloadBtn.addEventListener("click", download);
