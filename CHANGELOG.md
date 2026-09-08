@@ -30,6 +30,11 @@ Changes on `main` since the v0.1.0 tag, not yet cut as a new version.
   `stop_reason` key.
 - `CLAUDE.md`'s "one rule" reworded as maintainer-facing guidance about the
   x12-tidy import boundary.
+- **"Feedback" (nav, footer, landing page) is now an email link**
+  (`repair-feedback@tidyedi.com`) when a feedback address is configured — the
+  no-account path — falling back to a GitHub discussion otherwise. The
+  post-repair prompt is a clearer callout and pre-fills the run's verdict,
+  version, and stop reason into the message.
 
 ## v0.1.0 — 2026-09-06
 

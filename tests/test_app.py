@@ -185,8 +185,9 @@ def test_index_links_and_byte_note(client) -> None:
     # the pass model is explained on the page, not left for the visitor to infer
     assert "Pass&nbsp;1</strong> works on the interchange you submitted" in text
     assert "runs on the <em>previous pass's output</em>" in text
-    # "Feedback" -> a web-facing discussion (not Issues), nav + footer + results prompt
-    assert text.count("tidyedi/web-facing/discussions/new?category=ideas") == 3
+    # With no feedback address configured, "Feedback" (top nav + footer) falls
+    # back to a GitHub discussion; never Issues.
+    assert text.count("tidyedi/web-facing/discussions/new?category=ideas") == 2
     assert "tidyedi/web-facing/issues" not in text
 
 
@@ -231,14 +232,20 @@ def _app_config(html: str) -> dict:
     return json.loads(blob)
 
 
-def test_report_a_wrong_result_link_is_opt_in(monkeypatch) -> None:
+def test_feedback_email_drives_both_the_nav_link_and_the_results_prompt(monkeypatch) -> None:
     monkeypatch.delenv("X12_TIDY_WEB_FEEDBACK_EMAIL", raising=False)
-    off = _fresh_client(monkeypatch, "off")
-    assert _app_config(off.get("/").text)["feedbackEmail"] == ""
+    off = _fresh_client(monkeypatch, "off").get("/").text
+    assert _app_config(off)["feedbackEmail"] == ""
+    # no address -> nav "Feedback" is the GitHub discussion, no mailto anywhere
+    assert "mailto:" not in off
+    assert "discussions/new?category=ideas" in off
 
     monkeypatch.setenv("X12_TIDY_WEB_FEEDBACK_EMAIL", "ops@example.com")
-    on = _fresh_client(monkeypatch, "off")
-    assert _app_config(on.get("/").text)["feedbackEmail"] == "ops@example.com"
+    on = _fresh_client(monkeypatch, "off").get("/").text
+    assert _app_config(on)["feedbackEmail"] == "ops@example.com"
+    # address set -> nav "Feedback" becomes a mailto; the discussion link is gone
+    assert 'href="mailto:ops@example.com?subject=x12-tidy-web%20feedback"' in on
+    assert "discussions/new?category=ideas" not in on
 
 
 def test_index_embeds_the_samples(client) -> None:

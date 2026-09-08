@@ -194,6 +194,17 @@ button.ghost { background: transparent; }
 .panel-actions.download { flex-wrap: wrap; }
 
 .hint { color: var(--dim); font-size: .85rem; margin: .5rem 0 0; }
+
+/* the post-repair feedback prompt — readable, not a dim footnote */
+.feedback-line {
+  margin: 0;
+  padding: .6rem .85rem;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  background: var(--panel);
+  font-size: .9rem;
+}
 /* a hint that carries a real explanation, not just an aside — readable size,
    normal text colour, a bit of separation */
 .hint.lead { color: var(--ink); font-size: .92rem; margin: .35rem 0 1rem; line-height: 1.5; }
@@ -335,8 +346,7 @@ tr.deprecated { opacity: .55; }
 
   <a href="https://docs.tidyedi.com">Docs</a>
   <a href="https://github.com/tidyedi/web-facing">Source</a>
-  <a href="https://github.com/tidyedi/web-facing/discussions/new?category=ideas"
-     title="Opens a GitHub discussion — a free account is needed to post">Feedback</a>
+  <a href="mailto:repair-feedback@tidyedi.com?subject=x12-tidy-web%20feedback">Feedback</a>
   <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
 </div></div></nav>
 <header class="site-header">
@@ -507,8 +517,7 @@ tr.deprecated { opacity: .55; }
 
   <a href="https://docs.tidyedi.com">Docs</a>
   <a href="https://github.com/tidyedi/web-facing">Source</a>
-  <a href="https://github.com/tidyedi/web-facing/discussions/new?category=ideas"
-     title="Opens a GitHub discussion — a free account is needed to post">Feedback</a>
+  <a href="mailto:repair-feedback@tidyedi.com?subject=x12-tidy-web%20feedback">Feedback</a>
   <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
 </div>
   <p>x12-tidy-web 0.1.0 · x12-tidy 0.1.0 (git 04bffa4) · Apache-2.0 · static demo, nothing is sent anywhere</p>

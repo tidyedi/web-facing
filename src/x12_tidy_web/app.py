@@ -32,6 +32,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse, Response
@@ -65,6 +66,10 @@ _RATE_LIMIT_DEFAULT = "30/minute"
 _RATE_LIMIT_DISABLED = {"", "0", "off", "none", "disabled", "false"}
 
 
+#: Where the nav/footer "Feedback" link points when no feedback email is set.
+_FEEDBACK_DISCUSSIONS_URL = "https://github.com/tidyedi/web-facing/discussions/new?category=ideas"
+
+
 def _feedback_email() -> str:
     """Address for the "report a wrong result" link, or "" to hide it.
 
@@ -73,6 +78,17 @@ def _feedback_email() -> str:
     decides what to paste.
     """
     return os.environ.get("X12_TIDY_WEB_FEEDBACK_EMAIL", "").strip()
+
+
+def _feedback_href() -> str:
+    """The nav/footer "Feedback" target. A ``mailto:`` when a feedback address is
+    configured (the low-friction, no-account path), otherwise a GitHub
+    discussion — so a fork that sets no address never exposes someone else's
+    inbox."""
+    email = _feedback_email()
+    if email:
+        return f"mailto:{email}?subject={quote('x12-tidy-web feedback')}"
+    return _FEEDBACK_DISCUSSIONS_URL
 
 
 def _rate_limit() -> tuple[str, bool]:
@@ -131,6 +147,7 @@ def create_app() -> FastAPI:
                     "feedbackEmail": _feedback_email(),
                     "x12TidyRelease": x12_tidy_release(),
                 },
+                "feedback_href": _feedback_href(),
                 "current": "repair",
             },
         )
@@ -151,6 +168,7 @@ def create_app() -> FastAPI:
                 "fatal_count": sum(c["severity"] == "fatal" for c in catalog),
                 "error_count": sum(c["severity"] == "error" for c in catalog),
                 "warning_count": sum(c["severity"] == "warning" for c in catalog),
+                "feedback_href": _feedback_href(),
                 "current": "codes",
             },
         )
