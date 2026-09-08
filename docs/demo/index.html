@@ -358,7 +358,7 @@ tr.deprecated { opacity: .55; }
     </div>
     <p class="tagline">
       5 malformed X12 interchanges, each repaired by
-      <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a> 0.1.0 (git 3ce03cf)
+      <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a> 0.1.0 (git 04bffa4)
       with the result baked into a static page. No server, nothing sent anywhere.
       To paste your own interchange, use the
       <a href="https://repair.tidyedi.com/">hosted app</a>.
@@ -394,7 +394,7 @@ tr.deprecated { opacity: .55; }
   
   <section class="panel">
     <h2><a href="wrapped-isa.html" class="plain">Wrapped ISA header — 940 warehouse shipping order</a></h2>
-    <p class="hint">A mail client hard-wrapped the ISA segment mid-element, putting a CR/LF inside ISA08. x12-tidy removes the break, stitching RECEIVERTWO back together, and the interchange comes out conformant (one warning, resolved).</p>
+    <p class="hint">A mail client hard-wrapped the ISA segment mid-element, putting a CR/LF inside ISA08. x12-tidy replaces the break with a space, re-measures the element, and the interchange comes out conformant (one warning, one error, both resolved).</p>
     <p><a href="wrapped-isa.html">See the repair →</a></p>
   </section>
   
@@ -416,7 +416,7 @@ tr.deprecated { opacity: .55; }
   <a href="mailto:repair-feedback@tidyedi.com?subject=x12-tidy-web%20feedback">Feedback</a>
   <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
 </div>
-  <p>x12-tidy-web 0.1.0 · x12-tidy 0.1.0 (git 3ce03cf) · Apache-2.0</p>
+  <p>x12-tidy-web 0.1.0 · x12-tidy 0.1.0 (git 04bffa4) · Apache-2.0</p>
 </footer>
 </body>
 </html>

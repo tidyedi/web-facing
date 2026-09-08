@@ -4,14 +4,6 @@
 
 Changes on `main` since the v0.1.0 tag, not yet cut as a new version.
 
-### Dependency
-
-- Bumped the x12-tidy pin (`04bffa4` → `3ce03cf`). A CR/LF inside an ISA
-  element is now **removed** rather than replaced with a space, so a header
-  wrapped mid-value (`RECEIV<CRLF>ER`) is stitched back to `RECEIVER` instead of
-  coming out as `RECEIV··ER`. The `isa.element-embedded-newline` message changed
-  to "line break removed". Identified here, fixed upstream.
-
 ### Deployed
 
 - **The canonical instance is live.** Landing page at
