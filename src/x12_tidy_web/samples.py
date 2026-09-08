@@ -17,7 +17,7 @@ show different behaviour:
   or IEA). x12-tidy names every missing trailer but changes nothing; ends
   *stable* with the payload untouched.
 * ``wrapped-isa`` — a CR/LF wrapped into an ISA element by a mail client.
-  x12-tidy removes the break, stitching the element back together; ends *clean*.
+  x12-tidy replaces it with a space and re-measures; ends *clean*.
 
 Kept here rather than in the repo-root ``samples/`` directory so they ship in
 the wheel and the Docker image. The ``samples/*.edi`` files are generated copies
@@ -141,9 +141,9 @@ SAMPLES: tuple[Sample, ...] = (
         title="Wrapped ISA header — 940 warehouse shipping order",
         blurb=(
             "A mail client hard-wrapped the ISA segment mid-element, putting a "
-            "CR/LF inside ISA08. x12-tidy removes the break, stitching "
-            "RECEIVERTWO back together, and the interchange comes out conformant "
-            "(one warning, resolved)."
+            "CR/LF inside ISA08. x12-tidy replaces the break with a space, "
+            "re-measures the element, and the interchange comes out conformant "
+            "(one warning, one error, both resolved)."
         ),
         edi=(
             "ISA*00*          *00*          *ZZ*SHIPPERONE     *ZZ*RECEIVER\r\n"

@@ -357,7 +357,7 @@ tr.deprecated { opacity: .55; }
     </div>
     <p class="tagline">
       A static snapshot — the sample below was repaired by
-      <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a> 0.1.0 (git 3ce03cf)
+      <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a> 0.1.0 (git 04bffa4)
       and the result baked into this page. Nothing here talks to a server.
       To paste your own interchange, use the
       <a href="https://repair.tidyedi.com/">hosted app</a>.
@@ -384,7 +384,7 @@ tr.deprecated { opacity: .55; }
 
   <section class="panel">
     <h2>Wrapped ISA header — 940 warehouse shipping order</h2>
-    <p class="hint">A mail client hard-wrapped the ISA segment mid-element, putting a CR/LF inside ISA08. x12-tidy removes the break, stitching RECEIVERTWO back together, and the interchange comes out conformant (one warning, resolved).</p>
+    <p class="hint">A mail client hard-wrapped the ISA segment mid-element, putting a CR/LF inside ISA08. x12-tidy replaces the break with a space, re-measures the element, and the interchange comes out conformant (one warning, one error, both resolved).</p>
     <h3>The interchange as submitted</h3>
     <textarea readonly spellcheck="false" rows="6">ISA*00*          *00*          *ZZ*SHIPPERONE     *ZZ*RECEIVER
 TWO    *240705*2200*U*00401*000000900*0*P*:~GS*SW*SHIPPERONE*RECEIVERTWO*20240705*2200*900*X*004010~ST*940*0001~W05*N*ORDER-7781~N1*ST*Receiver Two DC~W66*PP*****FEDG~G62*10*20240706~SE*6*0001~GE*1*900~IEA*1*000000900~</textarea>
@@ -402,7 +402,7 @@ TWO    *240705*2200*U*00401*000000900*0*P*:~GS*SW*SHIPPERONE*RECEIVERTWO*2024070
     <div class="panel">
       <div class="panel-head"><h2>Corrected interchange</h2></div>
       
-      <textarea readonly spellcheck="false" rows="8">ISA*00*          *00*          *ZZ*SHIPPERONE     *ZZ*RECEIVERTWO    *240705*2200*U*00401*000000900*0*P*:~GS*SW*SHIPPERONE*RECEIVERTWO*20240705*2200*900*X*004010~ST*940*0001~W05*N*ORDER-7781~N1*ST*Receiver Two DC~W66*PP*****FEDG~G62*10*20240706~SE*6*0001~GE*1*900~IEA*1*000000900~</textarea>
+      <textarea readonly spellcheck="false" rows="8">ISA*00*          *00*          *ZZ*SHIPPERONE     *ZZ*RECEIVER  TWO  *240705*2200*U*00401*000000900*0*P*:~GS*SW*SHIPPERONE*RECEIVERTWO*20240705*2200*900*X*004010~ST*940*0001~W05*N*ORDER-7781~N1*ST*Receiver Two DC~W66*PP*****FEDG~G62*10*20240706~SE*6*0001~GE*1*900~IEA*1*000000900~</textarea>
     </div>
 
     <div class="panel">
@@ -411,7 +411,7 @@ TWO    *240705*2200*U*00401*000000900*0*P*:~GS*SW*SHIPPERONE*RECEIVERTWO*2024070
       
       <table class="facts"><tbody>
         <tr><th>Sender</th><td><span>ZZ / SHIPPERONE</span><span class="fact-src">From ISA05 (qualifier) and ISA06 (ID).</span></td></tr>
-        <tr><th>Receiver</th><td><span>ZZ / RECEIVERTWO</span><span class="fact-src">From ISA07 (qualifier) and ISA08 (ID).</span></td></tr>
+        <tr><th>Receiver</th><td><span>ZZ / RECEIVER  TWO</span><span class="fact-src">From ISA07 (qualifier) and ISA08 (ID).</span></td></tr>
         <tr><th>Usage indicator</th><td><span>P</span><span class="fact-src">ISA15 — P = production, T = test, I = information.</span></td></tr>
         <tr><th>Interchange version</th><td><span>00401</span><span class="fact-src">ISA12 — the interchange control version number.</span></td></tr>
         <tr><th>Date / time</th><td><span>240705 2200</span><span class="fact-src">ISA09 and ISA10 — when the interchange was prepared.</span></td></tr>
@@ -445,7 +445,7 @@ TWO    *240705*2200*U*00401*000000900*0*P*:~GS*SW*SHIPPERONE*RECEIVERTWO*2024070
         
           
         
-          
+          <span class="pill error">1 error</span>
         
           <span class="pill warning">1 warning</span>
         
@@ -463,13 +463,24 @@ TWO    *240705*2200*U*00401*000000900*0*P*:~GS*SW*SHIPPERONE*RECEIVERTWO*2024070
           <tbody>
           
             <tr>
+              <td><span class="sev error">ERROR</span></td>
+              <td><code>isa.element-width</code></td>
+              <td>0</td>
+              <td>
+                <strong>An ISA element is not its fixed width</strong>
+                <span class="finding-msg">ISA08 is 17 byte(s), over its fixed width of 15 by trailing spaces only; trimmed.</span>
+                <p class="finding-expl">Every ISA element has a fixed width -- ISA06 is 15 bytes, ISA13 is 9, and so on. This element was shorter (space-padded on the right to fit) or longer only by trailing spaces (trimmed). The value itself is unchanged. A sender that right-trims blank fixed-width fields is the usual cause. This is an error, not a warning: the ISA line is no longer 105 bytes, and conventional VAN services and fixed-offset parsers cannot read the interchange at all until it is repaired.</p>
+              </td>
+            </tr>
+          
+            <tr>
               <td><span class="sev warning">WARNING</span></td>
               <td><code>isa.element-embedded-newline</code></td>
               <td>0</td>
               <td>
                 <strong>A carriage return or line feed sits inside an ISA element</strong>
-                <span class="finding-msg">ISA08 contains 2 carriage-return/line-feed byte(s) (b&#39;RECEIVER\r\nTWO    &#39;); line break removed.</span>
-                <p class="finding-expl">An ISA element value contains a CR or LF byte -- almost always a sender that hard-wrapped the ISA segment across lines. The ISA is fixed-width with no sub-structure inside an element, so a newline here is never data; the byte is deleted, stitching the value back to what the sender wrote, and the element is then measured against its fixed width. The delimiters are already known at this point (ISA11 when it carries the repetition separator, and ISA16, are left untouched).</p>
+                <span class="finding-msg">ISA08 contains 2 carriage-return/line-feed byte(s) (b&#39;RECEIVER\r\nTWO    &#39;); replaced with spaces.</span>
+                <p class="finding-expl">An ISA element value contains a CR or LF byte -- almost always a sender that hard-wrapped the ISA segment across lines. The delimiters are already known at this point, so the byte cannot be a delimiter (ISA11 when it carries the repetition separator, and ISA16, are left untouched); it is replaced with a space and the element is then measured against its fixed width.</p>
               </td>
             </tr>
           
@@ -521,7 +532,7 @@ TWO    *240705*2200*U*00401*000000900*0*P*:~GS*SW*SHIPPERONE*RECEIVERTWO*2024070
   <a href="mailto:repair-feedback@tidyedi.com?subject=x12-tidy-web%20feedback">Feedback</a>
   <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
 </div>
-  <p>x12-tidy-web 0.1.0 · x12-tidy 0.1.0 (git 3ce03cf) · Apache-2.0 · static demo, nothing is sent anywhere</p>
+  <p>x12-tidy-web 0.1.0 · x12-tidy 0.1.0 (git 04bffa4) · Apache-2.0 · static demo, nothing is sent anywhere</p>
 </footer>
 </body>
 </html>
