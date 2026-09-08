@@ -1261,7 +1261,7 @@ wheels = [
 [[package]]
 name = "x12-tidy"
 version = "0.1.0"
-source = { git = "https://github.com/tidyedi/x12-tidy.git?rev=main#04bffa4a4bbdd4c54f39cc1bee43830fb12368e7" }
+source = { git = "https://github.com/tidyedi/x12-tidy.git?rev=main#3ce03cfa93c5eb333a57e06d7beba40ba15c5a5f" }
 
 [[package]]
 name = "x12-tidy-web"
