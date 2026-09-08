@@ -361,8 +361,8 @@ tr.deprecated { opacity: .55; }
       <h1><a href="index.html" class="plain">x12-tidy<span class="dim">-web</span></a> <span class="dim">/ codes</span></h1>
     </div>
     <p class="tagline">
-      Every finding x12-tidy&nbsp;<code>0.1.0 (git 04bffa4)</code> can emit, straight from its
-      <a href="https://github.com/tidyedi/x12-tidy/blob/04bffa4a4bbdd4c54f39cc1bee43830fb12368e7/src/x12_tidy/diagnostics/codes.py">diagnostic code registry</a> — the single source of truth that
+      Every finding x12-tidy&nbsp;<code>0.1.0 (git 3ce03cf)</code> can emit, straight from its
+      <a href="https://github.com/tidyedi/x12-tidy/blob/3ce03cfa93c5eb333a57e06d7beba40ba15c5a5f/src/x12_tidy/diagnostics/codes.py">diagnostic code registry</a> — the single source of truth that
       also backs <code>x12-tidy codes</code> and the library's own <code>docs/diagnostics.md</code>.
       This repo copies none of it; the table is built from the installed package
       at request time, so when a code's severity, title, or explanation changes
@@ -445,7 +445,7 @@ tr.deprecated { opacity: .55; }
           </td>
           <td>
             <strong>A carriage return or line feed sits inside an ISA element</strong>
-            <p class="finding-expl">An ISA element value contains a CR or LF byte -- almost always a sender that hard-wrapped the ISA segment across lines. The delimiters are already known at this point, so the byte cannot be a delimiter (ISA11 when it carries the repetition separator, and ISA16, are left untouched); it is replaced with a space and the element is then measured against its fixed width.</p>
+            <p class="finding-expl">An ISA element value contains a CR or LF byte -- almost always a sender that hard-wrapped the ISA segment across lines. The ISA is fixed-width with no sub-structure inside an element, so a newline here is never data; the byte is deleted, stitching the value back to what the sender wrote, and the element is then measured against its fixed width. The delimiters are already known at this point (ISA11 when it carries the repetition separator, and ISA16, are left untouched).</p>
           </td>
         </tr>
         
@@ -998,7 +998,7 @@ tr.deprecated { opacity: .55; }
   <a href="mailto:repair-feedback@tidyedi.com?subject=x12-tidy-web%20feedback">Feedback</a>
   <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
 </div>
-  <p>x12-tidy-web 0.1.0 · x12-tidy 0.1.0 (git 04bffa4) · Apache-2.0</p>
+  <p>x12-tidy-web 0.1.0 · x12-tidy 0.1.0 (git 3ce03cf) · Apache-2.0</p>
 </footer>
 
 <script>
