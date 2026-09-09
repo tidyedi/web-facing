@@ -16,9 +16,9 @@ what looked off.
   [x12-tidy][x12t]. Every result carries the exact x12-tidy commit (footer,
   `/healthz`, downloaded reports), so include that.
 - **The loop, the report, the UI, the API, or the CLI misbehaves** → open an
-  issue *here*: <https://github.com/tidyedi/web-facing/issues>.
+  issue *here*: <https://github.com/tidyedi/x12-tidy-web/issues>.
 - **A diagnostic code's severity, wording, or coverage seems wrong** → each row
-  on [`/codes`](https://tidyedi.github.io/web-facing/demo/codes.html) has a
+  on [`/codes`](https://tidyedi.github.io/x12-tidy-web/demo/codes.html) has a
   **Discuss** link that opens a pre-filled thread in
   [x12-tidy's Q&A discussions][disc].
 

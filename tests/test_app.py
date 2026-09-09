@@ -187,8 +187,8 @@ def test_index_links_and_byte_note(client) -> None:
     assert "runs on the <em>previous pass's output</em>" in text
     # With no feedback address configured, "Feedback" (top nav + footer) falls
     # back to a GitHub discussion; never Issues.
-    assert text.count("tidyedi/web-facing/discussions/new?category=ideas") == 2
-    assert "tidyedi/web-facing/issues" not in text
+    assert text.count("tidyedi/x12-tidy-web/discussions/new?category=ideas") == 2
+    assert "tidyedi/x12-tidy-web/issues" not in text
 
 
 def _fresh_client(monkeypatch, limit: str):

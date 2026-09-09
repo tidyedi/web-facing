@@ -67,7 +67,7 @@ _RATE_LIMIT_DISABLED = {"", "0", "off", "none", "disabled", "false"}
 
 
 #: Where the nav/footer "Feedback" link points when no feedback email is set.
-_FEEDBACK_DISCUSSIONS_URL = "https://github.com/tidyedi/web-facing/discussions/new?category=ideas"
+_FEEDBACK_DISCUSSIONS_URL = "https://github.com/tidyedi/x12-tidy-web/discussions/new?category=ideas"
 
 
 def _feedback_email() -> str:

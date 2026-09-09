@@ -3,7 +3,7 @@
 """Guardrails for the one rule: x12-tidy is imported from its git repo, never
 copied or path-linked into this one.
 
-Why this file exists (see tidyedi/web-facing#13): a vendored or locally
+Why this file exists (see tidyedi/x12-tidy-web#13): a vendored or locally
 path-linked copy of x12-tidy silently stops tracking upstream. The web app would
 then repair EDI with stale rules — wrong output that still looks plausible. These
 tests fail loudly the moment that happens, in CI and locally.

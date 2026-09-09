@@ -3,7 +3,7 @@
   &nbsp;x12-tidy-web
 </h1>
 
-[![CI](https://github.com/tidyedi/web-facing/actions/workflows/ci.yml/badge.svg)](https://github.com/tidyedi/web-facing/actions/workflows/ci.yml)
+[![CI](https://github.com/tidyedi/x12-tidy-web/actions/workflows/ci.yml/badge.svg)](https://github.com/tidyedi/x12-tidy-web/actions/workflows/ci.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
 [![Repair malformed X12 EDI: a malformed file (email header before the ISA, lowercase tag, short elements, wrong group count) → iterative repair (locate the ISA, recover delimiters, pad to fixed width, rebuild the envelope) → a conformant copy plus a per-pass report of every finding. Private by design, no account, nothing to install.](docs/social-preview.png)](https://repair.tidyedi.com)
@@ -27,7 +27,7 @@ Part of [TidyEDI](https://github.com/tidyedi). x12-tidy does all of the EDI work
   enter — a quick look at what the tool does.
 
 The worked examples are also served directly at
-<https://tidyedi.github.io/web-facing/demo/>.
+<https://tidyedi.github.io/x12-tidy-web/demo/>.
 
 ![The results view: verdict, corrected interchange, and envelope facts](docs/screenshot.png)
 
@@ -89,7 +89,7 @@ One self-contained HTML file per sample — CSS and favicon inlined, every link
 relative or external, no server. A committed copy is in
 [`docs/demo/`](docs/demo/), served rendered at
 **<https://repair.tidyedi.com/demo/>** (and its raw GitHub Pages address,
-<https://tidyedi.github.io/web-facing/demo/>).
+<https://tidyedi.github.io/x12-tidy-web/demo/>).
 
 ## The HTTP API
 

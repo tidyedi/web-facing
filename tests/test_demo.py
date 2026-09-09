@@ -65,4 +65,4 @@ def test_links_between_pages_are_relative(bundle: Path) -> None:
     assert 'href="index.html"' in fwd
     assert 'href="pipe-delimited.html"' in fwd
     # external links absolute
-    assert 'href="https://github.com/tidyedi/web-facing"' in fwd
+    assert 'href="https://github.com/tidyedi/x12-tidy-web"' in fwd
