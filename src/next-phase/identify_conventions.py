@@ -23,10 +23,28 @@ For every interchange in the app's sample corpus it:
    =============  ====================================================
 
 3. **lists every segment** — the full sequence in document order, no
-   truncation, plus a per-identifier count.
+   truncation, plus a per-identifier count;
+4. emits the **segment reference-table keys** the next-phase parser will need.
 
 Writes ``sample_conventions.md`` (readable) and ``sample_conventions.json``
 (machine-readable) next to this file.
+
+Why the segment list matters (next-phase intent)
+------------------------------------------------
+It becomes the **segment reference check**: before the translation step parses
+an interchange, it must confirm a reference table exists for every segment the
+interchange uses. Those tables are keyed
+``sender-receiver-release_version-segment_abbrev`` (e.g.
+``NORTHWIND-CONTOSO-004010-BEG``) — one per trading-partner pair, X12 release,
+and segment, because a partner's implementation guide can define the same
+segment differently. ``release_version`` here is the six-digit GS08 base
+(``004010``). This key shape will grow as the design firms up.
+
+Open design note: the envelope segments (ISA/GS/ST/SE/GE/IEA) are X12-standard
+and do not vary by partner, so they may end up resolved from a shared table
+rather than a per-partner one. This script currently emits a key for *every*
+segment, envelope included, per the stated rule — revisit when the table
+scheme is settled.
 
 Note on the truncated sample: ``truncated-transmission`` is a deliberately
 cut-off interchange. Its segment list ends where the bytes end (no SE/GE/IEA) —
@@ -121,10 +139,13 @@ class SampleAnalysis:
     transaction_set_name: str | None
     interchange_version: str  # ISA12
     group_versions: list[str]  # GS08(s)
+    release_version: str  # six-digit GS08 base, e.g. "004010"
     implementation_convention: str | None  # full GS08 suffix, e.g. "X098A1"
     segment_sequence: list[str] = field(default_factory=list)  # every segment, in order
     segment_counts: list[SegmentUse] = field(default_factory=list)  # per identifier
     segment_total: int = 0
+    # sender-receiver-release_version-segment_abbrev, one per distinct segment
+    segment_reference_keys: list[str] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
 
 
@@ -204,6 +225,11 @@ def analyze(slug: str, title: str, edi: str) -> SampleAnalysis:
     counts = Counter(sequence)
     ordered_ids: list[str] = list(dict.fromkeys(sequence))
 
+    release_version = (group_versions[0][:6] if group_versions else "")
+    sender = str(facts.get("sender_id", "")).strip()
+    receiver = str(facts.get("receiver_id", "")).strip()
+    ref_prefix = f"{sender or '?'}-{receiver or '?'}-{release_version or '?'}"
+
     analysis = SampleAnalysis(
         slug=slug,
         title=title,
@@ -213,10 +239,12 @@ def analyze(slug: str, title: str, edi: str) -> SampleAnalysis:
         transaction_set_name=TRANSACTION_SET_NAMES.get(st01),
         interchange_version=interchange_version,
         group_versions=group_versions,
+        release_version=release_version,
         implementation_convention=convention,
         segment_sequence=sequence,
         segment_counts=[SegmentUse(identifier=i, count=counts[i]) for i in ordered_ids],
         segment_total=len(sequence),
+        segment_reference_keys=[f"{ref_prefix}-{seg}" for seg in ordered_ids],
     )
 
     if st01 and analysis.transaction_set_name is None:
@@ -225,6 +253,11 @@ def analyze(slug: str, title: str, edi: str) -> SampleAnalysis:
         analysis.notes.append(
             "GS08 carries no implementation-convention reference (bare version); "
             "edialpha is '-'. Which guide applies is a trading-partner agreement."
+        )
+    if not release_version:
+        analysis.notes.append(
+            "No GS08 to take a release_version from — segment reference-table keys "
+            "fall back to '?' for that field."
         )
     if "SE" not in counts or "IEA" not in counts:
         analysis.notes.append(
@@ -253,6 +286,12 @@ def render_markdown(results: list[SampleAnalysis]) -> str:
             "(ISA06-ISA08-ST01-GS08 convention letter-ISA09)."
         ),
         "",
+        (
+            "Segment reference-table key shape: "
+            "`sender-receiver-release_version-segment_abbrev` — the next-phase "
+            "parser checks one exists for every segment before translating."
+        ),
+        "",
     ]
     for r in results:
         lines += [
@@ -279,7 +318,15 @@ def render_markdown(results: list[SampleAnalysis]) -> str:
         ]
         for i, seg in enumerate(r.segment_counts, 1):
             lines.append(f"| {i} | `{seg.identifier}` | {seg.count} |")
-        lines.append("")
+        lines += [
+            "",
+            "Segment reference-table keys needed to parse this interchange:",
+            "",
+            "```",
+            *r.segment_reference_keys,
+            "```",
+            "",
+        ]
         if r.notes:
             lines.append("Notes:")
             lines += [f"- {n}" for n in r.notes]
@@ -300,6 +347,7 @@ def main() -> None:
     for r in results:
         print(f"{r.slug:24} {r.standard_label}")
         print(f"{'':24} {r.segment_total} segments: {' '.join(r.segment_sequence)}")
+        print(f"{'':24} ref keys: {', '.join(r.segment_reference_keys)}")
     print(f"\nwrote {md_path.relative_to(Path.cwd())}")
     print(f"wrote {json_path.relative_to(Path.cwd())}")
 

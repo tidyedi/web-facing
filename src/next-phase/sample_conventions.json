@@ -16,6 +16,7 @@
     "group_versions": [
       "004010"
     ],
+    "release_version": "004010",
     "implementation_convention": null,
     "segment_sequence": [
       "ISA",
@@ -73,6 +74,18 @@
       }
     ],
     "segment_total": 11,
+    "segment_reference_keys": [
+      "NORTHWIND-CONTOSO-004010-ISA",
+      "NORTHWIND-CONTOSO-004010-GS",
+      "NORTHWIND-CONTOSO-004010-ST",
+      "NORTHWIND-CONTOSO-004010-BEG",
+      "NORTHWIND-CONTOSO-004010-N1",
+      "NORTHWIND-CONTOSO-004010-PO1",
+      "NORTHWIND-CONTOSO-004010-CTT",
+      "NORTHWIND-CONTOSO-004010-SE",
+      "NORTHWIND-CONTOSO-004010-GE",
+      "NORTHWIND-CONTOSO-004010-IEA"
+    ],
     "notes": [
       "GS08 carries no implementation-convention reference (bare version); edialpha is '-'. Which guide applies is a trading-partner agreement.",
       "Repair verdict is 'unfixable'; the segment list is of the best-effort repair."
@@ -95,6 +108,7 @@
     "group_versions": [
       "004010"
     ],
+    "release_version": "004010",
     "implementation_convention": null,
     "segment_sequence": [
       "ISA",
@@ -168,6 +182,21 @@
       }
     ],
     "segment_total": 15,
+    "segment_reference_keys": [
+      "FASTSHIP-MEGABUY-004010-ISA",
+      "FASTSHIP-MEGABUY-004010-GS",
+      "FASTSHIP-MEGABUY-004010-ST",
+      "FASTSHIP-MEGABUY-004010-BSN",
+      "FASTSHIP-MEGABUY-004010-HL",
+      "FASTSHIP-MEGABUY-004010-TD1",
+      "FASTSHIP-MEGABUY-004010-REF",
+      "FASTSHIP-MEGABUY-004010-PRF",
+      "FASTSHIP-MEGABUY-004010-LIN",
+      "FASTSHIP-MEGABUY-004010-SN1",
+      "FASTSHIP-MEGABUY-004010-SE",
+      "FASTSHIP-MEGABUY-004010-GE",
+      "FASTSHIP-MEGABUY-004010-IEA"
+    ],
     "notes": [
       "GS08 carries no implementation-convention reference (bare version); edialpha is '-'. Which guide applies is a trading-partner agreement."
     ]
@@ -189,6 +218,7 @@
     "group_versions": [
       "004010"
     ],
+    "release_version": "004010",
     "implementation_convention": null,
     "segment_sequence": [
       "ISA",
@@ -245,6 +275,18 @@
       }
     ],
     "segment_total": 10,
+    "segment_reference_keys": [
+      "GATEWAYEDI-PARTNERX-004010-ISA",
+      "GATEWAYEDI-PARTNERX-004010-GS",
+      "GATEWAYEDI-PARTNERX-004010-ST",
+      "GATEWAYEDI-PARTNERX-004010-AK1",
+      "GATEWAYEDI-PARTNERX-004010-AK2",
+      "GATEWAYEDI-PARTNERX-004010-AK5",
+      "GATEWAYEDI-PARTNERX-004010-AK9",
+      "GATEWAYEDI-PARTNERX-004010-SE",
+      "GATEWAYEDI-PARTNERX-004010-GE",
+      "GATEWAYEDI-PARTNERX-004010-IEA"
+    ],
     "notes": [
       "GS08 carries no implementation-convention reference (bare version); edialpha is '-'. Which guide applies is a trading-partner agreement."
     ]
@@ -266,6 +308,7 @@
     "group_versions": [
       "004010X098A1"
     ],
+    "release_version": "004010",
     "implementation_convention": "X098A1",
     "segment_sequence": [
       "ISA",
@@ -302,6 +345,14 @@
       }
     ],
     "segment_total": 6,
+    "segment_reference_keys": [
+      "ACME HEALTH-PAYERCENTRAL-004010-ISA",
+      "ACME HEALTH-PAYERCENTRAL-004010-GS",
+      "ACME HEALTH-PAYERCENTRAL-004010-ST",
+      "ACME HEALTH-PAYERCENTRAL-004010-BHT",
+      "ACME HEALTH-PAYERCENTRAL-004010-NM1",
+      "ACME HEALTH-PAYERCENTRAL-004010-PER"
+    ],
     "notes": [
       "Interchange has no SE/GE/IEA trailer \u2014 it is genuinely cut off; the segment list ends where the bytes end.",
       "Repair verdict is 'unfixable'; the segment list is of the best-effort repair."
@@ -324,6 +375,7 @@
     "group_versions": [
       "004010"
     ],
+    "release_version": "004010",
     "implementation_convention": null,
     "segment_sequence": [
       "ISA",
@@ -380,6 +432,18 @@
       }
     ],
     "segment_total": 10,
+    "segment_reference_keys": [
+      "SHIPPERONE-RECEIVER  TWO-004010-ISA",
+      "SHIPPERONE-RECEIVER  TWO-004010-GS",
+      "SHIPPERONE-RECEIVER  TWO-004010-ST",
+      "SHIPPERONE-RECEIVER  TWO-004010-W05",
+      "SHIPPERONE-RECEIVER  TWO-004010-N1",
+      "SHIPPERONE-RECEIVER  TWO-004010-W66",
+      "SHIPPERONE-RECEIVER  TWO-004010-G62",
+      "SHIPPERONE-RECEIVER  TWO-004010-SE",
+      "SHIPPERONE-RECEIVER  TWO-004010-GE",
+      "SHIPPERONE-RECEIVER  TWO-004010-IEA"
+    ],
     "notes": [
       "GS08 carries no implementation-convention reference (bare version); edialpha is '-'. Which guide applies is a trading-partner agreement."
     ]
