@@ -35,12 +35,23 @@ Why the segment list matters (next-phase intent)
 ------------------------------------------------
 It becomes the **segment reference check**: before the translation step parses
 an interchange, it must confirm a reference table exists for every segment the
-interchange uses. Those tables are keyed
-``sender-receiver-release_version-segment_abbrev`` (e.g.
-``NORTHWIND-CONTOSO-004010-BEG``) — one per trading-partner pair, X12 release,
-and segment, because a partner's implementation guide can define the same
-segment differently. ``release_version`` here is the six-digit GS08 base
-(``004010``). This key shape will grow as the design firms up.
+interchange uses.
+
+*Logical key* (what this script emits, from the earlier design note):
+``sender-receiver-release_version-segment_abbrev`` — e.g.
+``NORTHWIND-CONTOSO-004010-BEG``. ``release_version`` here is the six-digit GS08
+base.
+
+*Physical layout* the tables will live in (design, 2026-09-08):
+``segments / <segment_abbrev> / <release_vers> / <owner>`` —
+e.g. ``segments/BHT/4010/DLMS``. Note ``release_vers`` is the short form
+(``4010``, not ``004010``), and the path is keyed by **owner** (the standards
+body / subset that defines the segment — DLMS, X12, an industry guide), not by
+sender/receiver. Resolution is therefore two-step: the trading-partner pair
+selects which owner applies, then the table is fetched by
+segment / release / owner. ``owner`` is not in the interchange bytes for these
+samples (GS07 is only X or T; the GS08 ``X…`` suffix hints at a guide) — it
+comes from trading-partner configuration. This all firms up as we progress.
 
 The segment list is de-duped on purpose: the reference check needs one table per
 segment *abbreviation*, regardless of how many times that segment appears in the
