@@ -30,6 +30,9 @@ Changes on `main` since the v0.1.0 tag, not yet cut as a new version.
   `stop_reason` key.
 - `CLAUDE.md`'s "one rule" reworded as maintainer-facing guidance about the
   x12-tidy import boundary.
+- **The repo is renamed `web-facing` → `x12-tidy-web`** to match the package,
+  CLI, and Render service, which already used that name. GitHub redirects the
+  old URLs; <https://repair.tidyedi.com> and its `/demo/` path are unaffected.
 - **"Feedback" (nav, footer, landing page) is now an email link**
   (`repair-feedback@tidyedi.com`) when a feedback address is configured — the
   no-account path — falling back to a GitHub discussion otherwise. The
