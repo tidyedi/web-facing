@@ -36,8 +36,14 @@ Changes on `main` since the v0.1.0 tag, not yet cut as a new version.
 - **fatal / error / warning each have one definition now** — a shared
   `_severity_legend.html` partial, rendered identically under the repair passes
   and on `/codes`, replacing three looser phrasings (one of which wrongly called
-  an *error* "advisory"). The wording only describes how x12-tidy classifies its
-  codes; x12-tidy's registry still assigns severity.
+  an *error* "advisory"). The wording was checked against every code in the
+  installed registry (30 fatal / 10 error / 5 warning) so each definition holds
+  for its whole bucket — "fatal" now covers envelope self-check failures
+  (counts, control numbers, version), not just "a conforming parser rejects it".
+  It only *describes* x12-tidy's classification — the registry still assigns
+  severity — and it lives in the template, not in code. Classification questions
+  raised while doing this went to x12-tidy as a maintainer reminder
+  (`tidyedi/x12-tidy#87`), not as a fix.
 - **"Feedback" (nav, footer, landing page) is now an email link**
   (`repair-feedback@tidyedi.com`) when a feedback address is configured — the
   no-account path — falling back to a GitHub discussion otherwise. The
