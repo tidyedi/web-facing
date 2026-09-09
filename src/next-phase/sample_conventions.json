@@ -1,0 +1,387 @@
+[
+  {
+    "slug": "forwarded-email",
+    "title": "Forwarded email \u2014 850 purchase order",
+    "verdict_state": "unfixable",
+    "standard": {
+      "sender": "NORTHWIND",
+      "receiver": "CONTOSO",
+      "edi_number": "850",
+      "edi_alpha": "-",
+      "date_sent": "240401"
+    },
+    "standard_label": "NORTHWIND-CONTOSO-850---240401",
+    "transaction_set_name": "Purchase Order",
+    "interchange_version": "00401",
+    "group_versions": [
+      "004010"
+    ],
+    "implementation_convention": null,
+    "segment_sequence": [
+      "ISA",
+      "GS",
+      "ST",
+      "BEG",
+      "N1",
+      "PO1",
+      "PO1",
+      "CTT",
+      "SE",
+      "GE",
+      "IEA"
+    ],
+    "segment_counts": [
+      {
+        "identifier": "ISA",
+        "count": 1
+      },
+      {
+        "identifier": "GS",
+        "count": 1
+      },
+      {
+        "identifier": "ST",
+        "count": 1
+      },
+      {
+        "identifier": "BEG",
+        "count": 1
+      },
+      {
+        "identifier": "N1",
+        "count": 1
+      },
+      {
+        "identifier": "PO1",
+        "count": 2
+      },
+      {
+        "identifier": "CTT",
+        "count": 1
+      },
+      {
+        "identifier": "SE",
+        "count": 1
+      },
+      {
+        "identifier": "GE",
+        "count": 1
+      },
+      {
+        "identifier": "IEA",
+        "count": 1
+      }
+    ],
+    "segment_total": 11,
+    "notes": [
+      "GS08 carries no implementation-convention reference (bare version); edialpha is '-'. Which guide applies is a trading-partner agreement.",
+      "Repair verdict is 'unfixable'; the segment list is of the best-effort repair."
+    ]
+  },
+  {
+    "slug": "pipe-delimited",
+    "title": "Pipe-delimited \u2014 856 advance ship notice",
+    "verdict_state": "clean",
+    "standard": {
+      "sender": "FASTSHIP",
+      "receiver": "MEGABUY",
+      "edi_number": "856",
+      "edi_alpha": "-",
+      "date_sent": "240515"
+    },
+    "standard_label": "FASTSHIP-MEGABUY-856---240515",
+    "transaction_set_name": "Ship Notice / Manifest (ASN)",
+    "interchange_version": "00401",
+    "group_versions": [
+      "004010"
+    ],
+    "implementation_convention": null,
+    "segment_sequence": [
+      "ISA",
+      "GS",
+      "ST",
+      "BSN",
+      "HL",
+      "TD1",
+      "REF",
+      "HL",
+      "PRF",
+      "HL",
+      "LIN",
+      "SN1",
+      "SE",
+      "GE",
+      "IEA"
+    ],
+    "segment_counts": [
+      {
+        "identifier": "ISA",
+        "count": 1
+      },
+      {
+        "identifier": "GS",
+        "count": 1
+      },
+      {
+        "identifier": "ST",
+        "count": 1
+      },
+      {
+        "identifier": "BSN",
+        "count": 1
+      },
+      {
+        "identifier": "HL",
+        "count": 3
+      },
+      {
+        "identifier": "TD1",
+        "count": 1
+      },
+      {
+        "identifier": "REF",
+        "count": 1
+      },
+      {
+        "identifier": "PRF",
+        "count": 1
+      },
+      {
+        "identifier": "LIN",
+        "count": 1
+      },
+      {
+        "identifier": "SN1",
+        "count": 1
+      },
+      {
+        "identifier": "SE",
+        "count": 1
+      },
+      {
+        "identifier": "GE",
+        "count": 1
+      },
+      {
+        "identifier": "IEA",
+        "count": 1
+      }
+    ],
+    "segment_total": 15,
+    "notes": [
+      "GS08 carries no implementation-convention reference (bare version); edialpha is '-'. Which guide applies is a trading-partner agreement."
+    ]
+  },
+  {
+    "slug": "lowercased-isa",
+    "title": "Lowercased tag \u2014 997 functional acknowledgement",
+    "verdict_state": "clean",
+    "standard": {
+      "sender": "GATEWAYEDI",
+      "receiver": "PARTNERX",
+      "edi_number": "997",
+      "edi_alpha": "-",
+      "date_sent": "240102"
+    },
+    "standard_label": "GATEWAYEDI-PARTNERX-997---240102",
+    "transaction_set_name": "Functional Acknowledgement",
+    "interchange_version": "00401",
+    "group_versions": [
+      "004010"
+    ],
+    "implementation_convention": null,
+    "segment_sequence": [
+      "ISA",
+      "GS",
+      "ST",
+      "AK1",
+      "AK2",
+      "AK5",
+      "AK9",
+      "SE",
+      "GE",
+      "IEA"
+    ],
+    "segment_counts": [
+      {
+        "identifier": "ISA",
+        "count": 1
+      },
+      {
+        "identifier": "GS",
+        "count": 1
+      },
+      {
+        "identifier": "ST",
+        "count": 1
+      },
+      {
+        "identifier": "AK1",
+        "count": 1
+      },
+      {
+        "identifier": "AK2",
+        "count": 1
+      },
+      {
+        "identifier": "AK5",
+        "count": 1
+      },
+      {
+        "identifier": "AK9",
+        "count": 1
+      },
+      {
+        "identifier": "SE",
+        "count": 1
+      },
+      {
+        "identifier": "GE",
+        "count": 1
+      },
+      {
+        "identifier": "IEA",
+        "count": 1
+      }
+    ],
+    "segment_total": 10,
+    "notes": [
+      "GS08 carries no implementation-convention reference (bare version); edialpha is '-'. Which guide applies is a trading-partner agreement."
+    ]
+  },
+  {
+    "slug": "truncated-transmission",
+    "title": "Truncated transmission \u2014 837 claim, cut off",
+    "verdict_state": "unfixable",
+    "standard": {
+      "sender": "ACME HEALTH",
+      "receiver": "PAYERCENTRAL",
+      "edi_number": "837",
+      "edi_alpha": "A",
+      "date_sent": "240610"
+    },
+    "standard_label": "ACME HEALTH-PAYERCENTRAL-837-A-240610",
+    "transaction_set_name": "Health Care Claim",
+    "interchange_version": "00401",
+    "group_versions": [
+      "004010X098A1"
+    ],
+    "implementation_convention": "X098A1",
+    "segment_sequence": [
+      "ISA",
+      "GS",
+      "ST",
+      "BHT",
+      "NM1",
+      "PER"
+    ],
+    "segment_counts": [
+      {
+        "identifier": "ISA",
+        "count": 1
+      },
+      {
+        "identifier": "GS",
+        "count": 1
+      },
+      {
+        "identifier": "ST",
+        "count": 1
+      },
+      {
+        "identifier": "BHT",
+        "count": 1
+      },
+      {
+        "identifier": "NM1",
+        "count": 1
+      },
+      {
+        "identifier": "PER",
+        "count": 1
+      }
+    ],
+    "segment_total": 6,
+    "notes": [
+      "Interchange has no SE/GE/IEA trailer \u2014 it is genuinely cut off; the segment list ends where the bytes end.",
+      "Repair verdict is 'unfixable'; the segment list is of the best-effort repair."
+    ]
+  },
+  {
+    "slug": "wrapped-isa",
+    "title": "Wrapped ISA header \u2014 940 warehouse shipping order",
+    "verdict_state": "clean",
+    "standard": {
+      "sender": "SHIPPERONE",
+      "receiver": "RECEIVER  TWO",
+      "edi_number": "940",
+      "edi_alpha": "-",
+      "date_sent": "240705"
+    },
+    "standard_label": "SHIPPERONE-RECEIVER  TWO-940---240705",
+    "transaction_set_name": "Warehouse Shipping Order",
+    "interchange_version": "00401",
+    "group_versions": [
+      "004010"
+    ],
+    "implementation_convention": null,
+    "segment_sequence": [
+      "ISA",
+      "GS",
+      "ST",
+      "W05",
+      "N1",
+      "W66",
+      "G62",
+      "SE",
+      "GE",
+      "IEA"
+    ],
+    "segment_counts": [
+      {
+        "identifier": "ISA",
+        "count": 1
+      },
+      {
+        "identifier": "GS",
+        "count": 1
+      },
+      {
+        "identifier": "ST",
+        "count": 1
+      },
+      {
+        "identifier": "W05",
+        "count": 1
+      },
+      {
+        "identifier": "N1",
+        "count": 1
+      },
+      {
+        "identifier": "W66",
+        "count": 1
+      },
+      {
+        "identifier": "G62",
+        "count": 1
+      },
+      {
+        "identifier": "SE",
+        "count": 1
+      },
+      {
+        "identifier": "GE",
+        "count": 1
+      },
+      {
+        "identifier": "IEA",
+        "count": 1
+      }
+    ],
+    "segment_total": 10,
+    "notes": [
+      "GS08 carries no implementation-convention reference (bare version); edialpha is '-'. Which guide applies is a trading-partner agreement."
+    ]
+  }
+]
