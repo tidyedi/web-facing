@@ -33,6 +33,11 @@ Changes on `main` since the v0.1.0 tag, not yet cut as a new version.
 - **The repo is renamed `web-facing` → `x12-tidy-web`** to match the package,
   CLI, and Render service, which already used that name. GitHub redirects the
   old URLs; <https://repair.tidyedi.com> and its `/demo/` path are unaffected.
+- **fatal / error / warning each have one definition now** — a shared
+  `_severity_legend.html` partial, rendered identically under the repair passes
+  and on `/codes`, replacing three looser phrasings (one of which wrongly called
+  an *error* "advisory"). The wording only describes how x12-tidy classifies its
+  codes; x12-tidy's registry still assigns severity.
 - **"Feedback" (nav, footer, landing page) is now an email link**
   (`repair-feedback@tidyedi.com`) when a feedback address is configured — the
   no-account path — falling back to a GitHub discussion otherwise. The

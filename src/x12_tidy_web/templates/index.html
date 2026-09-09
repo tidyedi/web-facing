@@ -160,11 +160,7 @@
         but not safely fix on its own. The loop stops when a pass changes nothing
         or finds nothing; most interchanges settle in one or two passes.
       </p>
-      <dl class="legend">
-        <div><dt><span class="pill fatal">fatal</span></dt><dd>A conforming parser will reject the interchange. x12-tidy flags it but cannot make it valid.</dd></div>
-        <div><dt><span class="pill error">error</span></dt><dd>A real conformance violation. x12-tidy repaired what it could; the value or structure was wrong.</dd></div>
-        <div><dt><span class="pill warning">warning</span></dt><dd>Advisory — a trust or QA signal worth a look, not a conformance failure.</dd></div>
-      </dl>
+      {% include "_severity_legend.html" %}
       <p class="hint">
         x12-tidy's classification. Every finding's code, title, and explanation
         come straight from its
