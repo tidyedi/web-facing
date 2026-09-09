@@ -1,4 +1,4 @@
-"""Issue #79 — per sample: cleanse, state the standard, list every segment.
+"""Issue #79 — per sample: cleanse, state the standard, list the distinct segments.
 
 Next-phase groundwork. NOT part of the shipped ``x12-tidy-web`` package (see this
 directory's ``README.md``). Run directly:
@@ -22,9 +22,11 @@ For every interchange in the app's sample corpus it:
    datesent       ISA09, the interchange date (YYMMDD)
    =============  ====================================================
 
-3. **lists every segment** — the full sequence in document order, no
-   truncation, plus a per-identifier count;
-4. emits the **segment reference-table keys** the next-phase parser will need.
+3. **lists the segments** — the distinct segment abbreviations, de-duped, each
+   counted once, in first-seen order (nothing truncated: every abbreviation the
+   interchange uses is listed);
+4. emits the **segment reference-table keys** the next-phase parser will need —
+   one per distinct segment.
 
 Writes ``sample_conventions.md`` (readable) and ``sample_conventions.json``
 (machine-readable) next to this file.
@@ -40,11 +42,15 @@ and segment, because a partner's implementation guide can define the same
 segment differently. ``release_version`` here is the six-digit GS08 base
 (``004010``). This key shape will grow as the design firms up.
 
+The segment list is de-duped on purpose: the reference check needs one table per
+segment *abbreviation*, regardless of how many times that segment appears in the
+interchange, so a segment abbreviation is counted once.
+
 Open design note: the envelope segments (ISA/GS/ST/SE/GE/IEA) are X12-standard
 and do not vary by partner, so they may end up resolved from a shared table
 rather than a per-partner one. This script currently emits a key for *every*
-segment, envelope included, per the stated rule — revisit when the table
-scheme is settled.
+distinct segment, envelope included, per the stated rule — revisit when the
+table scheme is settled.
 
 Note on the truncated sample: ``truncated-transmission`` is a deliberately
 cut-off interchange. Its segment list ends where the bytes end (no SE/GE/IEA) —
@@ -58,7 +64,6 @@ from __future__ import annotations
 
 import json
 import re
-from collections import Counter
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
@@ -123,12 +128,6 @@ class StandardId:
         )
 
 
-@dataclass(frozen=True)
-class SegmentUse:
-    identifier: str
-    count: int
-
-
 @dataclass
 class SampleAnalysis:
     slug: str
@@ -141,9 +140,9 @@ class SampleAnalysis:
     group_versions: list[str]  # GS08(s)
     release_version: str  # six-digit GS08 base, e.g. "004010"
     implementation_convention: str | None  # full GS08 suffix, e.g. "X098A1"
-    segment_sequence: list[str] = field(default_factory=list)  # every segment, in order
-    segment_counts: list[SegmentUse] = field(default_factory=list)  # per identifier
-    segment_total: int = 0
+    # distinct segment abbreviations, de-duped, first-seen order
+    segments: list[str] = field(default_factory=list)
+    segment_count: int = 0  # number of distinct abbreviations
     # sender-receiver-release_version-segment_abbrev, one per distinct segment
     segment_reference_keys: list[str] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
@@ -161,18 +160,22 @@ def _delimiters(final_text: str) -> tuple[str, str]:
     return "*", "~"
 
 
-def _segments(final_text: str) -> list[str]:
-    """Every segment identifier, in document order, nothing dropped."""
+def _distinct_segments(final_text: str) -> list[str]:
+    """Distinct segment abbreviations, de-duped, in first-seen order.
+
+    De-duped by design: the reference check needs one table per abbreviation, no
+    matter how often the segment repeats in the interchange.
+    """
     element_sep, terminator = _delimiters(final_text)
-    out: list[str] = []
+    seen: dict[str, None] = {}
     for raw in final_text.split(terminator):
         seg = raw.strip()
         if not seg:
             continue
         identifier = seg.split(element_sep, 1)[0].strip().upper()
         if identifier:
-            out.append(identifier)
-    return out
+            seen.setdefault(identifier, None)
+    return list(seen)
 
 
 def _element(final_text: str, segment_id: str, index: int) -> str | None:
@@ -221,11 +224,9 @@ def analyze(slug: str, title: str, edi: str) -> SampleAnalysis:
         date_sent=str(facts.get("interchange_date", "")).strip(),
     )
 
-    sequence = _segments(final_text)
-    counts = Counter(sequence)
-    ordered_ids: list[str] = list(dict.fromkeys(sequence))
+    segments = _distinct_segments(final_text)
 
-    release_version = (group_versions[0][:6] if group_versions else "")
+    release_version = group_versions[0][:6] if group_versions else ""
     sender = str(facts.get("sender_id", "")).strip()
     receiver = str(facts.get("receiver_id", "")).strip()
     ref_prefix = f"{sender or '?'}-{receiver or '?'}-{release_version or '?'}"
@@ -241,10 +242,9 @@ def analyze(slug: str, title: str, edi: str) -> SampleAnalysis:
         group_versions=group_versions,
         release_version=release_version,
         implementation_convention=convention,
-        segment_sequence=sequence,
-        segment_counts=[SegmentUse(identifier=i, count=counts[i]) for i in ordered_ids],
-        segment_total=len(sequence),
-        segment_reference_keys=[f"{ref_prefix}-{seg}" for seg in ordered_ids],
+        segments=segments,
+        segment_count=len(segments),
+        segment_reference_keys=[f"{ref_prefix}-{seg}" for seg in segments],
     )
 
     if st01 and analysis.transaction_set_name is None:
@@ -259,7 +259,7 @@ def analyze(slug: str, title: str, edi: str) -> SampleAnalysis:
             "No GS08 to take a release_version from — segment reference-table keys "
             "fall back to '?' for that field."
         )
-    if "SE" not in counts or "IEA" not in counts:
+    if "SE" not in segments or "IEA" not in segments:
         analysis.notes.append(
             "Interchange has no SE/GE/IEA trailer — it is genuinely cut off; "
             "the segment list ends where the bytes end."
@@ -274,7 +274,7 @@ def analyze(slug: str, title: str, edi: str) -> SampleAnalysis:
 
 def render_markdown(results: list[SampleAnalysis]) -> str:
     lines: list[str] = [
-        "# Sample interchanges — standard and full segment list",
+        "# Sample interchanges — standard and distinct segments",
         "",
         (
             "Generated by `src/next-phase/identify_conventions.py` (issue #79). "
@@ -305,22 +305,18 @@ def render_markdown(results: list[SampleAnalysis]) -> str:
             f"- **interchange version (ISA12):** {r.interchange_version or '—'}",
             f"- **group version (GS08):** {', '.join(r.group_versions) or '—'}",
             f"- **implementation convention:** {r.implementation_convention or 'none (bare version)'}",
-            f"- **segment count:** {r.segment_total}",
+            f"- **distinct segments:** {r.segment_count}",
             "",
-            "Full segment sequence (document order):",
+            "Distinct segment abbreviations (de-duped, first-seen order):",
             "",
             "```",
-            " ".join(r.segment_sequence) if r.segment_sequence else "(none)",
+            " ".join(r.segments) if r.segments else "(none)",
             "```",
             "",
-            "| # | segment | count |",
-            "|--:|:--|--:|",
-        ]
-        for i, seg in enumerate(r.segment_counts, 1):
-            lines.append(f"| {i} | `{seg.identifier}` | {seg.count} |")
-        lines += [
-            "",
-            "Segment reference-table keys needed to parse this interchange:",
+            (
+                "Segment reference-table keys needed to parse this interchange "
+                "(one per distinct segment):"
+            ),
             "",
             "```",
             *r.segment_reference_keys,
@@ -346,7 +342,7 @@ def main() -> None:
 
     for r in results:
         print(f"{r.slug:24} {r.standard_label}")
-        print(f"{'':24} {r.segment_total} segments: {' '.join(r.segment_sequence)}")
+        print(f"{'':24} {r.segment_count} distinct segments: {' '.join(r.segments)}")
         print(f"{'':24} ref keys: {', '.join(r.segment_reference_keys)}")
     print(f"\nwrote {md_path.relative_to(Path.cwd())}")
     print(f"wrote {json_path.relative_to(Path.cwd())}")

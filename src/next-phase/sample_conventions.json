@@ -18,62 +18,19 @@
     ],
     "release_version": "004010",
     "implementation_convention": null,
-    "segment_sequence": [
+    "segments": [
       "ISA",
       "GS",
       "ST",
       "BEG",
       "N1",
       "PO1",
-      "PO1",
       "CTT",
       "SE",
       "GE",
       "IEA"
     ],
-    "segment_counts": [
-      {
-        "identifier": "ISA",
-        "count": 1
-      },
-      {
-        "identifier": "GS",
-        "count": 1
-      },
-      {
-        "identifier": "ST",
-        "count": 1
-      },
-      {
-        "identifier": "BEG",
-        "count": 1
-      },
-      {
-        "identifier": "N1",
-        "count": 1
-      },
-      {
-        "identifier": "PO1",
-        "count": 2
-      },
-      {
-        "identifier": "CTT",
-        "count": 1
-      },
-      {
-        "identifier": "SE",
-        "count": 1
-      },
-      {
-        "identifier": "GE",
-        "count": 1
-      },
-      {
-        "identifier": "IEA",
-        "count": 1
-      }
-    ],
-    "segment_total": 11,
+    "segment_count": 10,
     "segment_reference_keys": [
       "NORTHWIND-CONTOSO-004010-ISA",
       "NORTHWIND-CONTOSO-004010-GS",
@@ -110,7 +67,7 @@
     ],
     "release_version": "004010",
     "implementation_convention": null,
-    "segment_sequence": [
+    "segments": [
       "ISA",
       "GS",
       "ST",
@@ -118,70 +75,14 @@
       "HL",
       "TD1",
       "REF",
-      "HL",
       "PRF",
-      "HL",
       "LIN",
       "SN1",
       "SE",
       "GE",
       "IEA"
     ],
-    "segment_counts": [
-      {
-        "identifier": "ISA",
-        "count": 1
-      },
-      {
-        "identifier": "GS",
-        "count": 1
-      },
-      {
-        "identifier": "ST",
-        "count": 1
-      },
-      {
-        "identifier": "BSN",
-        "count": 1
-      },
-      {
-        "identifier": "HL",
-        "count": 3
-      },
-      {
-        "identifier": "TD1",
-        "count": 1
-      },
-      {
-        "identifier": "REF",
-        "count": 1
-      },
-      {
-        "identifier": "PRF",
-        "count": 1
-      },
-      {
-        "identifier": "LIN",
-        "count": 1
-      },
-      {
-        "identifier": "SN1",
-        "count": 1
-      },
-      {
-        "identifier": "SE",
-        "count": 1
-      },
-      {
-        "identifier": "GE",
-        "count": 1
-      },
-      {
-        "identifier": "IEA",
-        "count": 1
-      }
-    ],
-    "segment_total": 15,
+    "segment_count": 13,
     "segment_reference_keys": [
       "FASTSHIP-MEGABUY-004010-ISA",
       "FASTSHIP-MEGABUY-004010-GS",
@@ -220,7 +121,7 @@
     ],
     "release_version": "004010",
     "implementation_convention": null,
-    "segment_sequence": [
+    "segments": [
       "ISA",
       "GS",
       "ST",
@@ -232,49 +133,7 @@
       "GE",
       "IEA"
     ],
-    "segment_counts": [
-      {
-        "identifier": "ISA",
-        "count": 1
-      },
-      {
-        "identifier": "GS",
-        "count": 1
-      },
-      {
-        "identifier": "ST",
-        "count": 1
-      },
-      {
-        "identifier": "AK1",
-        "count": 1
-      },
-      {
-        "identifier": "AK2",
-        "count": 1
-      },
-      {
-        "identifier": "AK5",
-        "count": 1
-      },
-      {
-        "identifier": "AK9",
-        "count": 1
-      },
-      {
-        "identifier": "SE",
-        "count": 1
-      },
-      {
-        "identifier": "GE",
-        "count": 1
-      },
-      {
-        "identifier": "IEA",
-        "count": 1
-      }
-    ],
-    "segment_total": 10,
+    "segment_count": 10,
     "segment_reference_keys": [
       "GATEWAYEDI-PARTNERX-004010-ISA",
       "GATEWAYEDI-PARTNERX-004010-GS",
@@ -310,7 +169,7 @@
     ],
     "release_version": "004010",
     "implementation_convention": "X098A1",
-    "segment_sequence": [
+    "segments": [
       "ISA",
       "GS",
       "ST",
@@ -318,33 +177,7 @@
       "NM1",
       "PER"
     ],
-    "segment_counts": [
-      {
-        "identifier": "ISA",
-        "count": 1
-      },
-      {
-        "identifier": "GS",
-        "count": 1
-      },
-      {
-        "identifier": "ST",
-        "count": 1
-      },
-      {
-        "identifier": "BHT",
-        "count": 1
-      },
-      {
-        "identifier": "NM1",
-        "count": 1
-      },
-      {
-        "identifier": "PER",
-        "count": 1
-      }
-    ],
-    "segment_total": 6,
+    "segment_count": 6,
     "segment_reference_keys": [
       "ACME HEALTH-PAYERCENTRAL-004010-ISA",
       "ACME HEALTH-PAYERCENTRAL-004010-GS",
@@ -377,7 +210,7 @@
     ],
     "release_version": "004010",
     "implementation_convention": null,
-    "segment_sequence": [
+    "segments": [
       "ISA",
       "GS",
       "ST",
@@ -389,49 +222,7 @@
       "GE",
       "IEA"
     ],
-    "segment_counts": [
-      {
-        "identifier": "ISA",
-        "count": 1
-      },
-      {
-        "identifier": "GS",
-        "count": 1
-      },
-      {
-        "identifier": "ST",
-        "count": 1
-      },
-      {
-        "identifier": "W05",
-        "count": 1
-      },
-      {
-        "identifier": "N1",
-        "count": 1
-      },
-      {
-        "identifier": "W66",
-        "count": 1
-      },
-      {
-        "identifier": "G62",
-        "count": 1
-      },
-      {
-        "identifier": "SE",
-        "count": 1
-      },
-      {
-        "identifier": "GE",
-        "count": 1
-      },
-      {
-        "identifier": "IEA",
-        "count": 1
-      }
-    ],
-    "segment_total": 10,
+    "segment_count": 10,
     "segment_reference_keys": [
       "SHIPPERONE-RECEIVER  TWO-004010-ISA",
       "SHIPPERONE-RECEIVER  TWO-004010-GS",
