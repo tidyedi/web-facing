@@ -17,12 +17,12 @@ process. What is forbidden is changing x12-tidy *from here*.
 **All X12 knowledge lives in x12-tidy and is imported, never copied or edited
 here.** Locating the ISA line, recovering delimiters, reconstructing the
 envelope, auditing control numbers — none of that logic belongs in this repo.
-When you are in `web-facing` and find an x12-tidy finding that is wrong or
+When you are in `x12-tidy-web` and find an x12-tidy finding that is wrong or
 missing, the fix does **not** go here: make it in the x12-tidy repo, land it
 there through its own process, then bump the pin in this one.
 
 Why the rule exists: if x12-tidy logic were vendored, path-linked, or patched
-inside `web-facing`, that change would have no history in x12-tidy, would not
+inside `x12-tidy-web`, that change would have no history in x12-tidy, would not
 carry back to it, and every other consumer would silently diverge from what this
 repo runs. Importing it as a plain pinned dependency keeps x12-tidy the single
 place its behaviour is defined and reviewed.
@@ -170,7 +170,7 @@ CI additionally builds the Docker image and hits `/healthz` in the container.
   rejected):
   - **"Feedback"** (nav + footer, every page incl. the demo; and `docs/index.html`)
     → `app._feedback_href()`: a `mailto:` to `X12_TIDY_WEB_FEEDBACK_EMAIL` when
-    that's set (the low-friction, no-account path), else a `tidyedi/web-facing`
+    that's set (the low-friction, no-account path), else a `tidyedi/x12-tidy-web`
     **Ideas** discussion (so a fork with no address set never exposes someone
     else's inbox). Passed to `_nav.html` as `feedback_href`; the demo passes the
     `mailto:` via `demo.py` `static_nav`; `docs/index.html` hard-codes it.

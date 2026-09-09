@@ -30,8 +30,8 @@ dev = ["pytest>=8", "httpx>=0.27", "ruff>=0.6", "mypy>=1.11"]
 x12-tidy-web = "x12_tidy_web.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/tidyedi/web-facing"
-Repository = "https://github.com/tidyedi/web-facing"
+Homepage = "https://github.com/tidyedi/x12-tidy-web"
+Repository = "https://github.com/tidyedi/x12-tidy-web"
 "x12-tidy" = "https://github.com/tidyedi/x12-tidy"
 
 [build-system]
