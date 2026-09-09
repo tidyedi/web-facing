@@ -32,11 +32,10 @@
     </p>
     <p class="tagline">
       <strong>Severity</strong> is x12-tidy's classification, resolved from the registry at report
-      time. <span class="sev fatal">FATAL</span> also stops a conforming parser;
-      <span class="sev error">ERROR</span> and <span class="sev warning">WARNING</span> are advisory.
-      Counts below: {{ codes | length }} codes ({{ fatal_count }} fatal, {{ error_count }} error,
+      time — {{ codes | length }} codes ({{ fatal_count }} fatal, {{ error_count }} error,
       {{ warning_count }} warning).
     </p>
+    {% include "_severity_legend.html" %}
     <p class="tagline">
       Think a code is wrong, too harsh, too lenient, or missing a case? Each row's
       <strong>Discuss</strong> link opens a pre-filled thread in

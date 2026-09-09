@@ -370,11 +370,51 @@ tr.deprecated { opacity: .55; }
     </p>
     <p class="tagline">
       <strong>Severity</strong> is x12-tidy's classification, resolved from the registry at report
-      time. <span class="sev fatal">FATAL</span> also stops a conforming parser;
-      <span class="sev error">ERROR</span> and <span class="sev warning">WARNING</span> are advisory.
-      Counts below: 45 codes (30 fatal, 10 error,
+      time — 45 codes (30 fatal, 10 error,
       5 warning).
     </p>
+    
+<dl class="legend">
+  <div>
+    <dt><span class="pill fatal">fatal</span></dt>
+    <dd>
+      x12-tidy cannot produce an interchange you can rely on. Either the
+      structure can't be parsed — a delimiter missing or ambiguous, the ISA line
+      malformed or not locatable — or the envelope fails its own integrity
+      checks: a required GE / SE / IEA missing, a segment outside the envelope,
+      or a count or control number malformed, non-unique, or not agreeing
+      (ISA13 vs IEA02, GS08 vs ISA12, a stated count vs the segments actually
+      present). x12-tidy reports these but will not guess the fix, and a
+      conforming receiver rejects the interchange. Fix the source data and
+      repair again.
+    </dd>
+  </div>
+  <div>
+    <dt><span class="pill error">error</span></dt>
+    <dd>
+      A real conformance violation in a specific element or segment — the value
+      or structure breaks an X12 rule, though x12-tidy can still read the
+      interchange (an ISA element off its fixed width, a lowercased segment
+      identifier, an unusable delimiter, an ISA15 that isn't T/P/I). x12-tidy
+      fixes what it can do safely and flags the rest. Review every one — some
+      are not auto-fixed, and a couple turn fatal if the interchange actually
+      uses the affected feature (composite elements, repetition).
+    </dd>
+  </div>
+  <div>
+    <dt><span class="pill warning">warning</span></dt>
+    <dd>
+      Something about the input was off, but x12-tidy could resolve it on its
+      own without risking a real data value — bytes stripped from before the ISA
+      or after the segment terminator, a UTF-16 file transcoded to single-byte,
+      a stray newline inside an ISA element replaced with a space, an
+      unrecognised ISA12 version left opaque. The interchange is otherwise
+      sound. Treat each as a trust signal: usually a harmless sender quirk,
+      occasionally a sign the file was corrupted or mishandled upstream —
+      confirm the cleanup is what you expected.
+    </dd>
+  </div>
+</dl>
     <p class="tagline">
       Think a code is wrong, too harsh, too lenient, or missing a case? Each row's
       <strong>Discuss</strong> link opens a pre-filled thread in
