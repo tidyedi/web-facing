@@ -25,9 +25,11 @@
 
 <main class="wrap">
   <p class="privacy">
-    <svg class="privacy-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-      <path fill="currentColor" d="M12 1 3 5v6c0 5.25 3.6 10.15 9 11.5 5.4-1.35 9-6.25 9-11.5V5l-9-4Zm-1.2 15.2-4-4 1.4-1.4 2.6 2.6 5.6-5.6 1.4 1.4-7 7Z"/>
-    </svg>
+    <span class="privacy-icon">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+        <path fill="currentColor" d="M12 1 3 5v6c0 5.25 3.6 10.15 9 11.5 5.4-1.35 9-6.25 9-11.5V5l-9-4Zm-1.2 15.2-4-4 1.4-1.4 2.6 2.6 5.6-5.6 1.4 1.4-7 7Z"/>
+      </svg>
+    </span>
     <span>
       <strong>Nothing you paste is stored, logged, or sent anywhere.</strong>
       The repair runs in memory on this server and is gone the moment the response
@@ -39,6 +41,11 @@
     <label for="edi" class="field-label">EDI interchange</label>
     <textarea id="edi" name="edi" spellcheck="false" autocomplete="off"
       placeholder="ISA*00*          *00*          *ZZ*SENDER…~GS*…~ST*…~SE*…~GE*…~IEA*…~"></textarea>
+    <p class="hint">
+      Up to {{ "{:,}".format(max_edi_chars) }} characters, pasted or loaded from a file.
+      One interchange is rarely over a few hundred KB, so this is generous — it
+      exists to bound abuse, not typical use.
+    </p>
 
     <div class="controls">
       <label class="inline">
@@ -73,6 +80,7 @@
   </form>
 
   <script type="application/json" id="app-config">{{ config | tojson }}</script>
+  <script type="application/json" id="severity-meta">{{ severity_meta | tojson }}</script>
 
   <section id="results" hidden aria-live="polite">
     <div id="verdict" class="verdict"></div>
@@ -160,13 +168,13 @@
         but not safely fix on its own. The loop stops when a pass changes nothing
         or finds nothing; most interchanges settle in one or two passes.
       </p>
-      {% include "_severity_legend.html" %}
       <p class="hint">
-        x12-tidy's classification. Every finding's code, title, and explanation
-        come straight from its
+        Each severity is explained where it's found, above that pass's byte
+        count -- only the ones a pass actually turned up. Every finding's code,
+        title, and explanation come straight from x12-tidy's
         <a href="{{ registry_url }}">diagnostic code registry</a> — the same
-        source as <a href="/codes">the full code reference</a> and
-        <code>x12-tidy codes</code>.
+        source as <a href="/codes">the full code reference</a> (every severity,
+        always) and <code>x12-tidy codes</code>.
       </p>
       <p class="hint">
         The <strong>Byte</strong> column is the offset into the text you

@@ -116,11 +116,18 @@ def test_index_footer_shows_x12_tidy_commit(client) -> None:
 
 
 def test_index_has_privacy_callout_and_severity_legend(client) -> None:
+    import json
+
     text = client.get("/").text
     assert "stored, logged, or sent anywhere" in text
-    assert 'class="legend"' in text
-    for sev in ("fatal", "error", "warning"):
-        assert f'class="pill {sev}"' in text
+    # The full severity legend is embedded as JSON, not static markup -- each
+    # pass renders its own filtered copy client-side (static/app.js
+    # renderPassLegend). /codes still renders the static, always-all-of-them
+    # version from the same data (see test_codes_page_renders).
+    blob = text.split('id="severity-meta">', 1)[1].split("</script>", 1)[0]
+    severities = json.loads(blob)
+    assert {item["severity"] for item in severities} == {"fatal", "error", "warning"}
+    assert all(item["label"] and item["description"] for item in severities)
 
 
 def test_favicon_and_brand_mark_are_served(client) -> None:

@@ -43,9 +43,14 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
 from x12_tidy_web import __version__
-from x12_tidy_web.diagnostics import AREA_LABELS, code_catalog, code_reference
+from x12_tidy_web.diagnostics import (
+    AREA_LABELS,
+    code_catalog,
+    code_reference,
+    severity_legend_for,
+)
 from x12_tidy_web.engine import DEFAULT_MAX_ITERATIONS, MAX_ALLOWED_ITERATIONS, repair
-from x12_tidy_web.models import ReportRequest, ValidateRequest
+from x12_tidy_web.models import MAX_EDI_CHARS, ReportRequest, ValidateRequest
 from x12_tidy_web.provenance import (
     x12_tidy_commit,
     x12_tidy_release,
@@ -139,6 +144,8 @@ def create_app() -> FastAPI:
                 "default_max_iterations": DEFAULT_MAX_ITERATIONS,
                 "max_allowed_iterations": MAX_ALLOWED_ITERATIONS,
                 "formats": available_formats(),
+                "severity_meta": severity_legend_for(),
+                "max_edi_chars": MAX_EDI_CHARS,
                 "samples": [
                     {"slug": s.slug, "title": s.title, "blurb": s.blurb, "edi": s.edi}
                     for s in SAMPLES
@@ -146,6 +153,7 @@ def create_app() -> FastAPI:
                 "config": {
                     "feedbackEmail": _feedback_email(),
                     "x12TidyRelease": x12_tidy_release(),
+                    "maxEdiChars": MAX_EDI_CHARS,
                 },
                 "feedback_href": _feedback_href(),
                 "current": "repair",
@@ -165,6 +173,7 @@ def create_app() -> FastAPI:
                 "codes": catalog,
                 "by_area": code_reference(),
                 "area_labels": AREA_LABELS,
+                "severity_meta": severity_legend_for(),
                 "fatal_count": sum(c["severity"] == "fatal" for c in catalog),
                 "error_count": sum(c["severity"] == "error" for c in catalog),
                 "warning_count": sum(c["severity"] == "warning" for c in catalog),

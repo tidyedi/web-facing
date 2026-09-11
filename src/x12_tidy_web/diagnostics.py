@@ -31,6 +31,86 @@ SEVERITY_ORDER: tuple[str, ...] = ("fatal", "error", "warning")
 _DISCUSS_NEW = "https://github.com/tidyedi/x12-tidy/discussions/new"
 _DISCUSS_CATEGORY = "q-a"
 
+@dataclass(frozen=True)
+class SeverityInfo:
+    """Static, code-independent prose describing one severity bucket.
+
+    The single source for the severity legend: the ``/codes`` reference
+    (every entry, always), and the results page, which shows a pass only the
+    entries for severities that pass's findings actually used (see
+    :func:`severity_legend_for` and ``static/app.js``'s ``renderPassLegend``,
+    which reads the same data embedded as JSON on the page).
+    """
+
+    severity: str
+    label: str
+    description: str
+
+
+#: One entry per :data:`SEVERITY_ORDER` value, in that order. The wording was
+#: checked against every code in the installed registry (issue #73); if a
+#: registry bump changes which bucket a code sits in, re-check it here.
+SEVERITY_META: dict[str, SeverityInfo] = {
+    "fatal": SeverityInfo(
+        severity="fatal",
+        label="fatal",
+        description=(
+            "x12-tidy cannot produce an interchange you can rely on. Either the "
+            "structure can't be parsed — a delimiter missing or ambiguous, the "
+            "ISA line malformed or not locatable — or the envelope fails its "
+            "own integrity checks: a required GE / SE / IEA missing, a segment "
+            "outside the envelope, or a count or control number malformed, "
+            "non-unique, or not agreeing (ISA13 vs IEA02, GS08 vs ISA12, a "
+            "stated count vs the segments actually present). x12-tidy reports "
+            "these but will not guess the fix, and a conforming receiver "
+            "rejects the interchange. Fix the source data and repair again."
+        ),
+    ),
+    "error": SeverityInfo(
+        severity="error",
+        label="error",
+        description=(
+            "A real conformance violation in a specific element or segment — "
+            "the value or structure breaks an X12 rule, though x12-tidy can "
+            "still read the interchange (an ISA element off its fixed width, a "
+            "lowercased segment identifier, an unusable delimiter, an ISA15 "
+            "that isn't T/P/I). x12-tidy fixes what it can do safely and flags "
+            "the rest. Review every one — some are not auto-fixed, and a "
+            "couple turn fatal if the interchange actually uses the affected "
+            "feature (composite elements, repetition)."
+        ),
+    ),
+    "warning": SeverityInfo(
+        severity="warning",
+        label="warning",
+        description=(
+            "Something about the input was off, but x12-tidy could resolve it "
+            "on its own without risking a real data value — bytes stripped "
+            "from before the ISA or after the segment terminator, a UTF-16 "
+            "file transcoded to single-byte, a stray newline inside an ISA "
+            "element replaced with a space, an unrecognised ISA12 version left "
+            "opaque. The interchange is otherwise sound. Treat each as a trust "
+            "signal: usually a harmless sender quirk, occasionally a sign the "
+            "file was corrupted or mishandled upstream — confirm the cleanup "
+            "is what you expected."
+        ),
+    ),
+}
+
+
+def severity_legend_for(severities: set[str] | None = None) -> list[dict[str, str]]:
+    """:data:`SEVERITY_META`, in :data:`SEVERITY_ORDER`, as plain dicts for a
+    template or a JSON payload. ``severities`` restricts it to just those
+    keys (a single pass's own findings); omit it for the full reference
+    legend (``/codes``, and every severity a pass could possibly carry, for
+    the JSON the live app embeds and filters client-side per pass)."""
+    return [
+        {"severity": sev, "label": SEVERITY_META[sev].label, "description": SEVERITY_META[sev].description}
+        for sev in SEVERITY_ORDER
+        if severities is None or sev in severities
+    ]
+
+
 #: Display headings for x12-tidy's closed ``area`` vocabulary -- just the
 #: abbreviation spelled out, so the reference page can group codes. The areas
 #: themselves are x12-tidy's (:data:`x12_tidy.diagnostics.AREAS`); if that tuple

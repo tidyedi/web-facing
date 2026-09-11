@@ -51,17 +51,29 @@ main { padding: 1.5rem 0 3rem; }
 .privacy {
   display: flex;
   align-items: flex-start;
-  gap: .6rem;
+  gap: .85rem;
   margin: 0 0 1.5rem;
-  padding: .8rem 1rem;
-  border: 1px solid #bfe0cb;
-  border-left: 4px solid var(--ok);
+  padding: 1.1rem 1.3rem;
+  border: 1px solid #7fc794;
+  border-left: 8px solid var(--ok);
   border-radius: 8px;
-  background: #f1f8f3;
-  font-size: .9rem;
+  background: #e0f4e7;
+  box-shadow: 0 2px 6px rgba(26, 127, 55, .18);
+  font-size: 1.05rem;
+  font-weight: 500;
   color: var(--ink);
 }
-.privacy-icon { flex: none; color: var(--ok); margin-top: .1rem; }
+.privacy-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--ok);
+  color: #fff;
+  box-shadow: 0 1px 4px rgba(26, 127, 55, .35);
+}
 .privacy strong { color: var(--ok); }
 
 #edi-form { display: flex; flex-direction: column; gap: .75rem; }
@@ -167,6 +179,13 @@ button.ghost { background: transparent; }
   background: #fdf1f1;
   color: var(--fatal);
 }
+/* The amber triangle reads as "heads up", not "broken" -- wrong signal for a
+   fatal result, and the same glyph as the non-fatal case right above gave no
+   visual distinction at all. Swap it for the same "\2715" the top verdict
+   banner already uses for .fail (see .verdict.fail::before), so the two
+   fatal signals on the page agree instead of one looking milder than the
+   other. */
+.panel-warning.is-fatal::before { content: "\2715"; }
 
 .result-grid {
   display: grid;

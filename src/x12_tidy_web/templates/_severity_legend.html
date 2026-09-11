@@ -1,51 +1,22 @@
 {#
-  The single place fatal / error / warning are defined for visitors. Included by
-  index.html (under the repair passes) and codes.html (the reference intro).
+  Renders `severity_meta` -- a list of {severity, label, description} dicts,
+  in severity order. The copy itself lives in one place,
+  x12_tidy_web.diagnostics.SEVERITY_META (issue #73 checked the wording
+  against every code in the installed registry); this template only lays it
+  out, so it never goes stale relative to what a bump to that dict says.
 
-  This is presentation copy that *describes* how x12-tidy classifies its
-  diagnostics — x12-tidy's registry is what actually assigns severity, and none
-  of this is logic. The wording was checked against every code in the installed
-  registry (issue #73); if a bump changes which bucket a code sits in, re-check
-  it here.
+  codes.html passes the full legend (every severity, always -- it's a
+  general reference). The results page (index.html) no longer includes this
+  under the pass list; each pass instead gets its own filtered instance,
+  built client-side by static/app.js's renderPassLegend from the same data,
+  embedded on the page as JSON (see index.html's #severity-meta script tag)
+  and cut down to just the severities that pass's own findings used.
 #}
 <dl class="legend">
+  {% for item in severity_meta %}
   <div>
-    <dt><span class="pill fatal">fatal</span></dt>
-    <dd>
-      x12-tidy cannot produce an interchange you can rely on. Either the
-      structure can't be parsed — a delimiter missing or ambiguous, the ISA line
-      malformed or not locatable — or the envelope fails its own integrity
-      checks: a required GE / SE / IEA missing, a segment outside the envelope,
-      or a count or control number malformed, non-unique, or not agreeing
-      (ISA13 vs IEA02, GS08 vs ISA12, a stated count vs the segments actually
-      present). x12-tidy reports these but will not guess the fix, and a
-      conforming receiver rejects the interchange. Fix the source data and
-      repair again.
-    </dd>
+    <dt><span class="pill {{ item.severity }}">{{ item.label }}</span></dt>
+    <dd>{{ item.description }}</dd>
   </div>
-  <div>
-    <dt><span class="pill error">error</span></dt>
-    <dd>
-      A real conformance violation in a specific element or segment — the value
-      or structure breaks an X12 rule, though x12-tidy can still read the
-      interchange (an ISA element off its fixed width, a lowercased segment
-      identifier, an unusable delimiter, an ISA15 that isn't T/P/I). x12-tidy
-      fixes what it can do safely and flags the rest. Review every one — some
-      are not auto-fixed, and a couple turn fatal if the interchange actually
-      uses the affected feature (composite elements, repetition).
-    </dd>
-  </div>
-  <div>
-    <dt><span class="pill warning">warning</span></dt>
-    <dd>
-      Something about the input was off, but x12-tidy could resolve it on its
-      own without risking a real data value — bytes stripped from before the ISA
-      or after the segment terminator, a UTF-16 file transcoded to single-byte,
-      a stray newline inside an ISA element replaced with a space, an
-      unrecognised ISA12 version left opaque. The interchange is otherwise
-      sound. Treat each as a trust signal: usually a harmless sender quirk,
-      occasionally a sign the file was corrupted or mishandled upstream —
-      confirm the cleanup is what you expected.
-    </dd>
-  </div>
+  {% endfor %}
 </dl>

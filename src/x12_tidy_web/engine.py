@@ -134,6 +134,18 @@ class Iteration:
     def severity_counts(self) -> dict[str, int]:
         return severity_counts(self.diagnostics)
 
+    @property
+    def shown(self) -> bool:
+        """Whether this pass carries anything worth its own card in a
+        rendered report. Pass 1 always does -- it is the only evidence for
+        whether the input needed anything at all. A later pass that changed
+        no byte and found nothing is proof the previous pass already reached
+        the fixed point, not a fresh fact -- the run's ``verdict`` and pass
+        count already say so once, so repeating an empty card adds nothing.
+        ``iterations`` itself is never filtered -- this only tells a renderer
+        which entries to skip."""
+        return self.index == 1 or self.changed or bool(self.diagnostics)
+
     def as_dict(self) -> dict[str, Any]:
         return {
             "index": self.index,
@@ -143,6 +155,7 @@ class Iteration:
             "output_byte_length": self.output_byte_length,
             "was_clean": self.was_clean,
             "changed": self.changed,
+            "shown": self.shown,
             "severity_counts": self.severity_counts,
             "diagnostics": [d.as_dict() for d in self.diagnostics],
             "facts": self.facts.as_dict() if self.facts else None,
@@ -200,6 +213,13 @@ class RepairRun:
     def residual_diagnostics(self) -> list[DiagnosticView]:
         """Findings from the final pass -- what x12-tidy still flags after repair."""
         return list(self.iterations[-1].diagnostics) if self.iterations else []
+
+    @property
+    def shown_iterations(self) -> list[Iteration]:
+        """:attr:`iterations` filtered to the ones worth their own card --
+        see :attr:`Iteration.shown`. Every renderer that lists passes reads
+        this, not ``iterations`` directly, so the rule lives in one place."""
+        return [it for it in self.iterations if it.shown]
 
     @property
     def all_diagnostics(self) -> list[DiagnosticView]:
@@ -268,6 +288,7 @@ class RepairRun:
             n = counts["fatal"]
             noun = "finding" if n == 1 else "findings"
             them = "it" if n == 1 else "them"
+            remains = "remains" if n == 1 else "remain"
             return {
                 "state": "unfixable",
                 "css_class": "fail",
@@ -280,8 +301,10 @@ class RepairRun:
                 "output_label": "Partially repaired interchange — not conformant",
                 "output_caveat": (
                     f"This still carries {n} fatal {noun} that a conforming parser will reject. "
-                    f"It is not a drop-in replacement — resolve {them} in your source data and "
-                    "repair again."
+                    f"We recommend reviewing this file and fixing {them} before sending it — a "
+                    f"receiver's system will most likely be unable to read the interchange while "
+                    f"{them} {remains}. It is not a drop-in replacement — resolve {them} in your "
+                    "source data and repair again."
                 ),
             }
         if not self.converged:
