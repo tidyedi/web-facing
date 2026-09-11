@@ -40,7 +40,7 @@
   <form id="edi-form">
     <label for="edi" class="field-label">EDI interchange</label>
     <textarea id="edi" name="edi" spellcheck="false" autocomplete="off"
-      placeholder="ISA*00*          *00*          *ZZ*SENDER…~GS*…~ST*…~SE*…~GE*…~IEA*…~"></textarea>
+      placeholder="Paste an X12 EDI interchange here — or use &quot;Load a file…&quot; or &quot;Load a sample…&quot; below.&#10;&#10;e.g. ISA*00*          *00*          *ZZ*SENDER…~GS*…~ST*…~SE*…~GE*…~IEA*…~"></textarea>
     <p class="hint">
       Up to {{ "{:,}".format(max_edi_chars) }} characters, pasted or loaded from a file.
       One interchange is rarely over a few hundred KB, so this is generous — it

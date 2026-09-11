@@ -652,8 +652,22 @@ function loadFile(ev) {
 // Keep what's in the form for the life of this browser tab, so leaving for the
 // /codes page and coming back doesn't wipe it. sessionStorage (not local) is
 // per-tab and cleared on close, and never leaves the browser.
+//
+// A plain page reload is treated differently on purpose: it drops the draft
+// rather than restoring it, so "refresh" reads as "start over" the way a
+// visitor expects, while still surviving an in-tab trip to /codes and back
+// (a link click, not a reload).
 // --------------------------------------------------------------------------- //
 const DRAFT_KEY = "x12-tidy-web:draft";
+
+function isPageReload() {
+  try {
+    const nav = performance.getEntriesByType("navigation")[0];
+    return nav ? nav.type === "reload" : false;
+  } catch {
+    return false; // Navigation Timing unavailable — fall back to restoring
+  }
+}
 
 function saveDraft() {
   try {
@@ -668,6 +682,10 @@ function saveDraft() {
 
 function restoreDraft() {
   try {
+    if (isPageReload()) {
+      sessionStorage.removeItem(DRAFT_KEY);
+      return;
+    }
     const raw = sessionStorage.getItem(DRAFT_KEY);
     if (!raw) return;
     const d = JSON.parse(raw);
