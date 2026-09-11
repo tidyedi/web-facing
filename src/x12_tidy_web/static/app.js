@@ -26,6 +26,17 @@ try {
   /* no config — feature links stay hidden */
 }
 
+// [{severity, label, description}, ...], every severity, in severity order --
+// x12_tidy_web.diagnostics.SEVERITY_META, embedded by the server (the same
+// data _severity_legend.html renders for the /codes page). Each pass filters
+// this down to just the severities its own findings used; see renderPassLegend.
+let SEVERITY_META = [];
+try {
+  SEVERITY_META = JSON.parse($("severity-meta").textContent);
+} catch {
+  /* no severity metadata embedded — passes just won't show a legend line */
+}
+
 const form = $("edi-form");
 const ediInput = $("edi");
 const maxIterInput = $("max-iterations");
@@ -82,6 +93,27 @@ const SEVERITIES = ["fatal", "error", "warning"];
 function countsSummary(counts) {
   const parts = SEVERITIES.filter((s) => counts[s] > 0).map((s) => `${counts[s]} ${s}`);
   return parts.length ? parts.join(", ") : "no findings";
+}
+
+// The severity legend for one pass -- SEVERITY_META cut down to just the
+// severities that pass's own diagnostics used, same markup _severity_legend.html
+// renders server-side for /codes (which shows all of them, unfiltered).
+function renderPassLegend(diagnostics) {
+  const present = new Set(diagnostics.map((d) => d.severity));
+  const rows = SEVERITY_META.filter((item) => present.has(item.severity));
+  if (!rows.length) return null;
+  return el(
+    "dl",
+    { class: "legend" },
+    ...rows.map((item) =>
+      el(
+        "div",
+        {},
+        el("dt", {}, el("span", { class: `pill ${item.severity}`, text: item.label })),
+        el("dd", { text: item.description })
+      )
+    )
+  );
 }
 
 // --------------------------------------------------------------------------- //
@@ -300,6 +332,8 @@ function renderPass(iter, isLast) {
   summary.append(el("span", { class: "pass-label", text: `Pass ${iter.index}` }));
 
   const body = el("div", { class: "pass-body" });
+  const legend = renderPassLegend(iter.diagnostics);
+  if (legend) body.append(legend);
   const outBytes = iter.output_byte_length == null ? "—" : `${iter.output_byte_length} bytes`;
   body.append(
     el("p", { class: "hint", text: `${iter.input_byte_length} bytes in → ${outBytes} out.` })
@@ -446,9 +480,14 @@ function renderRun(run) {
 
   renderFacts(run.final_facts);
 
+  // A pass that changed nothing and found nothing is proof the previous pass
+  // already reached the fixed point, not a fresh fact -- the verdict above
+  // already says so once. Pass 1 always shows regardless (see Iteration.shown
+  // server-side); skip only a later no-op confirmation pass.
+  const shownIterations = run.iterations.filter((it) => it.shown);
   passesEl.replaceChildren();
-  run.iterations.forEach((iter, i) => {
-    passesEl.append(renderPass(iter, i === run.iterations.length - 1));
+  shownIterations.forEach((iter, i) => {
+    passesEl.append(renderPass(iter, i === shownIterations.length - 1));
   });
 
   results.hidden = false;
@@ -464,6 +503,13 @@ async function validate(ev) {
   const edi = ediInput.value;
   if (!edi.trim()) {
     showError("Paste an EDI interchange first.");
+    return;
+  }
+  if (CONFIG.maxEdiChars && edi.length > CONFIG.maxEdiChars) {
+    showError(
+      `That's ${edi.length.toLocaleString()} characters — over the ` +
+        `${CONFIG.maxEdiChars.toLocaleString()}-character limit. Trim it and try again.`
+    );
     return;
   }
   const payload = { edi, max_iterations: Number(maxIterInput.value) || 5 };
@@ -579,6 +625,17 @@ function resetForm() {
 function loadFile(ev) {
   const file = ev.target.files && ev.target.files[0];
   if (!file) return;
+  // A byte roughly maps to a character at this codec (latin1: see engine.py's
+  // TEXT_CODEC) -- close enough to reject an oversized file before reading
+  // the whole thing into memory, rather than only after a round trip.
+  if (CONFIG.maxEdiChars && file.size > CONFIG.maxEdiChars) {
+    showError(
+      `That file is ${file.size.toLocaleString()} bytes — over the ` +
+        `${CONFIG.maxEdiChars.toLocaleString()}-character limit. Trim it and try again.`
+    );
+    ev.target.value = "";
+    return;
+  }
   const reader = new FileReader();
   reader.onload = () => {
     ediInput.value = reader.result;

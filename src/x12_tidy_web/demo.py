@@ -20,7 +20,12 @@ from typing import Any
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from x12_tidy_web import __version__
-from x12_tidy_web.diagnostics import AREA_LABELS, code_catalog, code_reference
+from x12_tidy_web.diagnostics import (
+    AREA_LABELS,
+    code_catalog,
+    code_reference,
+    severity_legend_for,
+)
 from x12_tidy_web.engine import repair
 from x12_tidy_web.provenance import x12_tidy_release, x12_tidy_source_url
 from x12_tidy_web.samples import SAMPLES
@@ -91,6 +96,7 @@ def build_demo(out_dir: Path) -> list[Path]:
             app_version=__version__,
             x12_tidy_release=release,
             registry_url=registry_url,
+            severity_meta=severity_legend_for(),
             **static_nav,
         )
         path = out_dir / f"{sample.slug}.html"
@@ -106,6 +112,7 @@ def build_demo(out_dir: Path) -> list[Path]:
         codes=catalog,
         by_area=code_reference(),
         area_labels=AREA_LABELS,
+        severity_meta=severity_legend_for(),
         fatal_count=sum(c["severity"] == "fatal" for c in catalog),
         error_count=sum(c["severity"] == "error" for c in catalog),
         warning_count=sum(c["severity"] == "warning" for c in catalog),
