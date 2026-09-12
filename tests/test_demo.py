@@ -51,7 +51,7 @@ def test_verdicts_match_the_samples(bundle: Path) -> None:
 
     pipe = (bundle / "pipe-delimited.html").read_text()
     assert "verdict ok" in pipe
-    assert "Clean — the interchange is conformant, with nothing left to fix." in pipe
+    assert "Clean — repaired and now conformant, with nothing left to fix." in pipe
     # a clean sample keeps the plain heading and shows no warning banner
     # (the .panel-warning rule is in the inlined CSS either way; the element isn't)
     assert "Corrected interchange" in pipe
