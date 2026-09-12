@@ -200,6 +200,21 @@ button.ghost { background: transparent; }
    other. */
 .panel-warning.is-fatal::before { content: "\2715"; }
 
+/* Same callout shape as .panel-warning, but blue/informational rather than
+   amber/cautionary -- for a note that reassures ("this is correct, not a
+   bug") rather than one that warns. */
+.panel-note {
+  margin: .6rem 0 0;
+  padding: .6rem .8rem;
+  border: 1px solid #a9cdf5;
+  border-left: 4px solid var(--accent);
+  border-radius: 6px;
+  background: #eef5ff;
+  color: var(--ink);
+  font-size: .92rem;
+}
+.panel-note::before { content: "\2139\FE0F"; margin-right: .45rem; }
+
 .result-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
