@@ -28,14 +28,19 @@ try {
 
 // [{severity, label, description}, ...], every severity, in severity order --
 // x12_tidy_web.diagnostics.SEVERITY_META, embedded by the server (the same
-// data _severity_legend.html renders for the /codes page). Each pass filters
-// this down to just the severities its own findings used; see renderPassLegend.
+// data _severity_legend.html renders for the /codes page). Used as a hover
+// tooltip on each pass's severity pills (see renderPass) rather than spelled
+// out inline on every pass -- keeps the full description one hover away
+// without spending vertical space on every repeat of it.
 let SEVERITY_META = [];
 try {
   SEVERITY_META = JSON.parse($("severity-meta").textContent);
 } catch {
-  /* no severity metadata embedded — passes just won't show a legend line */
+  /* no severity metadata embedded — pills just won't get a tooltip */
 }
+const SEVERITY_DESCRIPTIONS = Object.fromEntries(
+  SEVERITY_META.map((item) => [item.severity, item.description])
+);
 
 const form = $("edi-form");
 const ediInput = $("edi");
@@ -93,27 +98,6 @@ const SEVERITIES = ["fatal", "error", "warning"];
 function countsSummary(counts) {
   const parts = SEVERITIES.filter((s) => counts[s] > 0).map((s) => `${counts[s]} ${s}`);
   return parts.length ? parts.join(", ") : "no findings";
-}
-
-// The severity legend for one pass -- SEVERITY_META cut down to just the
-// severities that pass's own diagnostics used, same markup _severity_legend.html
-// renders server-side for /codes (which shows all of them, unfiltered).
-function renderPassLegend(diagnostics) {
-  const present = new Set(diagnostics.map((d) => d.severity));
-  const rows = SEVERITY_META.filter((item) => present.has(item.severity));
-  if (!rows.length) return null;
-  return el(
-    "dl",
-    { class: "legend" },
-    ...rows.map((item) =>
-      el(
-        "div",
-        {},
-        el("dt", {}, el("span", { class: `pill ${item.severity}`, text: item.label })),
-        el("dd", { text: item.description })
-      )
-    )
-  );
 }
 
 // --------------------------------------------------------------------------- //
@@ -332,8 +316,6 @@ function renderPass(iter, isLast) {
   summary.append(el("span", { class: "pass-label", text: `Pass ${iter.index}` }));
 
   const body = el("div", { class: "pass-body" });
-  const legend = renderPassLegend(iter.diagnostics);
-  if (legend) body.append(legend);
   const outBytes = iter.output_byte_length == null ? "—" : `${iter.output_byte_length} bytes`;
   body.append(
     el("p", { class: "hint", text: `${iter.input_byte_length} bytes in → ${outBytes} out.` })
@@ -355,13 +337,17 @@ function renderPass(iter, isLast) {
   const sevButtons = [];
   for (const s of SEVERITIES) {
     if (counts[s] <= 0) continue;
+    const description = SEVERITY_DESCRIPTIONS[s];
+    const title = description
+      ? `${description} — click to show only ${s} findings; click more than one to combine.`
+      : `Show only ${s} findings — click more than one to combine`;
     const b = el(
       "button",
       {
         type: "button",
         class: `pill ${s}`,
         "aria-pressed": "false",
-        title: `Show only ${s} findings — click more than one to combine`,
+        title,
       },
       `${counts[s]} ${s}`
     );

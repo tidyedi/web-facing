@@ -98,24 +98,15 @@
       <summary>
         <span class="pass-label">Pass {{ it.index }}</span>
         {% for sev in ['fatal', 'error', 'warning'] %}
-          {% if it.severity_counts[sev] %}<span class="pill {{ sev }}">{{ it.severity_counts[sev] }} {{ sev }}</span>{% endif %}
+          {% if it.severity_counts[sev] %}
+          {% set meta = severity_meta | selectattr('severity', 'equalto', sev) | first %}
+          <span class="pill {{ sev }}" title="{{ meta.description }}">{{ it.severity_counts[sev] }} {{ sev }}</span>
+          {% endif %}
         {% endfor %}
         {% if it.was_clean %}<span class="pass-status ok">clean</span>{% endif %}
         <span class="pass-status">{{ 'changed the interchange' if it.changed else 'no change' }}</span>
       </summary>
       <div class="pass-body">
-        {% set pass_severities = it.diagnostics | map(attribute='severity') | list %}
-        {% set pass_legend = severity_meta | selectattr('severity', 'in', pass_severities) | list %}
-        {% if pass_legend %}
-        <dl class="legend">
-          {% for item in pass_legend %}
-          <div>
-            <dt><span class="pill {{ item.severity }}">{{ item.label }}</span></dt>
-            <dd>{{ item.description }}</dd>
-          </div>
-          {% endfor %}
-        </dl>
-        {% endif %}
         <p class="hint">
           {{ it.input_byte_length }} bytes in →
           {{ '—' if it.output_byte_length is none else (it.output_byte_length ~ ' bytes') }} out.

@@ -58,17 +58,29 @@ main { padding: 1.5rem 0 3rem; }
 .privacy {
   display: flex;
   align-items: flex-start;
-  gap: .6rem;
+  gap: .85rem;
   margin: 0 0 1.5rem;
-  padding: .8rem 1rem;
-  border: 1px solid #bfe0cb;
-  border-left: 4px solid var(--ok);
+  padding: 1.1rem 1.3rem;
+  border: 1px solid #7fc794;
+  border-left: 8px solid var(--ok);
   border-radius: 8px;
-  background: #f1f8f3;
-  font-size: .9rem;
+  background: #e0f4e7;
+  box-shadow: 0 2px 6px rgba(26, 127, 55, .18);
+  font-size: 1.05rem;
+  font-weight: 500;
   color: var(--ink);
 }
-.privacy-icon { flex: none; color: var(--ok); margin-top: .1rem; }
+.privacy-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--ok);
+  color: #fff;
+  box-shadow: 0 1px 4px rgba(26, 127, 55, .35);
+}
 .privacy strong { color: var(--ok); }
 
 #edi-form { display: flex; flex-direction: column; gap: .75rem; }
@@ -137,20 +149,33 @@ button.ghost { background: transparent; }
 #results { margin-top: 2rem; display: flex; flex-direction: column; gap: 1.25rem; }
 
 .verdict {
-  padding: .9rem 1.1rem;
+  padding: 1.1rem 1.3rem;
   border-radius: 8px;
   font-weight: 600;
+  font-size: 1.05rem;
   border: 1px solid var(--line);
-  border-left-width: 5px;
+  border-left-width: 8px;
   background: var(--panel);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .1);
 }
-.verdict::before { margin-right: .55rem; font-weight: 700; }
-.verdict.ok       { border-color: #bfe0cb; border-left-color: var(--ok); background: #f1f8f3; }
-.verdict.ok::before       { content: &#34;\2713&#34;; color: var(--ok); }
-.verdict.residual { border-color: #eed9b6; border-left-color: var(--error); background: #fdf6ec; }
-.verdict.residual::before { content: &#34;\0021&#34;; color: var(--error); }
-.verdict.fail     { border-color: #eec4c4; border-left-color: var(--fatal); background: #fdf1f1; }
-.verdict.fail::before      { content: &#34;\2715&#34;; color: var(--fatal); }
+.verdict::before {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  margin-right: .6rem;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: .95rem;
+  color: #fff;
+  vertical-align: -6px;
+}
+.verdict.ok        { border-color: #7fc794; border-left-color: var(--ok); background: #e0f4e7; box-shadow: 0 2px 6px rgba(26, 127, 55, .18); }
+.verdict.ok::before        { content: &#34;\2713&#34;; background: var(--ok); }
+.verdict.residual  { border-color: #e8c477; border-left-color: var(--error); background: #fbe9cc; box-shadow: 0 2px 6px rgba(192, 86, 0, .18); }
+.verdict.residual::before  { content: &#34;\0021&#34;; background: var(--error); }
+.verdict.fail      { border-color: #e39a9a; border-left-color: var(--fatal); background: #fbdada; box-shadow: 0 2px 6px rgba(179, 0, 0, .18); }
+.verdict.fail::before      { content: &#34;\2715&#34;; background: var(--fatal); }
 .verdict small { display: block; font-weight: 400; color: var(--dim); margin-top: .3rem; }
 
 /* Inline caveat inside a result panel — e.g. the output panel when the run
@@ -174,6 +199,13 @@ button.ghost { background: transparent; }
   background: #fdf1f1;
   color: var(--fatal);
 }
+/* The amber triangle reads as &#34;heads up&#34;, not &#34;broken&#34; -- wrong signal for a
+   fatal result, and the same glyph as the non-fatal case right above gave no
+   visual distinction at all. Swap it for the same &#34;\2715&#34; the top verdict
+   banner already uses for .fail (see .verdict.fail::before), so the two
+   fatal signals on the page agree instead of one looking milder than the
+   other. */
+.panel-warning.is-fatal::before { content: &#34;\2715&#34;; }
 
 .result-grid {
   display: grid;
@@ -445,9 +477,15 @@ TWO    *240705*2200*U*00401*000000900*0*P*:~GS*SW*SHIPPERONE*RECEIVERTWO*2024070
         
           
         
-          <span class="pill error">1 error</span>
+          
+          
+          <span class="pill error" title="A real conformance violation in a specific element or segment — the value or structure breaks an X12 rule, though x12-tidy can still read the interchange (an ISA element off its fixed width, a lowercased segment identifier, an unusable delimiter, an ISA15 that isn&#39;t T/P/I). x12-tidy fixes what it can do safely and flags the rest. Review every one — some are not auto-fixed, and a couple turn fatal if the interchange actually uses the affected feature (composite elements, repetition).">1 error</span>
+          
         
-          <span class="pill warning">1 warning</span>
+          
+          
+          <span class="pill warning" title="Something about the input was off, but x12-tidy could resolve it on its own without risking a real data value — bytes stripped from before the ISA or after the segment terminator, a UTF-16 file transcoded to single-byte, a stray newline inside an ISA element replaced with a space, an unrecognised ISA12 version left opaque. The interchange is otherwise sound. Treat each as a trust signal: usually a harmless sender quirk, occasionally a sign the file was corrupted or mishandled upstream — confirm the cleanup is what you expected.">1 warning</span>
+          
         
         
         <span class="pass-status">changed the interchange</span>
@@ -486,30 +524,6 @@ TWO    *240705*2200*U*00401*000000900*0*P*:~GS*SW*SHIPPERONE*RECEIVERTWO*2024070
           
           </tbody>
         </table>
-        
-      </div>
-    </details>
-    
-    <details class="pass" open>
-      <summary>
-        <span class="pass-label">Pass 2</span>
-        
-          
-        
-          
-        
-          
-        
-        <span class="pass-status ok">clean</span>
-        <span class="pass-status">no change</span>
-      </summary>
-      <div class="pass-body">
-        <p class="hint">
-          280 bytes in →
-          280 bytes out.
-        </p>
-        
-        <p class="hint">No findings on this pass.</p>
         
       </div>
     </details>
