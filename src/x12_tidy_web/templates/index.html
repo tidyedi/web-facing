@@ -145,20 +145,7 @@
     </div>
 
     <div class="panel">
-      <div class="panel-head">
-        <h2>Repair passes</h2>
-        <div class="panel-actions download">
-          <label class="inline">
-            Download report
-            <select id="format-select">
-              {% for f in formats %}
-              <option value="{{ f.key }}">{{ f.label }}</option>
-              {% endfor %}
-            </select>
-          </label>
-          <button type="button" id="download-btn" class="primary" disabled>Download</button>
-        </div>
-      </div>
+      <h2>Repair passes</h2>
       <p class="hint lead">
         Each pass runs <a href="https://github.com/tidyedi/x12-tidy">x12-tidy</a>
         once. <strong>Pass&nbsp;1</strong> works on the interchange you submitted
@@ -186,6 +173,26 @@
         more than one to combine.
       </p>
       <div id="passes"></div>
+      <div id="passes-verdict" class="verdict verdict-echo"></div>
+      <div class="report-panel">
+        <p class="report-panel-text">
+          <strong>Full report</strong> — every pass, every finding, the
+          envelope facts, and the corrected interchange, in one file. View it
+          here first, or download it to keep.
+        </p>
+        <div class="report-panel-actions">
+          <label class="inline">
+            Format
+            <select id="format-select">
+              {% for f in formats %}
+              <option value="{{ f.key }}">{{ f.label }}</option>
+              {% endfor %}
+            </select>
+          </label>
+          <button type="button" id="view-btn" class="ghost" disabled>View</button>
+          <button type="button" id="download-btn" class="primary" disabled>Download</button>
+        </div>
+      </div>
     </div>
   </section>
 </main>

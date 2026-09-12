@@ -137,6 +137,13 @@
     </details>
     {% endfor %}
     </div>
+    <div class="verdict verdict-echo {{ verdict_class }}">
+      {{ verdict_text }}
+      <small>
+        {{ run.iteration_count }} pass{{ '' if run.iteration_count == 1 else 'es' }} ·
+        output {{ 'differs from' if run.changed else 'matches' }} the input
+      </small>
+    </div>
   </div>
 </main>
 
