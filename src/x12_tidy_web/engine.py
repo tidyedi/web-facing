@@ -277,10 +277,15 @@ class RepairRun:
                 "output_caveat": "",
             }
         if self.clean:
+            headline = (
+                "Clean — repaired and now conformant, with nothing left to fix."
+                if self.changed
+                else "Clean — already conformant; nothing needed fixing."
+            )
             return {
                 "state": "clean",
                 "css_class": "ok",
-                "headline": "Clean — the interchange is conformant, with nothing left to fix.",
+                "headline": headline,
                 "output_label": "Corrected interchange",
                 "output_caveat": "",
             }
