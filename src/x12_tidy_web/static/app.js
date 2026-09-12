@@ -60,9 +60,11 @@ const explodedEl = $("exploded");
 const factsBody = $("facts").querySelector("tbody");
 const factsEmpty = $("facts-empty");
 const passesEl = $("passes");
+const passesVerdictEl = $("passes-verdict");
 const copyBtn = $("copy-btn");
 const useBtn = $("use-btn");
 const downloadBtn = $("download-btn");
+const viewBtn = $("view-btn");
 const formatSelect = $("format-select");
 const validateBtn = $("validate-btn");
 
@@ -103,16 +105,23 @@ function countsSummary(counts) {
 // --------------------------------------------------------------------------- //
 // rendering
 // --------------------------------------------------------------------------- //
-function renderVerdict(run) {
-  // The verdict — its wording, its style, and the rule that any residual fatal
-  // finding means "cannot be repaired" — is computed once, server-side, in the
-  // engine (RepairRun.verdict). This just paints it.
-  verdictEl.className = "verdict";
-  verdictEl.classList.add(run.verdict.css_class);
+// Paints one verdict box -- the top banner and the echo repeated after the
+// pass list both use this, so a visitor sees the same wording whichever one
+// they're looking at. The verdict itself (wording, style, the rule that any
+// residual fatal finding means "cannot be repaired") is computed once,
+// server-side, in the engine (RepairRun.verdict); this just paints it.
+// Only touches the "verdict" + state classes -- never resets className
+// wholesale, so a marker class already on the element (e.g. verdict-echo's
+// spacing) survives a re-render.
+const VERDICT_STATE_CLASSES = ["ok", "residual", "fail"];
+function paintVerdict(target, run) {
+  target.classList.add("verdict");
+  for (const c of VERDICT_STATE_CLASSES) target.classList.remove(c);
+  target.classList.add(run.verdict.css_class);
   // The headline already says *why* the run ended the way it did; this sub-line
   // is just the compact facts. (The full "why it stopped" wording is in the
   // downloaded report, which has room for it.)
-  verdictEl.replaceChildren(
+  target.replaceChildren(
     document.createTextNode(run.verdict.headline),
     el("small", {
       text:
@@ -121,6 +130,10 @@ function renderVerdict(run) {
         `final findings: ${countsSummary(run.residual_severity_counts)}`,
     })
   );
+}
+
+function renderVerdict(run) {
+  paintVerdict(verdictEl, run);
 }
 
 // Each row: label, a getter for the value, and a plain-language note on what the
@@ -444,6 +457,7 @@ function renderRun(run) {
   copyBtn.disabled = !hasCorrected;
   useBtn.disabled = !hasCorrected;
   downloadBtn.disabled = false;
+  viewBtn.disabled = false;
 
   // Label the payload honestly (it is only a "corrected interchange" when the
   // run came out clean) and carry the caveat right here, not only in the
@@ -475,6 +489,7 @@ function renderRun(run) {
   shownIterations.forEach((iter, i) => {
     passesEl.append(renderPass(iter, i === shownIterations.length - 1));
   });
+  paintVerdict(passesVerdictEl, run);
 
   results.hidden = false;
   results.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -530,29 +545,35 @@ function formatApiError(detail, status) {
   return `Server returned ${status}.`;
 }
 
-async function download() {
-  if (!lastRun) return;
+// Shared by the View and Download buttons -- both just want the same report
+// bytes, they differ only in what they do with them once fetched.
+async function fetchReport() {
   const payload = {
     edi: ediInput.value,
     max_iterations: Number(maxIterInput.value) || 5,
     format: formatSelect.value,
   };
+  const resp = await fetch("/api/report", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!resp.ok) {
+    const detail = await resp.json().catch(() => ({}));
+    throw new Error(formatApiError(detail, resp.status));
+  }
+  const blob = await resp.blob();
+  const disposition = resp.headers.get("Content-Disposition") || "";
+  const match = disposition.match(/filename="?([^"]+)"?/);
+  const filename = match ? match[1] : `x12-tidy-report.${formatSelect.value}`;
+  return { blob, filename };
+}
+
+async function download() {
+  if (!lastRun) return;
   downloadBtn.disabled = true;
   try {
-    const resp = await fetch("/api/report", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    if (!resp.ok) {
-      const detail = await resp.json().catch(() => ({}));
-      showError(formatApiError(detail, resp.status));
-      return;
-    }
-    const blob = await resp.blob();
-    const disposition = resp.headers.get("Content-Disposition") || "";
-    const match = disposition.match(/filename="?([^"]+)"?/);
-    const filename = match ? match[1] : `x12-tidy-report.${formatSelect.value}`;
+    const { blob, filename } = await fetchReport();
     triggerDownload(blob, filename);
   } catch (err) {
     showError(`Download failed: ${err.message}`);
@@ -568,6 +589,31 @@ function triggerDownload(blob, filename) {
   a.click();
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+// Open the report in a new tab instead of saving it. The tab is opened
+// synchronously, before the (async) fetch, so it's still tied to the click
+// that triggered it -- otherwise Safari and popup blockers treat the later
+// `window.open` as an unsolicited popup and block it.
+async function viewReport() {
+  if (!lastRun) return;
+  const tab = window.open("", "_blank");
+  viewBtn.disabled = true;
+  try {
+    const { blob } = await fetchReport();
+    const url = URL.createObjectURL(blob);
+    if (tab) {
+      tab.location.href = url;
+    } else {
+      showError("Your browser blocked the new tab — allow pop-ups for this site, or use Download instead.");
+    }
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  } catch (err) {
+    tab?.close();
+    showError(`Could not open the report: ${err.message}`);
+  } finally {
+    viewBtn.disabled = false;
+  }
 }
 
 async function copyCorrected() {
@@ -718,5 +764,6 @@ $("clear-btn").addEventListener("click", resetForm);
 copyBtn.addEventListener("click", copyCorrected);
 useBtn.addEventListener("click", useCorrected);
 downloadBtn.addEventListener("click", download);
+viewBtn.addEventListener("click", viewReport);
 
 restoreDraft();

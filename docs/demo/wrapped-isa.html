@@ -177,6 +177,29 @@ button.ghost { background: transparent; }
 .verdict.fail      { border-color: #e39a9a; border-left-color: var(--fatal); background: #fbdada; box-shadow: 0 2px 6px rgba(179, 0, 0, .18); }
 .verdict.fail::before      { content: &#34;\2715&#34;; background: var(--fatal); }
 .verdict small { display: block; font-weight: 400; color: var(--dim); margin-top: .3rem; }
+/* The same verdict box, repeated after the pass list -- a visitor who has
+   scrolled through several passes shouldn&#39;t have to scroll back up to see
+   whether the run ended clean, partly repaired, or unfixable. */
+.verdict-echo { margin-top: 1rem; }
+
+/* Was easy to miss as a small select+button tucked into the &#34;Repair passes&#34;
+   panel-head; now its own callout at the end of the results, next to the
+   closing verdict, so a visitor sees it without hunting for it. */
+.report-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  margin-top: 1rem;
+  padding: .9rem 1.1rem;
+  border: 1px solid var(--line);
+  border-left: 6px solid var(--accent);
+  border-radius: 8px;
+  background: var(--bg);
+}
+.report-panel-text { flex: 1 1 260px; margin: 0; font-size: .92rem; color: var(--ink); }
+.report-panel-actions { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
 
 /* Inline caveat inside a result panel — e.g. the output panel when the run
    did not come out clean. Amber by default; red when the result is fatal /
@@ -529,6 +552,13 @@ TWO    *240705*2200*U*00401*000000900*0*P*:~GS*SW*SHIPPERONE*RECEIVERTWO*2024070
       </div>
     </details>
     
+    </div>
+    <div class="verdict verdict-echo ok">
+      Clean — the interchange is conformant, with nothing left to fix.
+      <small>
+        2 passes ·
+        output differs from the input
+      </small>
     </div>
   </div>
 </main>
