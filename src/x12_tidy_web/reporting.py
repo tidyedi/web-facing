@@ -17,17 +17,30 @@ web layer can hand it straight to a download response.
 
 from __future__ import annotations
 
+import base64
 import csv
 import html
 import io
 import json
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from pathlib import Path
 
 from x12_tidy_web import __version__
 from x12_tidy_web.diagnostics import SEVERITY_ORDER, DiagnosticView
 from x12_tidy_web.engine import Iteration, RepairRun
-from x12_tidy_web.provenance import x12_tidy_commit, x12_tidy_release, x12_tidy_version
+from x12_tidy_web.provenance import (
+    x12_tidy_commit,
+    x12_tidy_release,
+    x12_tidy_source_url,
+    x12_tidy_version,
+)
+
+#: The hosted app -- the HTML report is often saved or forwarded on its own,
+#: away from the page that generated it, so it carries its own way back.
+_APP_URL = "https://repair.tidyedi.com"
+
+_STATIC = Path(__file__).parent / "static"
 
 #: format key -> (media type, file extension, human label)
 FORMATS: dict[str, tuple[str, str, str]] = {
@@ -290,7 +303,10 @@ def _render_csv(run: RepairRun) -> str:
 _HTML_STYLE = """
   body { font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
          max-width: 60rem; margin: 2rem auto; padding: 0 1rem; color: #1a1a1a; }
-  h1 { border-bottom: 2px solid #333; padding-bottom: .3rem; }
+  .brand { display: flex; align-items: center; gap: .5rem;
+           border-bottom: 2px solid #333; padding-bottom: .3rem; margin: 0 0 1rem; }
+  .brand img { display: block; border-radius: 4px; }
+  .brand h1 { margin: 0; border: none; padding: 0; }
   .verdict { font-weight: 600; padding: .75rem 1rem; border-radius: 6px; background: #f0f0f0; }
   table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
   th, td { border: 1px solid #ccc; padding: .4rem .6rem; text-align: left; vertical-align: top; }
@@ -310,15 +326,30 @@ def _esc(value: object) -> str:
     return html.escape(str(value), quote=True)
 
 
+def _favicon_data_uri() -> str:
+    """Inline the app's favicon so a saved/forwarded report still shows it --
+    it has no server to fetch the file from once it leaves the download."""
+    raw = (_STATIC / "favicon.svg").read_bytes()
+    return "data:image/svg+xml;base64," + base64.b64encode(raw).decode("ascii")
+
+
 def _render_html(run: RepairRun) -> str:
     parts: list[str] = []
     parts.append("<!doctype html><html lang='en'><head><meta charset='utf-8'>")
     parts.append("<meta name='viewport' content='width=device-width, initial-scale=1'>")
+    parts.append(f"<link rel='icon' href='{_favicon_data_uri()}'>")
     parts.append("<title>EDI validation report</title>")
     parts.append(f"<style>{_HTML_STYLE}</style></head><body>")
-    parts.append("<h1>EDI validation report</h1>")
     parts.append(
-        f"<p class='muted'>Generated {_esc(_now_iso())} by {_esc(_credit())}.</p>"
+        "<div class='brand'>"
+        f"<img src='{_favicon_data_uri()}' width='28' height='28' alt=''>"
+        "<h1>EDI validation report</h1>"
+        "</div>"
+    )
+    parts.append(
+        f"<p class='muted'>Generated {_esc(_now_iso())} by "
+        f"<a href='{_APP_URL}'>x12-tidy-web</a> {_esc(__version__)}, "
+        f"<a href='{_esc(x12_tidy_source_url())}'>x12-tidy</a> {_esc(x12_tidy_release())}.</p>"
     )
     parts.append(f"<p class='verdict'>{_esc(_verdict_line(run))}</p>")
     parts.append("<ul>")
