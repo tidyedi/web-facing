@@ -55,7 +55,20 @@ def test_json_report_is_valid_and_annotated(dirty_run) -> None:
 @pytest.mark.parametrize("fmt", ["markdown", "text", "html"])
 def test_prose_reports_credit_the_x12_tidy_build(dirty_run, fmt: str) -> None:
     text = render_report(dirty_run, fmt).content.decode()
-    assert "x12-tidy 0.1.0 (git " in text
+    # The HTML report links "x12-tidy" to its source instead of leaving it
+    # plain text, so the credit line's exact markup differs there.
+    needle = "x12-tidy</a> 0.1.0 (git " if fmt == "html" else "x12-tidy 0.1.0 (git "
+    assert needle in text
+
+
+def test_html_report_identifies_where_it_came_from(dirty_run) -> None:
+    # The HTML report is often saved or forwarded on its own, away from the
+    # app that produced it, so it carries its own icon and links back.
+    text = render_report(dirty_run, "html").content.decode()
+    assert "<link rel='icon' href='data:image/svg+xml;base64," in text
+    assert "<img src='data:image/svg+xml;base64," in text
+    assert "href='https://repair.tidyedi.com'>x12-tidy-web</a>" in text
+    assert "href='https://github.com/tidyedi/x12-tidy/tree/" in text
 
 
 def test_markdown_report_mentions_key_facts(dirty_run) -> None:
